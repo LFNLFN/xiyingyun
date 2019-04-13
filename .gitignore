@@ -1,0 +1,15 @@
+.DS_Store
+code/node_modules/
+code/dist/
+code/npm-debug.log*
+code/yarn-debug.log*
+code/yarn-error.log*
+code/package-lock.json
+
+# Editor directories and files
+code/.idea
+code/.vscode
+code/*.suo
+code/*.ntvs*
+code/*.njsproj
+code/*.sln
