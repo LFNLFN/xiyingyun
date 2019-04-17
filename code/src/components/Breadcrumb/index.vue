@@ -28,13 +28,12 @@ export default {
   },
   methods: {
     getBreadcrumb() {
-      let matched = this.$route.matched.filter(item => item.name)
-
-      const first = matched[0]
-      if (first && first.name !== 'dashboard') {
-        matched = [{ path: '/dashboard', meta: { title: 'Dashboard' }}].concat(matched)
-      }
-
+      const matched = this.$route.matched.filter(item => item.name)
+      // const first = matched[0]
+      // // 添加首页
+      // if (first && first.name !== 'index') {
+      //   matched = [{ path: '/index', meta: { title: '首页' }}].concat(matched)
+      // }
       this.levelList = matched.filter(item => item.meta && item.meta.title && item.meta.breadcrumb !== false)
     },
     pathCompile(path) {
@@ -45,6 +44,8 @@ export default {
     },
     handleLink(item) {
       const { redirect, path } = item
+      console.log('redirect: ', redirect)
+      console.log('path: ', path)
       if (redirect) {
         this.$router.push(redirect)
         return

@@ -1,15 +1,13 @@
 <template>
   <div v-if="!item.hidden" class="menu-wrapper">
-
-    <template v-if="hasOneShowingChild(item.children,item) && (!onlyOneChild.children||onlyOneChild.noShowingChildren)&&!item.alwaysShow">
+    <template v-if="hasOneShowingChild(item.children,item) && (!onlyOneChild.children||onlyOneChild.noShowingChildren) && !item.alwaysShow">
       <app-link :to="resolvePath(onlyOneChild.path)">
         <el-menu-item :index="resolvePath(onlyOneChild.path)" :class="{'submenu-title-noDropdown':!isNest}">
           <item :meta="Object.assign({},item.meta,onlyOneChild.meta)" />
         </el-menu-item>
       </app-link>
     </template>
-
-    <el-submenu v-else ref="subMenu" :index="resolvePath(item.path)" popper-append-to-body>
+    <el-submenu v-else ref="submenu" :index="resolvePath(item.path)" :has-index="item.hasIndex" popper-append-to-body @click.native.stop="clickHandle(item.hasIndex, item.redirect)">
       <template slot="title">
         <item :meta="item.meta" />
       </template>
@@ -19,9 +17,8 @@
         :item="child"
         :key="child.path"
         :base-path="resolvePath(child.path)"
-        class="nest-menu" />
+        class="nest-menu"/>
     </el-submenu>
-
   </div>
 </template>
 
@@ -56,6 +53,11 @@ export default {
     return {}
   },
   methods: {
+    clickHandle(hasIndex, path) {
+      // if (hasIndex && path.length > 0) {
+      //   this.$router.push(path)
+      // }
+    },
     hasOneShowingChild(children = [], parent) {
       const showingChildren = children.filter(item => {
         if (item.hidden) {

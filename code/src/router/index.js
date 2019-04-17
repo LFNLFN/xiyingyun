@@ -6,7 +6,7 @@ import Router from 'vue-router'
 
 Vue.use(Router)
 
-/* Layout */
+// 引入Layout
 import Layout from '../views/layout/Layout'
 
 /**
@@ -21,127 +21,183 @@ import Layout from '../views/layout/Layout'
     icon: 'svg-name'             the icon show in the sidebar
     breadcrumb: false            if false, the item will hidden in breadcrumb(default is true)
   }
-**/
-export const constantRouterMap = [
-  { path: '/login', component: () => import('@/views/login/index'), hidden: true },
-  { path: '/404', component: () => import('@/views/404'), hidden: true },
 
+**/
+
+// 配置路由 routes
+export const constantRouterMap = [
+  // 登录页面
+  {
+    path: '/login',
+    component: () => import('@/views/login/index'),
+    hidden: true
+  },
+  // 链接错误页面
+  {
+    path: '/404',
+    component: () => import('@/views/404'),
+    hidden: true
+  },
+  // 登录后进入首页
   {
     path: '/',
     component: Layout,
-    redirect: '/dashboard',
-    name: 'Dashboard',
-    hidden: true,
-    children: [{
-      path: 'dashboard',
-      component: () => import('@/views/dashboard/index')
-    }]
+    redirect: '/project_config',
+    hidden: true
   },
-
+  // 项目设置界面
   {
-    path: '/example',
+    path: '/project_config',
     component: Layout,
-    redirect: '/example/table',
-    name: 'Example',
-    meta: { title: 'Example', icon: 'example' },
+    redirect: '/project_config/project',
+    name: 'projectConfig',
+    meta: { title: '项目设置', icon: '' },
     children: [
       {
-        path: 'table',
-        name: 'Table',
-        component: () => import('@/views/table/index'),
-        meta: { title: 'Table', icon: 'table' }
+        path: 'project',
+        name: 'Project',
+        meta: { title: '项目管理', icon: '' },
+        conponent: () => import('@/views/project_config/project')
       },
       {
-        path: 'tree',
-        name: 'Tree',
-        component: () => import('@/views/tree/index'),
-        meta: { title: 'Tree', icon: 'tree' }
+        path: 'plan',
+        name: 'Plan',
+        meta: { title: '平面图管理', icon: '' },
+        conponent: () => import('@/views/project_config/plan')
+      },
+      {
+        path: 'building',
+        name: 'Building',
+        meta: { title: '楼栋管理', icon: '' },
+        conponent: () => import('@/views/project_config/building')
+      },
+      {
+        path: 'participant',
+        name: 'Participant',
+        meta: { title: '参建方管理', icon: '' },
+        conponent: () => import('@/views/project_config/participant')
       }
     ]
   },
-
+  // 基础资料页面
   {
-    path: '/form',
+    path: '/base_data',
     component: Layout,
+    name: 'baseData',
+    redirect: '/base_data/suppliers',
+    meta: { title: '基础资料', icon: '' },
     children: [
       {
-        path: 'index',
-        name: 'Form',
-        component: () => import('@/views/form/index'),
-        meta: { title: 'Form', icon: 'form' }
-      }
-    ]
-  },
-
-  {
-    path: '/nested',
-    component: Layout,
-    redirect: '/nested/menu1',
-    name: 'Nested',
-    meta: {
-      title: 'Nested',
-      icon: 'nested'
-    },
-    children: [
+        path: 'suppliers',
+        name: 'suppliers',
+        meta: { title: '供应商管理', icon: '' },
+        component: () => import('@/views/base_data/suppliers')
+      },
       {
-        path: 'menu1',
-        component: () => import('@/views/nested/menu1/index'), // Parent router-view
-        name: 'Menu1',
-        meta: { title: 'Menu1' },
+        path: 'account',
+        name: 'account',
+        meta: { title: '账号管理', icon: '' },
+        component: () => import('@/views/base_data/account')
+      },
+      {
+        path: 'organization',
+        name: 'organization',
+        meta: { title: '组织架构', icon: '' },
+        component: () => import('@/views/base_data/organization')
+      },
+      {
+        path: 'permission',
+        name: 'permission',
+        meta: { title: '权限管理', icon: '' },
+        component: () => import('@/views/base_data/permission')
+      },
+      {
+        path: 'params_config',
+        name: 'paramsConfig',
+        redirect: '/base_data/params_config/index',
+        meta: { title: '参数设置', icon: '' },
+        component: () => import('@/views/base_data/params_config/index'),
+        alwaysShow: true,
         children: [
           {
-            path: 'menu1-1',
-            component: () => import('@/views/nested/menu1/menu1-1'),
-            name: 'Menu1-1',
-            meta: { title: 'Menu1-1' }
+            path: 'index',
+            name: 'paramsIndex',
+            hidden: true,
+            component: () => import('@/views/base_data/params_config/index')
           },
           {
-            path: 'menu1-2',
-            component: () => import('@/views/nested/menu1/menu1-2'),
-            name: 'Menu1-2',
-            meta: { title: 'Menu1-2' },
-            children: [
-              {
-                path: 'menu1-2-1',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-1'),
-                name: 'Menu1-2-1',
-                meta: { title: 'Menu1-2-1' }
-              },
-              {
-                path: 'menu1-2-2',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-2'),
-                name: 'Menu1-2-2',
-                meta: { title: 'Menu1-2-2' }
-              }
-            ]
-          },
-          {
-            path: 'menu1-3',
-            component: () => import('@/views/nested/menu1/menu1-3'),
-            name: 'Menu1-3',
-            meta: { title: 'Menu1-3' }
+            path: 'params_setting',
+            name: 'paramsSetting',
+            component: () => import('@/views/base_data/params_config/params_setting'),
+            meta: { title: '供应商性质', icon: '' }
           }
         ]
       },
       {
-        path: 'menu2',
-        component: () => import('@/views/nested/menu2/index'),
-        meta: { title: 'menu2' }
+        path: 'check_items',
+        name: 'checkItems',
+        meta: { title: '检查项配置', icon: '' },
+        component: () => import('@/views/base_data/check_items')
       }
     ]
   },
-
+  // 用户设置界面
   {
-    path: 'external-link',
+    path: '/user',
     component: Layout,
+    name: 'user',
+    redirect: '/user/user_set',
+    meta: { title: '我的', icon: '' },
     children: [
       {
-        path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
-        meta: { title: 'External Link', icon: 'link' }
+        path: 'security',
+        name: 'security',
+        redirect: '/user/security/index',
+        meta: { title: '安全设置', icon: '' },
+        hasIndex: true,
+        // component: () => import('@/views/user/security/index'),
+        children: [
+          {
+            path: 'index',
+            name: 'index',
+            hidden: true,
+            component: () => import('@/views/user/security/index')
+          },
+          {
+            path: 'phone_num',
+            name: 'poneNum',
+            component: () => import('@/views/user/security/phone_num'),
+            meta: { title: '更换手机号码', icon: '' }
+          },
+          {
+            path: 'password',
+            name: 'password',
+            component: () => import('@/views/user/security/password'),
+            meta: { title: '更改密码', icon: '' }
+          }
+        ]
+      },
+      {
+        path: 'user_set',
+        name: 'userSet',
+        meta: { title: '个人设置', icon: '' },
+        component: () => import('@/views/user/user_set')
+      },
+      {
+        path: 'my_company',
+        name: 'myCompany',
+        meta: { title: '我的公司', icon: '' },
+        component: () => import('@/views/user/my_company')
+      },
+      {
+        path: 'quit_apply',
+        name: 'quitApply',
+        meta: { title: '退出申请', icon: '' },
+        component: () => import('@/views/user/quit_apply')
       }
     ]
   },
-
+  // 无效链接重定向到404页面
   { path: '*', redirect: '/404', hidden: true }
 ]
 
