@@ -21,7 +21,6 @@ import Layout from '../views/layout/Layout'
     icon: 'svg-name'             the icon show in the sidebar
     breadcrumb: false            if false, the item will hidden in breadcrumb(default is true)
   }
-
 **/
 
 // 配置路由 routes
@@ -94,10 +93,10 @@ export const constantRouterMap = [
         component: () => import('@/views/base_data/suppliers')
       },
       {
-        path: 'account',
-        name: 'account',
+        path: 'accounts',
+        name: 'accounts',
         meta: { title: '账号管理', icon: '' },
-        component: () => import('@/views/base_data/account')
+        component: () => import('@/views/base_data/accounts')
       },
       {
         path: 'organization',
@@ -114,24 +113,23 @@ export const constantRouterMap = [
       {
         path: 'params_config',
         name: 'paramsConfig',
-        redirect: '/base_data/params_config/index',
         meta: { title: '参数设置', icon: '' },
-        component: () => import('@/views/base_data/params_config/index'),
-        alwaysShow: true,
-        children: [
-          {
-            path: 'index',
-            name: 'paramsIndex',
-            hidden: true,
-            component: () => import('@/views/base_data/params_config/index')
-          },
-          {
-            path: 'params_setting',
-            name: 'paramsSetting',
-            component: () => import('@/views/base_data/params_config/params_setting'),
-            meta: { title: '供应商性质', icon: '' }
-          }
-        ]
+        component: () => import('@/views/base_data/params_config')
+        // alwaysShow: true,
+        // children: [
+        //   {
+        //     path: 'index',
+        //     name: 'paramsIndex',
+        //     hidden: true,
+        //     component: () => import('@/views/base_data/params_config/index')
+        //   },
+        //   {
+        //     path: 'params_setting',
+        //     name: 'paramsSetting',
+        //     component: () => import('@/views/base_data/params_config/params_setting'),
+        //     meta: { title: '供应商性质', icon: '' }
+        //   }
+        // ]
       },
       {
         path: 'check_items',
@@ -152,30 +150,28 @@ export const constantRouterMap = [
       {
         path: 'security',
         name: 'security',
-        redirect: '/user/security/index',
         meta: { title: '安全设置', icon: '' },
-        hasIndex: true,
-        // component: () => import('@/views/user/security/index'),
-        children: [
-          {
-            path: 'index',
-            name: 'index',
-            hidden: true,
-            component: () => import('@/views/user/security/index')
-          },
-          {
-            path: 'phone_num',
-            name: 'poneNum',
-            component: () => import('@/views/user/security/phone_num'),
-            meta: { title: '更换手机号码', icon: '' }
-          },
-          {
-            path: 'password',
-            name: 'password',
-            component: () => import('@/views/user/security/password'),
-            meta: { title: '更改密码', icon: '' }
-          }
-        ]
+        component: () => import('@/views/user/security')
+        // children: [
+        //   {
+        //     path: 'index',
+        //     name: 'index',
+        //     hidden: true,
+        //     component: () => import('@/views/user/security/index')
+        //   },
+        //   {
+        //     path: 'phone_num',
+        //     name: 'poneNum',
+        //     component: () => import('@/views/user/security/phone_num'),
+        //     meta: { title: '更换手机号码', icon: '' }
+        //   },
+        //   {
+        //     path: 'password',
+        //     name: 'password',
+        //     component: () => import('@/views/user/security/password'),
+        //     meta: { title: '更改密码', icon: '' }
+        //   }
+        // ]
       },
       {
         path: 'user_set',
@@ -198,6 +194,10 @@ export const constantRouterMap = [
     ]
   },
   // 无效链接重定向到404页面
+  { path: '*', redirect: '/404', hidden: true }
+]
+
+export const asyncRouterMap = [
   { path: '*', redirect: '/404', hidden: true }
 ]
 

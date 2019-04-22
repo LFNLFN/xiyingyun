@@ -2,22 +2,10 @@
   <div class="navbar">
     <hamburger :toggle-click="toggleSideBar" :is-active="sidebar.opened" class="hamburger-container"/>
     <breadcrumb />
-    <el-dropdown class="avatar-container" trigger="click">
-      <div class="avatar-wrapper">
-        <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
-        <i class="el-icon-caret-bottom"/>
-      </div>
-      <el-dropdown-menu slot="dropdown" class="user-dropdown">
-        <router-link class="inlineBlock" to="/">
-          <el-dropdown-item>
-            Home
-          </el-dropdown-item>
-        </router-link>
-        <el-dropdown-item divided>
-          <span style="display:block;" @click="logout">LogOut</span>
-        </el-dropdown-item>
-      </el-dropdown-menu>
-    </el-dropdown>
+    <div class="navbar-right-part">
+      <userDropdown />
+      <msgDropdown />
+    </div>
   </div>
 </template>
 
@@ -25,11 +13,15 @@
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
+import UserDropdown from '@/components/UserDropdown'
+import MsgDropdown from '@/components/MsgDropdown'
 
 export default {
   components: {
     Breadcrumb,
-    Hamburger
+    Hamburger,
+    UserDropdown,
+    MsgDropdown
   },
   computed: {
     ...mapGetters([
@@ -40,11 +32,6 @@ export default {
   methods: {
     toggleSideBar() {
       this.$store.dispatch('ToggleSideBar')
-    },
-    logout() {
-      this.$store.dispatch('LogOut').then(() => {
-        location.reload() // 为了重新实例化vue-router对象 避免bug
-      })
     }
   }
 }
@@ -89,6 +76,16 @@ export default {
         font-size: 12px;
       }
     }
+  }
+  .navbar-right-part {
+    height: 50px;
+    padding-right: 10px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 }
 </style>

@@ -11,17 +11,11 @@ Mock.XHR.prototype.send = function() {
   }
   this.proxy_send(...arguments)
 }
-// Mock.setup({
-//   timeout: '350-600'
-// })
 
 // User
-// Mock.mock(/\/user\/login/, 'post', userAPI.login)
-// Mock.mock(/\/user\/info/, 'get', userAPI.getInfo)
-// Mock.mock(/\/user\/logout/, 'post', userAPI.logout)
-
-Mock.mock(/\/authorize\/login/, 'post', userAPI.login)
-Mock.mock(/\/user\/info/, 'get', userAPI.getInfo)
+// Mock.mock(/\/authorize\/login/, 'post', userAPI.login)
+Mock.mock(/\/authorize\/me/, 'get', userAPI.getInfo)
+Mock.mock(/\/authorize\/logout/, 'get', userAPI.logout)
 
 // Table
 Mock.mock(/\/table\/list/, 'get', tableAPI.list)

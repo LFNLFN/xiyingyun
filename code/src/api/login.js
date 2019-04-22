@@ -4,24 +4,25 @@ export function login(username, password) {
   return request({
     url: '/authorize/login',
     method: 'post',
-    data: {
+    data: JSON.stringify({
       username,
-      password
-    }
+      password,
+      'token_type': 'token'
+    })
   })
 }
 
 export function getInfo(token) {
   return request({
-    url: '/user/info',
-    method: 'get',
-    params: { token }
+    url: '/authorize/me',
+    method: 'get'
+    // params: { token }
   })
 }
 
 export function logout() {
   return request({
-    url: '/user/logout',
-    method: 'post'
+    url: '/authorize/logout',
+    method: 'get'
   })
 }

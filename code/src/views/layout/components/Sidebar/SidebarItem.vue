@@ -7,7 +7,7 @@
         </el-menu-item>
       </app-link>
     </template>
-    <el-submenu v-else ref="submenu" :index="resolvePath(item.path)" :has-index="item.hasIndex" popper-append-to-body @click.native.stop="clickHandle(item.hasIndex, item.redirect)">
+    <el-submenu v-else ref="submenu" :index="resolvePath(item.path)" :has-index="item.hasIndex" is-close="true" popper-append-to-body @click.native.stop="clickHandle($event, item.hasIndex, item.redirect)">
       <template slot="title">
         <item :meta="item.meta" />
       </template>
@@ -53,10 +53,19 @@ export default {
     return {}
   },
   methods: {
-    clickHandle(hasIndex, path) {
-      // if (hasIndex && path.length > 0) {
-      //   this.$router.push(path)
+    clickHandle(evt, hasIndex, path) {
+      // const curtag = evt.currentTarget
+      // const isClose = curtag.getAttribute('is-close')
+      // if (!hasIndex || path.length === 0) {
+      //   return
       // }
+      // console.log('isClose: ', isClose)
+      // if (isClose !== 'true') {
+      //   curtag.setAttribute('is-close', 'true')
+      //   return
+      // }
+      // this.$router.push(path)
+      // curtag.setAttribute('is-close', 'false')
     },
     hasOneShowingChild(children = [], parent) {
       const showingChildren = children.filter(item => {

@@ -7,7 +7,7 @@
         <span class="svg-container">
           <svg-icon icon-class="user" />
         </span>
-        <el-input v-model="loginForm.username" name="username" type="text" auto-complete="on" placeholder="请输入用户名称" />
+        <el-input v-model="loginForm.username" name="username" type="text" auto-complete="new-password" placeholder="请输入用户名称" />
       </el-form-item>
       <el-form-item prop="password">
         <span class="svg-container">
@@ -17,7 +17,7 @@
           :type="pwdType"
           v-model="loginForm.password"
           name="password"
-          auto-complete="on"
+          auto-complete="new-password"
           placeholder="请输入登录密码"
           @keyup.enter.native="handleLogin" />
         <span class="show-pwd" @click="showPwd">
@@ -51,7 +51,7 @@ export default {
     }
     // 用户密码验证规则
     const validatePass = (rule, value, callback) => {
-      if (value.length < 8) {
+      if (value.length < 5) {
         callback(new Error('密码不能小于8位'))
       } else {
         callback()

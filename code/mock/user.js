@@ -10,18 +10,26 @@ const tokens = {
 }
 
 const users = {
-  'admin-token': {
-    roles: ['admin'],
-    introduction: 'I am a super administrator',
-    avatar: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
-    name: 'Super Admin'
+  code: 200,
+  result: {
+    attributes: {
+      
+    },
+    permissions: [
+      
+    ],
+    roles: [
+      "admin"
+    ],
+    user: {
+      id: "0",
+      name: "zmb",
+      type: "default",
+      username: "admin"
+    }
   },
-  'editor-token': {
-    roles: ['editor'],
-    introduction: 'I am an editor',
-    avatar: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
-    name: 'Normal Editor'
-  }
+  status: 200,
+  timestamp: 1555663215156
 }
 
 export default {
@@ -30,30 +38,24 @@ export default {
       code: 200,
       message: '登陆成功',
       result: {
+        userId: 0,
         token: 'admin-token'
       },
-      status: 0,
+      status: 200,
       timestamp: 0
     }
   },
   getInfo: res => {
     const { token } = param2Obj(res.url)
-    const info = users[token]
-    if (info) {
-      return {
-        code: 200,
-        data: info
-      }
-    }
-    return {
-      code: 50008,
-      message: 'Login failed, unable to get user details.'
-    }
+    const info = users
+    return info
   },
   logout: () => {
     return {
       code: 200,
-      data: 'success'
+      status: 200,
+      data: 'success',
+      message: '退出登录成功'
     }
   }
 }

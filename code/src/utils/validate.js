@@ -3,9 +3,10 @@
  */
 
 export function isvalidUsername(str) {
-  // const valid_map = ['admin', 'editor']
-  // return valid_map.indexOf(str.trim()) >= 0
-  return true
+  if (str.length === 0) {
+    return { valid: false, msg: '用户名不能为空' }
+  }
+  return { valid: true, msg: '' }
 }
 
 export function isExternal(path) {
