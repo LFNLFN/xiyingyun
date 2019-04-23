@@ -33,8 +33,8 @@
         <el-table-column width="220" label="操作">
           <template slot-scope="scope">
             <el-button size="mini" type="primary" class="staff-table-btn">编辑</el-button>
-            <el-button size="mini" type="primary" class="staff-table-btn">重置密码</el-button>
-            <el-button size="mini" type="primary" class="staff-table-btn">删除</el-button>
+            <el-button size="mini" type="primary" class="staff-table-btn" @click="passwordBoxShow(scope.$index)">重置密码</el-button>
+            <el-button size="mini" type="primary" class="staff-table-btn" @click="staffDisable(scope.$index)">禁用</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -49,17 +49,23 @@
         </el-select>
         <el-button type="primary" size="mini">确定</el-button>
       </div>
-      <el-pagination :total="pageTotal" background layout="prev, pager, next, jumper" />
+      <el-pagination
+        :total="pageTotal"
+        background
+        layout="prev, pager, next, jumper"
+        @current-change="pageChangeHandle"/>
     </el-footer>
     <AddStaffBox v-show="showStarffBox" @closeAddStaffBox="addStaffBoxShow" />
+    <ResetPassword v-show="showPasswordBox" :user-data="resetPasswordUser" @closePasswordBox="passwordBoxShow"/>
   </el-container>
 </template>
 <script>
-import AddStaffBox from '@/views/base_data/components/AddStaffBox'
-import { getUsers } from '@/api/base_data/accounts'
+import AddStaffBox from '@/views/base_data/components/accounts/AddStaffBox'
+import ResetPassword from '@/views/base_data/components/accounts/ResetPassword'
+import { getUsers, disableUSer } from '@/api/base_data/accounts'
 export default{
   name: 'Accounts',
-  components: { AddStaffBox },
+  components: { AddStaffBox, ResetPassword },
   data() {
     const validsearchForm = (rule, value, callback) => {
       if (this.searchForm.name.length === 0 && this.searchForm.phone.length === 0) {
@@ -69,7 +75,6 @@ export default{
       }
     }
     return {
-      token: this.$store.getters.token,
       searchForm: {
         name: '',
         phone: ''
@@ -83,24 +88,36 @@ export default{
       allCheckdeValue: false,
       multipleSelection: [],
       showStarffBox: false,
+      showPasswordBox: false,
+      resetPasswordUser: {},
       pageTotal: 0,
       isLoading: true
     }
   },
   created() {
-    this.getUsersMethod({})
+    this.getUsersFunc()
   },
   methods: {
-    addStaffBoxShow() {
+    // 添加用户组件显隐
+    addStaffBoxShow(addCount) {
       this.showStarffBox = !this.showStarffBox
+      if (typeof addCount === 'number' && addCount > 0) {
+        console.log('addCount', addCount)
+        this.getUsersFunc()
+      }
+    },
+    // 重置密码组件显隐
+    passwordBoxShow(index) {
+      this.resetPasswordUser = this.tableData[index]
+      this.showPasswordBox = !this.showPasswordBox
     },
     // 获取员工信息
-    getUsersMethod(params) {
-      if (Object.keys(params).length === 0) {
+    getUsersFunc(params) {
+      this.isLoading = true
+      if (!params || Object.keys(params).length === 0) {
         params = {
-          pageIndex: 1,
-          pageSize: 10,
-          token: this.token
+          pageIndex: 0,
+          pageSize: 10
         }
       }
       getUsers(params).then(response => {
@@ -111,24 +128,56 @@ export default{
         this.isLoading = false
       })
     },
+    // 根据条件查询员工信息
     filterStaffInfo() {
       this.$refs.searchForm.validate(valid => {
-        console.log('valid', valid)
         if (valid) {
           this.isLoading = true
           const params = {
             pageIndex: 1,
             pageSize: 10,
             name: this.searchForm.name,
-            phone: this.searchForm.phone,
-            token: this.token
+            phone: this.searchForm.phone
           }
-          this.getUsersMethod(params)
+          this.getUsersFunc(params)
         }
       })
     },
+    staffDisable(index) {
+      const user = this.tableData[index]
+      if (user.id.length === 0) {
+        this.$message({
+          showClose: true,
+          message: '禁用失败，用户信息不完整',
+          type: 'warning',
+          duration: 3 * 1000
+        })
+        return
+      }
+      this.$confirm(`确定禁用 ${user.name}？`, {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then((action) => {
+        this.isLoading = true
+        disableUSer(user.id).then(resp => {
+          console.log(resp)
+          this.$message({
+            showClose: true,
+            message: '禁用成功',
+            type: 'success',
+            duration: 3 * 1000
+          })
+          this.isLoading = false
+        }).catch(() => {
+          this.isLoading = false
+        })
+      }, (cancel) => {
+        // console.log('取消禁用: ', cancel)
+      })
+    },
+    // 全选状态按钮控制
     handleSelectionChange(val) {
-      console.log('val ', val)
       this.multipleSelection = val
       if (val.length === this.tableData.length) {
         this.allCheckdeValue = true
@@ -136,14 +185,24 @@ export default{
         this.allCheckdeValue = false
       }
     },
+    // 控制表格全选
     tableToggleSelection(rows) {
-      console.log('this.$refs.staffTable ', this.$refs.staffTable)
       this.$refs.staffTable.toggleAllSelection()
+    },
+    // 点击分页按钮处理
+    pageChangeHandle(val) {
+      const params = {
+        pageIndex: val - 1,
+        pageSize: 10
+      }
+      this.getUsersFunc(params)
     }
   }
 }
 </script>
 <style ref="stylesheet/scss" lang="scss">
+@import "src/styles/mixin.scss";
+
 @mixin header {
   height: 40px;
   background: #e6e6e6;
@@ -194,10 +253,8 @@ export default{
   .el-footer {
     padding: 0;
     margin-top: 30px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
+    @include flex-space-between-center;
+    @include flex-wrap;
     .el-select {
       width: 100px;
       margin: 0 10px;

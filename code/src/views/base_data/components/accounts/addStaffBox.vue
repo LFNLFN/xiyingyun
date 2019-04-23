@@ -6,7 +6,7 @@
         <i class="el-icon-error" @click="closeBox" />
       </div>
       <el-form ref="addStaffForm" :model="addStaffForm" :rules="addStaffRules" class="add-staff-from">
-        <el-form-item label="姓名" prop="name">
+        <el-form-item label="姓名" hide-required-asterisk="true" prop="name">
           <el-input v-model="addStaffForm.name" />
         </el-form-item>
         <el-form-item label="手机" prop="phone">

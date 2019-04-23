@@ -26,3 +26,19 @@
   width: 100%;
   height: 100%;
 }
+
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin flex-space-between-center {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+@mixin flex-wrap {
+  flex-wrap: wrap;
+}

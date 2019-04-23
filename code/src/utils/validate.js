@@ -9,6 +9,13 @@ export function isvalidUsername(str) {
   return { valid: true, msg: '' }
 }
 
+export function isvalidPassword(str) {
+  if (str.length < 5) {
+    return { valid: false, msg: '密码不能少于5位' }
+  }
+  return { valid: true, msg: '' }
+}
+
 export function isExternal(path) {
   return /^(https?:|mailto:|tel:)/.test(path)
 }
