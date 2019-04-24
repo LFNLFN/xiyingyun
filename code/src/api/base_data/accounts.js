@@ -24,13 +24,22 @@ export function resetPassword(id, paramObj) {
   return request({
     url: url,
     method: 'put',
-    data: JSON.stringify(paramObj)
+    params: paramObj
   })
 }
 
 // 禁用用户
-export function disableUSer(id) {
+export function disableUser(id) {
   const url = `/user/${id}/disable`
+  return request({
+    url: url,
+    method: 'put'
+  })
+}
+
+// 启用用户
+export function enableUser(id) {
+  const url = `/user/${id}/enable`
   return request({
     url: url,
     method: 'put'

@@ -42,3 +42,19 @@
 @mixin flex-wrap {
   flex-wrap: wrap;
 }
+
+@mixin gray-header {
+  height: 40px;
+  background: #e6e6e6;
+  line-height: 40px;
+  padding-left: 10px;
+}
+
+@mixin boxShadow-container {
+  padding: 0px;
+  border: 1px solid #e6e6e6;
+  border-top: none;
+  border-radius: 5px;
+  overflow-y: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)
+} 

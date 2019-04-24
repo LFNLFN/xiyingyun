@@ -23,9 +23,16 @@
         数据列表
         <el-button type="primary" size="small" icon="el-icon-circle-plus-outline" class="staff-add-btn" @click.native="addStaffBoxShow">新增</el-button>
       </div>
-      <el-table v-loading="isLoading" ref="staffTable" :data="tableData" border class="staff-table" @selection-change="handleSelectionChange" >
-        <el-table-column type="selection" width="55"/>
-        <el-table-column prop="name" width="100" label="姓名"/>
+      <el-table
+        v-loading="isLoading"
+        ref="staffTable"
+        :data="tableData"
+        :row-class-name="tableRowClass"
+        border
+        class="staff-table"
+        @selection-change="handleSelectionChange">
+        <el-table-column type="selection" width="55" />
+        <el-table-column prop="name" width="100" label="姓名" />
         <el-table-column prop="phone" label="手机号" />
         <el-table-column prop="username" label="账号" />
         <el-table-column prop="email" label="邮箱" />
@@ -34,7 +41,10 @@
           <template slot-scope="scope">
             <el-button size="mini" type="primary" class="staff-table-btn">编辑</el-button>
             <el-button size="mini" type="primary" class="staff-table-btn" @click="passwordBoxShow(scope.$index)">重置密码</el-button>
-            <el-button size="mini" type="primary" class="staff-table-btn" @click="staffDisable(scope.$index)">禁用</el-button>
+            <!-- status === 1 正常用户 -->
+            <el-button v-if="scope.row.status===1" size="mini" type="primary" class="staff-table-btn" @click="staffDisable(scope.$index)">禁用</el-button>
+            <!-- status === 0 被禁用用户 -->
+            <el-button v-else size="mini" type="primary" class="staff-table-btn" @click="staffDisable(scope.$index)">启用</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -45,7 +55,7 @@
         <el-checkbox v-model="allCheckdeValue" border size="mini" @change.native="tableToggleSelection">全选</el-checkbox>
         <el-select v-model="batchSelectedValue" clearable size="mini" placeholder="批量操作">
           <el-option value="changPassword" label="更改密码" />
-          <el-option value="delete" label="删除" />
+          <el-option value="delete" label="启用" />
         </el-select>
         <el-button type="primary" size="mini">确定</el-button>
       </div>
@@ -62,7 +72,7 @@
 <script>
 import AddStaffBox from '@/views/base_data/components/accounts/AddStaffBox'
 import ResetPassword from '@/views/base_data/components/accounts/ResetPassword'
-import { getUsers, disableUSer } from '@/api/base_data/accounts'
+import { getUsers, disableUser, enableUser } from '@/api/base_data/accounts'
 export default{
   name: 'Accounts',
   components: { AddStaffBox, ResetPassword },
@@ -98,6 +108,12 @@ export default{
     this.getUsersFunc()
   },
   methods: {
+    // 控制表个行的classname
+    tableRowClass({ row, idx }) {
+      if (row.status === 0) {
+        return 'disable-user'
+      }
+    },
     // 添加用户组件显隐
     addStaffBoxShow(addCount) {
       this.showStarffBox = !this.showStarffBox
@@ -108,7 +124,9 @@ export default{
     },
     // 重置密码组件显隐
     passwordBoxShow(index) {
-      this.resetPasswordUser = this.tableData[index]
+      if (typeof index === 'number') {
+        this.resetPasswordUser = this.tableData[index]
+      }
       this.showPasswordBox = !this.showPasswordBox
     },
     // 获取员工信息
@@ -145,38 +163,46 @@ export default{
     },
     staffDisable(index) {
       const user = this.tableData[index]
+      let tipsText = '禁用'
       if (user.id.length === 0) {
         this.$message({
           showClose: true,
-          message: '禁用失败，用户信息不完整',
+          message: '操作失败，用户信息不完整',
           type: 'warning',
           duration: 3 * 1000
         })
         return
       }
-      this.$confirm(`确定禁用 ${user.name}？`, {
+      if (user.status === 0) {
+        tipsText = '启用'
+      }
+      this.$confirm(`确定${tipsText} ${user.name}？`, {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then((action) => {
         this.isLoading = true
-        disableUSer(user.id).then(resp => {
-          console.log(resp)
+        let method
+        if (user.status === 1) {
+          method = disableUser(user.id)
+        } else if (user.status === 0) {
+          method = enableUser(user.id)
+        }
+        method.then(resp => {
           this.$message({
             showClose: true,
-            message: '禁用成功',
+            message: `${tipsText}成功`,
             type: 'success',
             duration: 3 * 1000
           })
+          this.getUsersFunc()
           this.isLoading = false
         }).catch(() => {
           this.isLoading = false
         })
-      }, (cancel) => {
-        // console.log('取消禁用: ', cancel)
       })
     },
-    // 全选状态按钮控制
+    // 表格多选控制
     handleSelectionChange(val) {
       this.multipleSelection = val
       if (val.length === this.tableData.length) {
@@ -203,24 +229,12 @@ export default{
 <style ref="stylesheet/scss" lang="scss">
 @import "src/styles/mixin.scss";
 
-@mixin header {
-  height: 40px;
-  background: #e6e6e6;
-  line-height: 40px;
-  padding-left: 10px;
-}
-@mixin container {
-  padding: 0px;
-  border: 1px solid #e6e6e6;
-  border-top: none;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-}
 .accounts-container {
   padding: 20px;
   .search-container {
-    @include container;
+    @include boxShadow-container;
     .search-header {
-      @include header;
+      @include gray-header;
     }
     .search-form {
       padding: 20px 40px;
@@ -231,9 +245,9 @@ export default{
   }
   .staff-table-container {
     margin-top: 30px;
-    @include container;
+    @include boxShadow-container;
     .staff-header {
-      @include header;
+      @include gray-header;
       .staff-add-btn {
         float: right;
         height: 30px;
@@ -241,12 +255,19 @@ export default{
       }
     }
     .staff-table {
-      text-align: center;
       .cell {
         text-align: center;
       }
       .staff-table-btn {
         padding: 5px 10px !important;
+      }
+    }
+    .disable-user {
+      background: #f3f3f3 !important;
+
+      .staff-table-btn {
+        background: #b7b6b6 !important;
+        border-color: #b7b6b6 !important;
       }
     }
   }

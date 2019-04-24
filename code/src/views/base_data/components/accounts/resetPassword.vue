@@ -1,32 +1,27 @@
 <template>
-  <div class="container-shadow">
-    <div v-loading="resetLoading" class="container">
-      <div class="header">
-        <span>重置密码</span>
-        <i class="el-icon-error" @click="closeBox" />
-      </div>
+  <!-- <publicPopups title-text="重置密码" @closePop="closeBox" @formConfirm="passwordSubmit"> -->
+  <publicPopups title-text="重置密码" v-on="$listeners" @formConfirm="passwordSubmit">
+    <template slot="main-content">
       <el-form ref="passwordForm" :model="passwordForm" :rules="passwordRules">
         <el-form-item label="请输入旧密码" prop="oldPassword">
-          <el-input v-model.number="passwordForm.oldPassword" type="password" />
+          <el-input v-model="passwordForm.oldPassword" type="password" />
         </el-form-item>
         <el-form-item label="请输入新密码" prop="newPassword">
-          <el-input v-model.number="passwordForm.newPassword" type="password" />
+          <el-input v-model="passwordForm.newPassword" type="password" />
         </el-form-item>
         <el-form-item label="请再次输入新密码" prop="reputNewPassword">
-          <el-input v-model.number="passwordForm.reputNewPassword" type="password" />
-        </el-form-item>
-        <el-form-item class="btn-warp">
-          <el-button @click="closeBox">取消</el-button>
-          <el-button type="primary" @click="passwordSubmit">确定</el-button>
+          <el-input v-model="passwordForm.reputNewPassword" type="password" />
         </el-form-item>
       </el-form>
-    </div>
-  </div>
+    </template>
+  </publicPopups>
 </template>
 <script>
+import PublicPopups from '@/components/Pop-ups/PublicPopups'
 import { resetPassword } from '@/api/base_data/accounts'
 import { isvalidPassword } from '@/utils/validate'
 export default {
+  components: { PublicPopups },
   props: {
     userData: {
       type: Object,
@@ -78,10 +73,14 @@ export default {
       resetLoading: false
     }
   },
+  created() {
+    console.log('listeners', this.$listeners)
+    console.log('attr', this.$attr)
+  },
   methods: {
-    closeBox() {
-      this.$emit('closePasswordBox')
-    },
+    // closeBox() {
+    //   this.$emit('closePasswordBox')
+    // },
     passwordSubmit() {
       console.log('userData: ', this.userData)
       this.resetLoading = true
@@ -96,8 +95,8 @@ export default {
         return
       }
       const passwordObj = {
-        oldPassword: this.passwordForm.oldPassword,
-        password: this.passwordForm.newPassword
+        'oldPassword': String(this.passwordForm.oldPassword),
+        'password': String(this.passwordForm.newPassword)
       }
       resetPassword(userId, passwordObj).then(resp => {
         this.$message({
@@ -117,41 +116,11 @@ export default {
 </script>
 <style ref="stylesheet/scss" lang="scss" scoped>
 @import "src/styles/mixin.scss";
-
-.container-shadow {
-  width: 100vw;
-  height: 100vh;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 999;
-  background: rgba(255, 255, 255, .6);
-  @include flex-center;
-  .container {
-    border-radius: 10px;
-    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.2);
-    background: #fff;
-    width: 500px;
-    overflow: hidden;
-    .header {
-      padding: 10px 5px 10px 20px;
-      height: 50px;
-      background: #e6e6e6;
-      font-size: 24px;
-      i {
-        cursor: pointer;
-        float: right;
-        color: #f00;
-        font-size: 30px;
-      }
-    }
-    .el-form {
-      padding: 20px 50px;
-      .btn-warp {
-        margin-top: 30px;
-        @include flex-center;
-      }
-    }
+.el-form {
+  padding: 20px 50px;
+  .btn-warp {
+    margin-top: 30px;
+    @include flex-center;
   }
 }
 </style>
