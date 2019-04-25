@@ -1,35 +1,35 @@
 <template>
   <el-container class="accounts-container">
     <!-- 头部信息筛选部分 -->
-    <el-header class="search-container" height="no">
-      <div class="search-header">
+    <el-header class="accounts-header" height="no">
+      <div class="accounts-header-title">
         <i class="el-icon-tickets"/>
         筛选查询
       </div>
-      <el-form ref="searchForm" :rules="searchRules" :inline="true" :model="searchForm" size="small" class="search-form">
+      <el-form ref="searchForm" :rules="searchRules" :inline="true" :model="searchForm" size="small" class="accounts-header-form">
         <el-form-item prop="name" label="姓名">
           <el-input v-model="searchForm.name" name="name" type="text" auto-complete="off" placeholder="请输入用户名称" />
         </el-form-item>
         <el-form-item prop="phone" label="手机号码">
           <el-input v-model="searchForm.phone" type="text" />
         </el-form-item>
-        <el-button type="primary" size="small" class="search-btn" @click="filterStaffInfo">查询</el-button>
+        <el-button type="primary" size="small" class="search-btn" @click="filterAccountInfo">查询</el-button>
       </el-form>
     </el-header>
     <!-- 中间员工信息部分 -->
-    <el-main class="staff-table-container">
-      <div class="staff-header">
+    <el-main class="accounts-main">
+      <div class="accounts-main-title">
         <i class="el-icon-tickets"/>
         数据列表
-        <el-button type="primary" size="small" icon="el-icon-circle-plus-outline" class="staff-add-btn" @click.native="addStaffBoxShow">新增</el-button>
+        <el-button type="primary" size="small" icon="el-icon-circle-plus-outline" class="account-add-btn" @click.native="addAccountBoxShow">新增</el-button>
       </div>
       <el-table
         v-loading="isLoading"
-        ref="staffTable"
+        ref="accountTable"
         :data="tableData"
         :row-class-name="tableRowClass"
         border
-        class="staff-table"
+        class="account-table"
         @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" />
         <el-table-column prop="name" width="100" label="姓名" />
@@ -39,12 +39,12 @@
         <el-table-column prop="expireTime" label="失效时间" />
         <el-table-column width="220" label="操作">
           <template slot-scope="scope">
-            <el-button size="mini" type="primary" class="staff-table-btn">编辑</el-button>
-            <el-button size="mini" type="primary" class="staff-table-btn" @click="passwordBoxShow(scope.$index)">重置密码</el-button>
+            <el-button size="mini" type="primary" class="account-table-btn">编辑</el-button>
+            <el-button size="mini" type="primary" class="account-table-btn" @click="passwordBoxShow(scope.$index)">重置密码</el-button>
             <!-- status === 1 正常用户 -->
-            <el-button v-if="scope.row.status===1" size="mini" type="primary" class="staff-table-btn" @click="staffDisable(scope.$index)">禁用</el-button>
+            <el-button v-if="scope.row.status===1" size="mini" type="primary" class="account-table-btn" @click="accountDisable(scope.$index)">禁用</el-button>
             <!-- status === 0 被禁用用户 -->
-            <el-button v-else size="mini" type="primary" class="staff-table-btn" @click="staffDisable(scope.$index)">启用</el-button>
+            <el-button v-else size="mini" type="primary" class="account-table-btn" @click="accountDisable(scope.$index)">启用</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -55,7 +55,7 @@
         <el-checkbox v-model="allCheckdeValue" border size="mini" @change.native="tableToggleSelection">全选</el-checkbox>
         <el-select v-model="batchSelectedValue" clearable size="mini" placeholder="批量操作">
           <el-option value="changPassword" label="更改密码" />
-          <el-option value="delete" label="启用" />
+          <el-option value="delete" label="禁用" />
         </el-select>
         <el-button type="primary" size="mini">确定</el-button>
       </div>
@@ -65,17 +65,17 @@
         layout="prev, pager, next, jumper"
         @current-change="pageChangeHandle"/>
     </el-footer>
-    <AddStaffBox v-show="showStarffBox" @closeAddStaffBox="addStaffBoxShow" />
-    <ResetPassword v-show="showPasswordBox" :user-data="resetPasswordUser" @closePasswordBox="passwordBoxShow"/>
+    <AddAccountBox v-show="showStarffBox" @closeAddAccountBox="addAccountBoxShow" />
+    <ResetPassword v-show="showPasswordBox" :user-data="resetPasswordUser" @closePupupsBox="passwordBoxShow"/>
   </el-container>
 </template>
 <script>
-import AddStaffBox from '@/views/base_data/components/accounts/AddStaffBox'
+import AddAccountBox from '@/views/base_data/components/accounts/AddAccountBox'
 import ResetPassword from '@/views/base_data/components/accounts/ResetPassword'
 import { getUsers, disableUser, enableUser } from '@/api/base_data/accounts'
 export default{
   name: 'Accounts',
-  components: { AddStaffBox, ResetPassword },
+  components: { AddAccountBox, ResetPassword },
   data() {
     const validsearchForm = (rule, value, callback) => {
       if (this.searchForm.name.length === 0 && this.searchForm.phone.length === 0) {
@@ -115,7 +115,8 @@ export default{
       }
     },
     // 添加用户组件显隐
-    addStaffBoxShow(addCount) {
+    addAccountBoxShow(addCount) {
+      console.log('addCount', addCount)
       this.showStarffBox = !this.showStarffBox
       if (typeof addCount === 'number' && addCount > 0) {
         console.log('addCount', addCount)
@@ -146,8 +147,8 @@ export default{
         this.isLoading = false
       })
     },
-    // 根据条件查询员工信息
-    filterStaffInfo() {
+    // 根据条件查询账号信息
+    filterAccountInfo() {
       this.$refs.searchForm.validate(valid => {
         if (valid) {
           this.isLoading = true
@@ -161,7 +162,7 @@ export default{
         }
       })
     },
-    staffDisable(index) {
+    accountDisable(index) {
       const user = this.tableData[index]
       let tipsText = '禁用'
       if (user.id.length === 0) {
@@ -205,15 +206,11 @@ export default{
     // 表格多选控制
     handleSelectionChange(val) {
       this.multipleSelection = val
-      if (val.length === this.tableData.length) {
-        this.allCheckdeValue = true
-      } else if (val.length === 0) {
-        this.allCheckdeValue = false
-      }
+      val.length === this.tableData.length ? this.allCheckdeValue = true : this.allCheckdeValue = false
     },
     // 控制表格全选
     tableToggleSelection(rows) {
-      this.$refs.staffTable.toggleAllSelection()
+      this.$refs.accountTable.toggleAllSelection()
     },
     // 点击分页按钮处理
     pageChangeHandle(val) {
@@ -231,41 +228,41 @@ export default{
 
 .accounts-container {
   padding: 20px;
-  .search-container {
+  .accounts-header {
     @include boxShadow-container;
-    .search-header {
+    .accounts-header-title {
       @include gray-header;
     }
-    .search-form {
+    .accounts-header-form {
       padding: 20px 40px;
       .el-form-item {
         margin: 0 15px 0 10px;
       }
     }
   }
-  .staff-table-container {
+  .accounts-main {
     margin-top: 30px;
     @include boxShadow-container;
-    .staff-header {
+    .accounts-main-title {
       @include gray-header;
-      .staff-add-btn {
+      .account-add-btn {
         float: right;
         height: 30px;
-        margin: 5px 5px 0 0;
+        margin-top: 5px;
       }
     }
-    .staff-table {
+    .account-table {
       .cell {
         text-align: center;
       }
-      .staff-table-btn {
+      .account-table-btn {
         padding: 5px 10px !important;
       }
     }
     .disable-user {
       background: #f3f3f3 !important;
 
-      .staff-table-btn {
+      .account-table-btn {
         background: #b7b6b6 !important;
         border-color: #b7b6b6 !important;
       }

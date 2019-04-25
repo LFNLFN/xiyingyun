@@ -1,5 +1,4 @@
 <template>
-  <!-- <publicPopups title-text="重置密码" @closePop="closeBox" @formConfirm="passwordSubmit"> -->
   <publicPopups title-text="重置密码" v-on="$listeners" @formConfirm="passwordSubmit">
     <template slot="main-content">
       <el-form ref="passwordForm" :model="passwordForm" :rules="passwordRules">
@@ -72,10 +71,6 @@ export default {
       },
       resetLoading: false
     }
-  },
-  created() {
-    console.log('listeners', this.$listeners)
-    console.log('attr', this.$attr)
   },
   methods: {
     // closeBox() {

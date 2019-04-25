@@ -5,18 +5,18 @@
         <span>添加账号</span>
         <i class="el-icon-error" @click="closeBox" />
       </div>
-      <el-form ref="addStaffForm" :model="addStaffForm" :rules="addStaffRules" class="add-staff-from">
+      <el-form ref="addAccountForm" :model="addAccountForm" :rules="addAccountRules" class="add-staff-from">
         <el-form-item label="姓名" prop="name">
-          <el-input v-model="addStaffForm.name" />
+          <el-input v-model="addAccountForm.name" />
         </el-form-item>
         <el-form-item label="手机" prop="phone">
-          <el-input v-model.number="addStaffForm.phone" />
+          <el-input v-model.number="addAccountForm.phone" />
         </el-form-item>
         <el-form-item label="账号" prop="username">
-          <el-input v-model="addStaffForm.username" />
+          <el-input v-model="addAccountForm.username" />
         </el-form-item>
         <el-form-item label="邮箱" prop="email">
-          <el-input v-model="addStaffForm.email" />
+          <el-input v-model="addAccountForm.email" />
         </el-form-item>
         <el-form-item label="特殊资源">
           <el-radio-group v-model="expireDateRadio" prop="expireDateRadio">
@@ -26,7 +26,7 @@
         </el-form-item>
         <el-form-item prop="expireTime">
           <el-date-picker
-            v-model="addStaffForm.expireTime"
+            v-model="addAccountForm.expireTime"
             :disabled="datePickerDisable"
             size="small"
             align="center"
@@ -78,7 +78,7 @@ export default {
       }
     }
     return {
-      addStaffForm: {
+      addAccountForm: {
         name: '',
         phone: '',
         username: '',
@@ -86,7 +86,7 @@ export default {
         expireTime: '',
         password: ''
       },
-      addStaffRules: {
+      addAccountRules: {
         name: [{ required: true, trigger: 'blur', validator: validateUserName }],
         phone: [{ required: true, trigger: 'blur', validator: validatePhone }],
         expireTime: [{ required: true, trigger: 'change', validator: validateExpireTime }]
@@ -103,13 +103,12 @@ export default {
     expireDateRadio(newVal) {
       if (newVal === 'permanent') {
         this.datePickerDisable = true
-        if (this.addStaffForm.expireTime !== '') {
-          this.addStaffForm.expireTime = ''
+        if (this.addAccountForm.expireTime !== '') {
+          this.addAccountForm.expireTime = ''
         }
       } else {
         this.datePickerDisable = false
       }
-      console.log('this.addStaffForm.expireTime', this.addStaffForm.expireTime)
     }
   },
   methods: {
@@ -119,15 +118,15 @@ export default {
     },
     // 发送添加员工请求
     addStaffSubmit() {
-      this.$refs.addStaffForm.validate(vaild => {
+      this.$refs.addAccountForm.validate(vaild => {
         if (vaild) {
           this.addStaffLoading = true
-          this.addStaffForm.password = this.addStaffForm.phone
-          addStaff(this.addStaffForm).then(respon => {
+          this.addAccountForm.password = this.addAccountForm.phone
+          addStaff(this.addAccountForm).then(respon => {
             this.addStaffLoading = false
             this.addStaffCount += 1
             // 重置表单
-            this.resetForm('addStaffForm')
+            this.resetForm('addAccountForm')
             this.$message({
               showClose: true,
               message: '新增成功',

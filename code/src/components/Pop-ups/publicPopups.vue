@@ -32,7 +32,7 @@ export default {
   },
   methods: {
     emitClosePop() {
-      this.$emit('closePasswordBox', 'ispopus')
+      this.$emit('closePupupsBox', 'ispopus')
     },
     emitConfirm() {
       this.$emit('formConfirm')

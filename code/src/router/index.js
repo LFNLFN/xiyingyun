@@ -89,8 +89,24 @@ export const constantRouterMap = [
       {
         path: 'suppliers',
         name: 'suppliers',
+        redirect: '/base_data/suppliers/index',
         meta: { title: '供应商管理', icon: '' },
-        component: () => import('@/views/base_data/suppliers')
+        component: () => import('@/views/base_data/suppliers/index'),
+        children: [
+          {
+            path: 'index',
+            name: 'suppliersIndex',
+            hidden: true,
+            component: () => import('@/views/base_data/suppliers/suppliers')
+          },
+          {
+            path: 'details',
+            name: 'suppliersDetails',
+            hidden: true,
+            component: () => import('@/views/base_data/suppliers/details'),
+            meta: { title: '员工信息', icon: '' }
+          }
+        ]
       },
       {
         path: 'accounts',

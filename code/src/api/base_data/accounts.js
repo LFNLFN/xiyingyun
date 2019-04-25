@@ -10,7 +10,7 @@ export function getUsers(paramObj) {
 }
 
 // 增加员工
-export function addStaff(paramObj) {
+export function addAccount(paramObj) {
   return request({
     url: '/user',
     method: 'post',

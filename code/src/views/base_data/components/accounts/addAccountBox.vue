@@ -1,22 +1,18 @@
 <template>
-  <div class="container-shadow">
-    <div v-loading="addStaffLoading" class="container">
-      <div class="header">
-        <span>添加账号</span>
-        <i class="el-icon-error" @click="closeBox" />
-      </div>
-      <el-form ref="addStaffForm" :model="addStaffForm" :rules="addStaffRules" class="add-staff-from">
-        <el-form-item label="姓名" hide-required-asterisk="true" prop="name">
-          <el-input v-model="addStaffForm.name" />
+  <publicPopups title-text="重置密码" v-on="$listeners" @closePupupsBox="closeBox" @formConfirm="addAccountSubmit">
+    <template slot="main-content">
+      <el-form ref="addAccountForm" :model="addAccountForm" :rules="addAccountRules" class="add-account-from">
+        <el-form-item label="姓名" prop="name">
+          <el-input v-model="addAccountForm.name" />
         </el-form-item>
         <el-form-item label="手机" prop="phone">
-          <el-input v-model.number="addStaffForm.phone" />
+          <el-input v-model.number="addAccountForm.phone" />
         </el-form-item>
         <el-form-item label="账号" prop="username">
-          <el-input v-model="addStaffForm.username" />
+          <el-input v-model="addAccountForm.username" />
         </el-form-item>
         <el-form-item label="邮箱" prop="email">
-          <el-input v-model="addStaffForm.email" />
+          <el-input v-model="addAccountForm.email" />
         </el-form-item>
         <el-form-item label="特殊资源">
           <el-radio-group v-model="expireDateRadio" prop="expireDateRadio">
@@ -26,7 +22,7 @@
         </el-form-item>
         <el-form-item prop="expireTime">
           <el-date-picker
-            v-model="addStaffForm.expireTime"
+            v-model="addAccountForm.expireTime"
             :disabled="datePickerDisable"
             size="small"
             align="center"
@@ -35,25 +31,17 @@
             format="yyyy 年 MM 月 dd 日"
             value-format="yyyy-MM-dd" />
         </el-form-item>
-        <el-form-item class="btn-warp">
-          <el-button @click.native="closeBox">取消</el-button>
-          <el-button type="primary" @click="addStaffSubmit">确定</el-button>
-        </el-form-item>
       </el-form>
-    </div>
-  </div>
+    </template>
+  </publicPopups>
 </template>
 <script>
+import PublicPopups from '@/components/Pop-ups/PublicPopups'
 import { isvalidUsername } from '@/utils/validate'
-import { addStaff } from '@/api/base_data/accounts'
+import { addAccount } from '@/api/base_data/accounts'
 
 export default {
-  // props: {
-  //   showControl: {
-  //     type: Boolean,
-  //     default: false
-  //   }
-  // },
+  components: { PublicPopups },
   data() {
     const validateUserName = (rule, value, callback) => {
       const { valid, msg } = isvalidUsername(value)
@@ -78,7 +66,7 @@ export default {
       }
     }
     return {
-      addStaffForm: {
+      addAccountForm: {
         name: '',
         phone: '',
         username: '',
@@ -86,15 +74,15 @@ export default {
         expireTime: '',
         password: ''
       },
-      addStaffRules: {
+      addAccountRules: {
         name: [{ required: true, trigger: 'blur', validator: validateUserName }],
         phone: [{ required: true, trigger: 'blur', validator: validatePhone }],
         expireTime: [{ required: true, trigger: 'change', validator: validateExpireTime }]
       },
       expireDateRadio: '',
       datePickerDisable: false,
-      addStaffLoading: false,
-      addStaffCount: 0,
+      addAccountLoading: false,
+      addAccountCount: 0,
       token: this.$store.getters.token
     }
   },
@@ -103,31 +91,30 @@ export default {
     expireDateRadio(newVal) {
       if (newVal === 'permanent') {
         this.datePickerDisable = true
-        if (this.addStaffForm.expireTime !== '') {
-          this.addStaffForm.expireTime = ''
+        if (this.addAccountForm.expireTime !== '') {
+          this.addAccountForm.expireTime = ''
         }
       } else {
         this.datePickerDisable = false
       }
-      console.log('this.addStaffForm.expireTime', this.addStaffForm.expireTime)
     }
   },
   methods: {
     closeBox() {
-      this.$emit('closeAddStaffBox', this.addStaffCount)
-      this.addStaffCount = 0
+      this.$emit('closeAddAccountBox', this.addAccountCount)
+      this.addAccountCount = 0
     },
     // 发送添加员工请求
-    addStaffSubmit() {
-      this.$refs.addStaffForm.validate(vaild => {
+    addAccountSubmit() {
+      this.$refs.addAccountForm.validate(vaild => {
         if (vaild) {
-          this.addStaffLoading = true
-          this.addStaffForm.password = this.addStaffForm.phone
-          addStaff(this.addStaffForm).then(respon => {
-            this.addStaffLoading = false
-            this.addStaffCount += 1
+          this.addAccountLoading = true
+          this.addAccountForm.password = this.addAccountForm.phone
+          addAccount(this.addAccountForm).then(respon => {
+            this.addAccountLoading = false
+            this.addAccountCount += 1
             // 重置表单
-            this.resetForm('addStaffForm')
+            this.resetForm('addAccountForm')
             this.$message({
               showClose: true,
               message: '新增成功',
@@ -135,7 +122,7 @@ export default {
               duration: 3 * 1000
             })
           }).catch(rej => {
-            this.addStaffLoading = false
+            this.addAccountLoading = false
           })
         }
       })
@@ -151,56 +138,26 @@ export default {
 <style ref="stylesheet/scss" lang="scss" scoped>
 @import "src/styles/mixin.scss";
 
-.container-shadow {
-  width: 100vw;
-  height: 100vh;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 999;
-  background: rgba(255, 255, 255, .6);
-  @include flex-center;
-  .container {
-    border-radius: 10px;
-    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.2);
-    background: #fff;
-    width: 500px;
-    height: 500px;
-    overflow: hidden;
-    .header {
-      padding: 10px 5px 10px 20px;
-      height: 50px;
-      background: #e6e6e6;
-      font-size: 24px;
-      i {
-        cursor: pointer;
-        float: right;
-        color: #f00;
-        font-size: 30px;
-      }
-    }
-    .add-staff-from {
-      padding: 10px  20px;
-      .el-form-item {
-        width: 80%;
-        margin: 20px auto;
-      }
-      .el-input {
-        width: 80%;
-        margin-left: 10px;
-      }
-      .el-date-editor {
-        width: 50% !important;
-        margin-left: 25% !important;
-      }
-      .el-button {
-        margin: 0 20px;
-      }
-      .btn-warp {
-        margin-top: 30px;
-        @include flex-center;
-      }
-    }
+.add-account-from {
+  padding: 10px  20px;
+  .el-form-item {
+    width: 80%;
+    margin: 20px auto;
+  }
+  .el-input {
+    width: 80%;
+    margin-left: 10px;
+  }
+  .el-date-editor {
+    width: 50% !important;
+    margin-left: 25% !important;
+  }
+  .el-button {
+    margin: 0 20px;
+  }
+  .btn-warp {
+    margin-top: 30px;
+    @include flex-center;
   }
 }
 </style>
