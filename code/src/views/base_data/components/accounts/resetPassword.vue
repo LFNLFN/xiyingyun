@@ -1,8 +1,8 @@
 <template>
-  <publicPopups title-text="重置密码" v-on="$listeners" @formConfirm="passwordSubmit">
+  <publicPopups title-text="重置密码" v-on="$listeners" @closePupupsBox="closeBox" @formConfirm="resetHandle">
     <template slot="main-content">
       <el-form ref="passwordForm" :model="passwordForm" :rules="passwordRules">
-        <el-form-item label="请输入旧密码" prop="oldPassword">
+        <el-form-item v-if="!isBatch" label="请输入旧密码" prop="oldPassword">
           <el-input v-model="passwordForm.oldPassword" type="password" />
         </el-form-item>
         <el-form-item label="请输入新密码" prop="newPassword">
@@ -17,28 +17,34 @@
 </template>
 <script>
 import PublicPopups from '@/components/Pop-ups/PublicPopups'
-import { resetPassword } from '@/api/base_data/accounts'
+import { resetPassword, batchResetPswd } from '@/api/base_data/accounts'
 import { isvalidPassword } from '@/utils/validate'
 export default {
   components: { PublicPopups },
   props: {
+    isBatch: {
+      type: Boolean,
+      default: false
+    },
     userData: {
-      type: Object,
+      type: Array,
       default: () => {
-        return {
-          birthday: '',
-          createTime: 0,
-          creatorId: '',
-          creatorIdProperty: '',
-          email: '',
-          expireTime: '',
-          gender: '',
-          id: '',
-          name: '',
-          phone: '',
-          status: 0,
-          username: ''
-        }
+        return [
+          {
+            birthday: '',
+            createTime: 0,
+            creatorId: '',
+            creatorIdProperty: '',
+            email: '',
+            expireTime: '',
+            gender: '',
+            id: '',
+            name: '',
+            phone: '',
+            status: 0,
+            username: ''
+          }
+        ]
       }
     }
   },
@@ -65,21 +71,23 @@ export default {
         reputNewPassword: ''
       },
       passwordRules: {
-        oldPassword: [{ required: true, trigger: 'blur', validator: validPassword }],
-        newPassword: [{ required: true, trigger: 'blur', validator: validPassword }],
-        reputNewPassword: [{ required: true, trigger: 'blur', validator: validReputPassword }]
+        oldPassword: [{ required: true, trigger: 'change', validator: validPassword }],
+        newPassword: [{ required: true, trigger: 'change', validator: validPassword }],
+        reputNewPassword: [{ required: true, trigger: 'change', validator: validReputPassword }]
       },
       resetLoading: false
     }
   },
   methods: {
-    // closeBox() {
-    //   this.$emit('closePasswordBox')
-    // },
+    resetHandle() {
+      if (this.isBatch) {
+        this.batchResetSubmit()
+      } else {
+        this.passwordSubmit()
+      }
+    },
     passwordSubmit() {
-      console.log('userData: ', this.userData)
-      this.resetLoading = true
-      const userId = this.userData.id
+      const userId = this.userData[0].id
       if (userId.length === 0) {
         this.$message({
           showClose: true,
@@ -89,22 +97,55 @@ export default {
         })
         return
       }
+      this.resetLoading = true
       const passwordObj = {
-        'oldPassword': String(this.passwordForm.oldPassword),
-        'password': String(this.passwordForm.newPassword)
+        // 'oldPassword': String(this.passwordForm.oldPassword),
+        'password': String(this.passwordForm.reputNewPassword)
       }
       resetPassword(userId, passwordObj).then(resp => {
-        this.$message({
-          showClose: true,
-          message: '重置密码成功',
-          type: 'success',
-          duration: 3 * 1000
-        })
-        console.log('reset resp: ', resp)
-        this.resetLoading = false
+        console.log('reset resp', resp)
+        this.resetSuccess()
       }).catch(() => {
         this.resetLoading = false
       })
+    },
+    batchResetSubmit() {
+      const idArr = []
+      for (const user of this.userData) {
+        idArr.push(user.id)
+      }
+      if (idArr.length === 0) {
+        this.$message({
+          showClose: true,
+          message: '重置密码失败，用户信息不完整',
+          type: 'warning',
+          duration: 3 * 1000
+        })
+        return
+      }
+      this.resetLoading = true
+      const passwordObj = {
+        'password': String(this.passwordForm.reputNewPassword)
+      }
+      batchResetPswd(idArr, passwordObj).then(resp => {
+        this.resetSuccess()
+      }).catch(() => {
+        this.resetLoading = false
+      })
+    },
+    resetSuccess() {
+      this.$message({
+        showClose: true,
+        message: '重置密码成功',
+        type: 'success',
+        duration: 3 * 1000
+      })
+      this.$refs['passwordForm'].resetFields()
+      this.resetLoading = false
+    },
+    closeBox() {
+      this.$refs['passwordForm'].resetFields()
+      this.$emit('closePasswordBox')
     }
   }
 }

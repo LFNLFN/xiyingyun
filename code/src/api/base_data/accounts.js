@@ -28,8 +28,18 @@ export function resetPassword(id, paramObj) {
   })
 }
 
+// 批量修改密码
+export function batchResetPswd(ids, paramObj) {
+  return request({
+    url: '/user/batch/password',
+    method: 'put',
+    params: paramObj,
+    data: JSON.stringify(ids)
+  })
+}
+
 // 禁用用户
-export function disableUser(id) {
+export function disableAcc(id) {
   const url = `/user/${id}/disable`
   return request({
     url: url,
@@ -38,10 +48,20 @@ export function disableUser(id) {
 }
 
 // 启用用户
-export function enableUser(id) {
+export function enableAcc(id) {
   const url = `/user/${id}/enable`
   return request({
     url: url,
     method: 'put'
+  })
+}
+
+// 批量启用/禁用用户
+export function batchOperateAcc(order, ids) {
+  const url = `/user/${order}`
+  return request({
+    url: url,
+    method: 'put',
+    data: JSON.stringify(ids)
   })
 }

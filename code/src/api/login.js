@@ -22,7 +22,7 @@ export function getInfo(token) {
 
 export function logout() {
   return request({
-    url: '/authorize/logout',
+    url: '/authorize/login-out',
     method: 'get'
   })
 }

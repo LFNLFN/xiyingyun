@@ -39,25 +39,26 @@
         <el-table-column prop="expireTime" label="失效时间" />
         <el-table-column width="220" label="操作">
           <template slot-scope="scope">
-            <el-button size="mini" type="primary" class="account-table-btn">编辑</el-button>
-            <el-button size="mini" type="primary" class="account-table-btn" @click="passwordBoxShow(scope.$index)">重置密码</el-button>
+            <el-button size="mini" type="primary" class="account-table-btn" @click="editAccount">编辑</el-button>
+            <el-button size="mini" type="primary" class="account-table-btn" @click="passwordBoxShow(false, scope.$index)">重置密码</el-button>
             <!-- status === 1 正常用户 -->
-            <el-button v-if="scope.row.status===1" size="mini" type="primary" class="account-table-btn" @click="accountDisable(scope.$index)">禁用</el-button>
+            <el-button v-if="scope.row.status===1" size="mini" type="primary" class="account-table-btn" @click="accountOperate(scope.$index)">禁用</el-button>
             <!-- status === 0 被禁用用户 -->
-            <el-button v-else size="mini" type="primary" class="account-table-btn" @click="accountDisable(scope.$index)">启用</el-button>
+            <el-button v-else size="mini" type="primary" class="account-table-btn" @click="accountOperate(scope.$index)">启用</el-button>
           </template>
         </el-table-column>
       </el-table>
     </el-main>
     <!-- 底部批量操作、翻页部分 -->
     <el-footer>
-      <div class="footer-operate-wrap">
+      <div class="footer-operatete-wrap">
         <el-checkbox v-model="allCheckdeValue" border size="mini" @change.native="tableToggleSelection">全选</el-checkbox>
-        <el-select v-model="batchSelectedValue" clearable size="mini" placeholder="批量操作">
-          <el-option value="changPassword" label="更改密码" />
-          <el-option value="delete" label="禁用" />
+        <el-select v-model="batchOperateValue" clearable size="mini" placeholder="批量操作">
+          <el-option value="changePassword" label="更改密码" />
+          <el-option value="enable" label="启用" />
+          <el-option value="disable" label="禁用" />
         </el-select>
-        <el-button type="primary" size="mini">确定</el-button>
+        <el-button type="primary" size="mini" @click="batchSelected">确定</el-button>
       </div>
       <el-pagination
         :total="pageTotal"
@@ -66,13 +67,13 @@
         @current-change="pageChangeHandle"/>
     </el-footer>
     <AddAccountBox v-show="showStarffBox" @closeAddAccountBox="addAccountBoxShow" />
-    <ResetPassword v-show="showPasswordBox" :user-data="resetPasswordUser" @closePupupsBox="passwordBoxShow"/>
+    <ResetPassword v-show="showPasswordBox" :is-batch="isBatchResetPassword" :user-data="resetPasswordAccs" @closePasswordBox="passwordBoxHidden"/>
   </el-container>
 </template>
 <script>
 import AddAccountBox from '@/views/base_data/components/accounts/AddAccountBox'
 import ResetPassword from '@/views/base_data/components/accounts/ResetPassword'
-import { getUsers, disableUser, enableUser } from '@/api/base_data/accounts'
+import { getUsers, disableAcc, enableAcc, batchOperateAcc } from '@/api/base_data/accounts'
 export default{
   name: 'Accounts',
   components: { AddAccountBox, ResetPassword },
@@ -94,12 +95,13 @@ export default{
         phone: [{ trigger: 'blur', validator: validsearchForm }]
       },
       tableData: [],
-      batchSelectedValue: '',
+      batchOperateValue: '',
       allCheckdeValue: false,
-      multipleSelection: [],
+      multipleSelectedAcc: [],
       showStarffBox: false,
       showPasswordBox: false,
-      resetPasswordUser: {},
+      isBatchResetPassword: false,
+      resetPasswordAccs: [],
       pageTotal: 0,
       isLoading: true
     }
@@ -114,21 +116,35 @@ export default{
         return 'disable-user'
       }
     },
-    // 添加用户组件显隐
+    // 控制添加用户组件显隐
     addAccountBoxShow(addCount) {
-      console.log('addCount', addCount)
       this.showStarffBox = !this.showStarffBox
       if (typeof addCount === 'number' && addCount > 0) {
-        console.log('addCount', addCount)
         this.getUsersFunc()
       }
     },
+    // 编辑用户
+    editAccount(evt) {
+      console.log('event', evt)
+    },
     // 重置密码组件显隐
-    passwordBoxShow(index) {
-      if (typeof index === 'number') {
-        this.resetPasswordUser = this.tableData[index]
+    passwordBoxShow(isBatch, index) {
+      if (isBatch) {
+        this.resetPasswordAccs = this.multipleSelectedAcc
+        this.isBatchResetPassword = true
+      } else {
+        this.resetPasswordAccs.splice(0, this.resetPasswordAccs.length)
+        this.resetPasswordAccs.push(this.tableData[index])
       }
-      this.showPasswordBox = !this.showPasswordBox
+      this.showPasswordBox = true
+    },
+    // 重置密码组件隐藏
+    passwordBoxHidden() {
+      this.showPasswordBox = false
+      if (this.isBatchResetPassword) {
+        this.isBatchResetPassword = false
+        this.$refs['accountTable'].clearSelection()
+      }
     },
     // 获取员工信息
     getUsersFunc(params) {
@@ -162,9 +178,9 @@ export default{
         }
       })
     },
-    accountDisable(index) {
+    accountOperate(index) {
       const user = this.tableData[index]
-      let tipsText = '禁用'
+      let tipsText = ''
       if (user.id.length === 0) {
         this.$message({
           showClose: true,
@@ -174,9 +190,7 @@ export default{
         })
         return
       }
-      if (user.status === 0) {
-        tipsText = '启用'
-      }
+      user.status === 0 ? tipsText = '启用' : tipsText = '禁用'
       this.$confirm(`确定${tipsText} ${user.name}？`, {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -185,9 +199,9 @@ export default{
         this.isLoading = true
         let method
         if (user.status === 1) {
-          method = disableUser(user.id)
+          method = disableAcc(user.id)
         } else if (user.status === 0) {
-          method = enableUser(user.id)
+          method = enableAcc(user.id)
         }
         method.then(resp => {
           this.$message({
@@ -203,9 +217,47 @@ export default{
         })
       })
     },
+    batchAccountOperate(order, accounts) {
+      let [tipsText, nameStrs] = ['', '']
+      const [idArr, nameArr] = [[], []]
+      for (const acc of accounts) {
+        idArr.push(acc.id)
+        nameArr.push(acc.name)
+      }
+      nameStrs = nameArr.join('，')
+      order === 'disable' ? tipsText = '禁用' : tipsText = '启用'
+      this.$confirm(`确定${tipsText} ${nameStrs}？`, {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        batchOperateAcc(order, idArr).then(resp => {
+          this.$message({
+            showClose: true,
+            message: `${tipsText}成功`,
+            type: 'success',
+            duration: 3 * 1000
+          })
+          this.getUsersFunc()
+          this.isLoading = false
+        }).catch(() => {
+          this.isLoading = false
+        })
+      })
+    },
+    // 批量操作
+    batchSelected() {
+      switch (this.batchOperateValue) {
+        case 'changePassword':
+          this.passwordBoxShow(true)
+          break
+        default:
+          this.batchAccountOperate(this.batchOperateValue, this.multipleSelectedAcc)
+      }
+    },
     // 表格多选控制
     handleSelectionChange(val) {
-      this.multipleSelection = val
+      this.multipleSelectedAcc = val
       val.length === this.tableData.length ? this.allCheckdeValue = true : this.allCheckdeValue = false
     },
     // 控制表格全选
@@ -277,7 +329,7 @@ export default{
       width: 100px;
       margin: 0 10px;
     }
-    .footer-operate-wrap {
+    .footer-operatete-wrap {
       display: flex;
       flex-wrap: nowrap;
       align-items: center;
