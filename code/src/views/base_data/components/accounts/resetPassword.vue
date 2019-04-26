@@ -99,11 +99,10 @@ export default {
       }
       this.resetLoading = true
       const passwordObj = {
-        // 'oldPassword': String(this.passwordForm.oldPassword),
+        'oldPassword': String(this.passwordForm.oldPassword),
         'password': String(this.passwordForm.reputNewPassword)
       }
       resetPassword(userId, passwordObj).then(resp => {
-        console.log('reset resp', resp)
         this.resetSuccess()
       }).catch(() => {
         this.resetLoading = false
