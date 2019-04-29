@@ -2,7 +2,10 @@
   <el-container class="detail-container">
     <el-header class="detail-header" height="no">
       <div class="detail-header-title">
-        <span class="el-icon-tickets">基础信息</span>
+        <span>
+          <i class="el-icon-tickets"/>
+          基础信息
+        </span>
       </div>
       <el-row class="detail-header-row">
         <el-col :span="12" class="detail-header-col"><span>公司名称： {{ suppInfo.fullName }}</span></el-col>
@@ -15,8 +18,10 @@
     </el-header>
     <el-main class="detail-main">
       <div class="detail-main-title">
-        <i class="el-icon-tickets"/>
-        数据列表
+        <span>
+          <i class="el-icon-tickets"/>
+          数据列表
+        </span>
         <div class="staff-add-btns-wrap">
           <el-button type="primary" size="small" icon="el-icon-download" @click="pullStaffBoxCtrl">引入成员</el-button>
           <el-button type="primary" size="small" icon="el-icon-circle-plus-outline" @click="addStaffBoxCtrl">新增成员</el-button>

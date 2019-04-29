@@ -48,6 +48,8 @@
   background: #e6e6e6;
   line-height: 40px;
   padding: 0 10px;
+  @include flex-space-between-center; 
+
 }
 
 @mixin boxShadow-container {

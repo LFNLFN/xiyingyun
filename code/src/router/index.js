@@ -129,26 +129,20 @@ export const constantRouterMap = [
       {
         path: 'params_config',
         name: 'paramsConfig',
+        redirect: '/base_data/params_config/index',
         meta: { title: '参数设置', icon: '' },
-        component: () => import('@/views/base_data/params_config')
-        // alwaysShow: true,
-        // children: [
-        //   {
-        //     path: 'index',
-        //     name: 'paramsIndex',
-        //     hidden: true,
-        //     component: () => import('@/views/base_data/params_config/index')
-        //   },
-        //   {
-        //     path: 'params_setting',
-        //     name: 'paramsSetting',
-        //     component: () => import('@/views/base_data/params_config/params_setting'),
-        //     meta: { title: '供应商性质', icon: '' }
-        //   }
-        // ]
+        component: () => import('@/views/base_data/params_config/index'),
+        children: [
+          {
+            path: 'index',
+            name: 'paramsConfigIndex',
+            hidden: true,
+            component: () => import('@/views/base_data/params_config/index')
+          }
+        ]
       },
       {
-        path: 'check_items',
+        path: 'check_items/:itemId',
         name: 'checkItems',
         meta: { title: '检查项配置', icon: '' },
         component: () => import('@/views/base_data/check_items')

@@ -59,8 +59,10 @@
     </el-header>
     <el-main class="suppliers-main">
       <div class="suppliers-main-title">
-        <i class="el-icon-tickets"/>
-        数据列表
+        <span>
+          <i class="el-icon-tickets"/>
+          数据列表
+        </span>
         <el-button type="primary" size="small" icon="el-icon-circle-plus-outline" class="suppliers-add-btn" @click.native="addSuppBoxShow">添加</el-button>
       </div>
       <el-table v-loading="isLoading" ref="suppTable" :data="suppTableData" border class="suppliers-table">
@@ -89,6 +91,7 @@
   </el-container>
 </template>
 <script>
+import { getSuppliers } from '@/api/base_data/suppliers'
 export default{
   data() {
     return {
@@ -111,6 +114,12 @@ export default{
       advancedSearchBtnText: '高级搜索',
       pageTotal: 10
     }
+  },
+  created() {
+    console.log('running')
+    getSuppliers().then(resp => {
+      console.log('resp: ', resp)
+    })
   },
   methods: {
     searchFormChange() {
@@ -174,9 +183,7 @@ export default{
     .suppliers-main-title {
       @include gray-header;
       .suppliers-add-btn {
-        float: right;
         height: 30px;
-        margin-top: 5px;
       }
     }
     .suppliers-table {

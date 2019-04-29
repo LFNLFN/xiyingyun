@@ -3,8 +3,10 @@
     <!-- 头部信息筛选部分 -->
     <el-header class="accounts-header" height="no">
       <div class="accounts-header-title">
-        <i class="el-icon-tickets"/>
-        筛选查询
+        <span>
+          <i class="el-icon-tickets"/>
+          筛选查询
+        </span>
       </div>
       <el-form ref="searchForm" :rules="searchRules" :inline="true" :model="searchForm" size="small" class="accounts-header-form">
         <el-form-item prop="name" label="姓名">
@@ -19,8 +21,10 @@
     <!-- 中间员工信息部分 -->
     <el-main class="accounts-main">
       <div class="accounts-main-title">
-        <i class="el-icon-tickets"/>
-        数据列表
+        <span>
+          <i class="el-icon-tickets"/>
+          数据列表
+        </span>
         <el-button type="primary" size="small" icon="el-icon-circle-plus-outline" class="account-add-btn" @click.native="addAccountBoxShow">新增</el-button>
       </div>
       <el-table
@@ -31,13 +35,13 @@
         border
         class="account-table"
         @selection-change="handleSelectionChange">
-        <el-table-column type="selection" width="55" />
-        <el-table-column prop="name" width="100" label="姓名" />
-        <el-table-column prop="phone" label="手机号" />
-        <el-table-column prop="username" label="账号" />
-        <el-table-column prop="email" label="邮箱" />
-        <el-table-column prop="expireTime" label="失效时间" />
-        <el-table-column width="220" label="操作">
+        <el-table-column type="selection" width="55" align="center"/>
+        <el-table-column prop="name" width="100" label="姓名" align="center" />
+        <el-table-column prop="phone" label="手机号" align="center" />
+        <el-table-column prop="username" label="账号" align="center" />
+        <el-table-column prop="email" label="邮箱" align="center" />
+        <el-table-column prop="expireTime" label="失效时间" align="center" />
+        <el-table-column width="220" label="操作" align="center">
           <template slot-scope="scope">
             <el-button size="mini" type="primary" class="account-table-btn" @click="editAccount">编辑</el-button>
             <el-button size="mini" type="primary" class="account-table-btn" @click="passwordBoxShow(false, scope.$index)">重置密码</el-button>
@@ -178,6 +182,7 @@ export default{
         }
       })
     },
+    // 对账号进行启用/禁用操作
     accountOperate(index) {
       const user = this.tableData[index]
       let tipsText = ''
@@ -217,6 +222,7 @@ export default{
         })
       })
     },
+    // 批量禁用/启用账号
     batchAccountOperate(order, accounts) {
       let [tipsText, nameStrs] = ['', '']
       const [idArr, nameArr] = [[], []]
@@ -275,7 +281,7 @@ export default{
   }
 }
 </script>
-<style ref="stylesheet/scss" lang="scss">
+<style ref="stylesheet/scss" lang="scss" scoped>
 @import "src/styles/mixin.scss";
 
 .accounts-container {
@@ -298,9 +304,9 @@ export default{
     .accounts-main-title {
       @include gray-header;
       .account-add-btn {
-        float: right;
+        // float: right;
         height: 30px;
-        margin-top: 5px;
+        // margin-top: 5px;
       }
     }
     .account-table {

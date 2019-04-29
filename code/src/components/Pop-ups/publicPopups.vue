@@ -1,6 +1,6 @@
 <template>
   <div class="container-shadow">
-    <div class="container">
+    <div :style="{ width:width }" class="container">
       <header height="50" class="header">
         <span>{{ titleText }}</span>
         <i class="el-icon-error" @click="emitClosePop" />
@@ -10,8 +10,10 @@
         <!-- <slot /> -->
       </main>
       <footer class="footer">
-        <el-button @click="emitClosePop">取消</el-button>
-        <el-button type="primary" @click="emitConfirm">确定</el-button>
+        <slot name="footer-content">
+          <el-button @click="emitClosePop">取消</el-button>
+          <el-button type="primary" @click="emitConfirm">确定</el-button>
+        </slot>
       </footer>
     </div>
   </div>
@@ -23,6 +25,10 @@ export default {
     titleText: {
       type: String,
       default: ''
+    },
+    width: {
+      type: String,
+      default: '500px'
     }
   },
   data() {
@@ -55,7 +61,7 @@ export default {
     border-radius: 10px;
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.2);
     background: #fff;
-    width: 500px !important;
+    // width: 500px !important;
     overflow: hidden;
     .header {
       padding: 10px 5px 10px 20px;

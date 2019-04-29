@@ -80,6 +80,7 @@ export default {
   },
   methods: {
     resetHandle() {
+      console.log('this.passwordForm', this.passwordForm)
       if (this.isBatch) {
         this.batchResetSubmit()
       } else {

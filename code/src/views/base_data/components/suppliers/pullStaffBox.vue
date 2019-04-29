@@ -67,6 +67,7 @@ export default {
   padding: 0 15px;
 }
 .pull-staff-footer {
+  text-align: center;
   padding: 0 30px;
   margin: 30px 0 10px 0;
 }
