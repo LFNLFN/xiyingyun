@@ -1,16 +1,13 @@
 <template>
   <el-container class="accounts-container">
     <!-- 头部信息筛选部分 -->
-    <el-header class="accounts-header" height="no">
-      <div class="accounts-header-title">
-        <span>
-          <i class="el-icon-tickets"/>
-          筛选查询
-        </span>
+    <el-header class="search-wrap" height="no">
+      <div class="header">
+        <span class="el-icon-tickets">筛选查询</span>
       </div>
-      <el-form ref="searchForm" :rules="searchRules" :inline="true" :model="searchForm" size="small" class="accounts-header-form">
+      <el-form ref="searchForm" :rules="searchRules" :inline="true" :model="searchForm" size="small" class="search-form">
         <el-form-item prop="name" label="姓名">
-          <el-input v-model="searchForm.name" name="name" type="text" auto-complete="off" placeholder="请输入用户名称" />
+          <el-input v-model="searchForm.name" type="text" auto-complete="off" placeholder="请输入用户名称" />
         </el-form-item>
         <el-form-item prop="phone" label="手机号码">
           <el-input v-model="searchForm.phone" type="text" />
@@ -20,17 +17,14 @@
     </el-header>
     <!-- 中间员工信息部分 -->
     <el-main class="accounts-main">
-      <div class="accounts-main-title">
-        <span>
-          <i class="el-icon-tickets"/>
-          数据列表
-        </span>
+      <div class="header">
+        <span class="el-icon-tickets">数据列表</span>
         <el-button type="primary" size="small" icon="el-icon-circle-plus-outline" class="account-add-btn" @click.native="addAccountBoxShow">新增</el-button>
       </div>
       <el-table
         v-loading="isLoading"
         ref="accountTable"
-        :data="tableData"
+        :data="accountTableData"
         :row-class-name="tableRowClass"
         border
         class="account-table"
@@ -79,7 +73,6 @@ import AddAccountBox from '@/views/base_data/components/accounts/AddAccountBox'
 import ResetPassword from '@/views/base_data/components/accounts/ResetPassword'
 import { getUsers, disableAcc, enableAcc, batchOperateAcc } from '@/api/base_data/accounts'
 export default{
-  name: 'Accounts',
   components: { AddAccountBox, ResetPassword },
   data() {
     const validsearchForm = (rule, value, callback) => {
@@ -98,7 +91,7 @@ export default{
         name: [{ trigger: 'blur', validator: validsearchForm }],
         phone: [{ trigger: 'blur', validator: validsearchForm }]
       },
-      tableData: [],
+      accountTableData: [],
       batchOperateValue: '',
       allCheckdeValue: false,
       multipleSelectedAcc: [],
@@ -138,7 +131,7 @@ export default{
         this.isBatchResetPassword = true
       } else {
         this.resetPasswordAccs.splice(0, this.resetPasswordAccs.length)
-        this.resetPasswordAccs.push(this.tableData[index])
+        this.resetPasswordAccs.push(this.accountTableData[index])
       }
       this.showPasswordBox = true
     },
@@ -160,7 +153,7 @@ export default{
         }
       }
       getUsers(params).then(response => {
-        this.tableData = response.result.data
+        this.accountTableData = response.result.data
         this.pageTotal = response.result.total
         this.isLoading = false
       }).catch(rej => {
@@ -184,7 +177,7 @@ export default{
     },
     // 对账号进行启用/禁用操作
     accountOperate(index) {
-      const user = this.tableData[index]
+      const user = this.accountTableData[index]
       let tipsText = ''
       if (user.id.length === 0) {
         this.$message({
@@ -264,7 +257,7 @@ export default{
     // 表格多选控制
     handleSelectionChange(val) {
       this.multipleSelectedAcc = val
-      val.length === this.tableData.length ? this.allCheckdeValue = true : this.allCheckdeValue = false
+      val.length === this.accountTableData.length ? this.allCheckdeValue = true : this.allCheckdeValue = false
     },
     // 控制表格全选
     tableToggleSelection(rows) {
@@ -285,13 +278,13 @@ export default{
 @import "src/styles/mixin.scss";
 
 .accounts-container {
+  .header {
+    @include gray-header;
+  }
   padding: 20px;
-  .accounts-header {
+  .search-wrap {
     @include boxShadow-container;
-    .accounts-header-title {
-      @include gray-header;
-    }
-    .accounts-header-form {
+    .search-form {
       padding: 20px 40px;
       .el-form-item {
         margin: 0 15px 0 10px;

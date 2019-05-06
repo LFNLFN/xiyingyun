@@ -7,7 +7,7 @@ export function login(username, password) {
     data: JSON.stringify({
       username,
       password,
-      'token_type': 'token'
+      'token_type': 'jwt'
     })
   })
 }

@@ -4,6 +4,7 @@
       <el-button
         v-for="(tab, idx) in routerTabData"
         :key="idx"
+        :class="{active: routerTabCActiveCtrl(tab)}"
         type="primary"
         plain
         class="router-tab-item"
@@ -58,7 +59,6 @@ export default {
   data() {
     return {
       routerTabData: this.$store.getters.checkItems,
-      isActive: false,
       checkItemTitle: '质量风险',
       checkItemTreeData: [
         {
@@ -104,27 +104,22 @@ export default {
       probPageTotal: 20
     }
   },
-  created() {
-    console.log('created is run')
-  },
-  beforeRouteEnter(to, from, next) {
-    console.log('to', to)
-    console.log('from', from)
-    next()
-  },
   beforeRouteUpdate(to, from, next) {
     next()
   },
   methods: {
+    routerTabCActiveCtrl(tab) {
+      const itemId = this.$route.params.checkItemsId
+      return tab.name === itemId
+    },
     changeCheckItem(tab) {
-      this.isActive = !this.isActive
       this.checkItemTitle = tab.title
       this.$router.push(tab.path)
     }
   }
 }
 </script>
-<style ref="stylesheet/scss" lang="scss" spcoped>
+<style ref="stylesheet/scss" lang="scss" scoped>
 @import "src/styles/mixin.scss";
 
 .container {
@@ -137,8 +132,10 @@ export default {
     .router-tab-item {
       margin: 0 10px;
       &.active {
-        background: #409EFF !important;
-        color:  #fff !important;
+        background: #3a8ee6  !important;
+        border-color: #3a8ee6 !important;
+        color: #fff !important;
+        outline: 0;
       }
     }
   }

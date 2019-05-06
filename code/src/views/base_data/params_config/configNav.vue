@@ -6,8 +6,12 @@
       </div>
       <div class="params-item-wrap">
         <el-row v-for="(item, idx) in paramsItems" :key="idx" type="flex" justify="space-between">
-          <el-col><span>{{ item.name }}</span></el-col>
-          <el-col :span="2"><el-button type="primary" size="small" @click="showCurConfigBox(item.component)">设置</el-button></el-col>
+          <el-col>
+            <span>{{ item.name }}</span>
+          </el-col>
+          <el-col :span="2">
+            <el-button :disabled="item.disable" type="primary" size="small" @click="showCurConfigBox(item.component)">设置</el-button>
+          </el-col>
         </el-row>
       </div>
     </el-main>
@@ -18,10 +22,10 @@ export default{
   data() {
     return {
       paramsItems: [
-        { name: '问题等级', component: 'problemLevel' },
-        { name: '专业分类', component: 'professionSort' },
-        { name: '允许相册上传图片', component: 'allowUploadImg' },
-        { name: '供应商性质', component: 'SupplierProperty' }
+        { name: '问题等级', component: 'problemLevel', disable: false },
+        { name: '专业分类', component: 'professionSort', disable: false },
+        { name: '允许相册上传图片', component: 'allowUploadImg', disable: true },
+        { name: '供应商性质', component: 'SupplierProperty', disable: false }
       ],
       showComponent: 'SupplierProperty',
       componentShow: false

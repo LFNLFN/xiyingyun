@@ -54,27 +54,27 @@ export const constantRouterMap = [
     children: [
       {
         path: 'project',
-        name: 'Project',
+        name: 'project',
         meta: { title: '项目管理', icon: '' },
-        conponent: () => import('@/views/project_config/project')
+        component: () => import('@/views/project_config/project')
       },
       {
         path: 'plan',
         name: 'Plan',
         meta: { title: '平面图管理', icon: '' },
-        conponent: () => import('@/views/project_config/plan')
+        component: () => import('@/views/project_config/plan')
       },
       {
         path: 'building',
         name: 'Building',
         meta: { title: '楼栋管理', icon: '' },
-        conponent: () => import('@/views/project_config/building')
+        component: () => import('@/views/project_config/building')
       },
       {
         path: 'participant',
         name: 'Participant',
         meta: { title: '参建方管理', icon: '' },
-        conponent: () => import('@/views/project_config/participant')
+        component: () => import('@/views/project_config/participant')
       }
     ]
   },
@@ -142,7 +142,7 @@ export const constantRouterMap = [
         ]
       },
       {
-        path: 'check_items/:itemId',
+        path: 'check_items/:checkItemsId',
         name: 'checkItems',
         meta: { title: '检查项配置', icon: '' },
         component: () => import('@/views/base_data/check_items')
