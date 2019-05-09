@@ -20,7 +20,7 @@
             <el-radio label="expire">失效时间</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item prop="expireTime">
+        <el-form-item prop="expireTime" class="expireTime-wrap">
           <el-date-picker
             v-model="addAccountForm.expireTime"
             :disabled="datePickerDisable"
@@ -148,16 +148,19 @@ export default {
     width: 80%;
     margin-left: 10px;
   }
+  .expireTime-wrap {
+    text-align: center;
+    margin-bottom: 5px;
+  }
   .el-date-editor {
-    width: 50% !important;
-    margin-left: 25% !important;
+    width: 135px !important;
   }
   .el-button {
     margin: 0 20px;
   }
   .btn-warp {
     margin-top: 30px;
-    @include flex-center;
+    @include flex-layout(center, center, null, null);
   }
 }
 </style>

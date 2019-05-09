@@ -5,7 +5,7 @@
         <span>{{ titleText }}</span>
         <i class="el-icon-error" @click="emitClosePop" />
       </header>
-      <main>
+      <main class="main">
         <slot name="main-content" />
         <!-- <slot /> -->
       </main>
@@ -46,7 +46,7 @@ export default {
   }
 }
 </script>
-<style ref="styleshheet/scss" lang="scss" scoped>
+<style ref="styleshheet/scss" lang="scss">
 @import "src/styles/mixin.scss";
 .container-shadow {
   width: 100vw;
@@ -56,7 +56,7 @@ export default {
   left: 0;
   z-index: 999;
   background: rgba(255, 255, 255, .6);
-  @include flex-center;
+  @include flex-layout(center, center, null, null);
   .container {
     border-radius: 10px;
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.2);
@@ -75,9 +75,19 @@ export default {
         font-size: 30px;
       }
     }
+    .main {
+      padding: 0 20px;
+      .el-form {
+        .el-form-item:not(.is-required) {
+          .el-form-item__label {
+            margin-left: 10px;
+          }
+        }
+      }
+    }
     .footer {
       height: 70px;
-      @include flex-center;
+      @include flex-layout(center, center, null, null);
       .el-button {
         margin: 0 20px;
       }

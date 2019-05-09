@@ -112,19 +112,19 @@ export const constantRouterMap = [
         path: 'accounts',
         name: 'accounts',
         meta: { title: '账号管理', icon: '' },
-        component: () => import('@/views/base_data/accounts')
+        component: () => import('@/views/base_data/accounts/accounts')
       },
       {
         path: 'organization',
         name: 'organization',
         meta: { title: '组织架构', icon: '' },
-        component: () => import('@/views/base_data/organization')
+        component: () => import('@/views/base_data/organization/organization')
       },
       {
         path: 'permission',
         name: 'permission',
         meta: { title: '权限管理', icon: '' },
-        component: () => import('@/views/base_data/permission')
+        component: () => import('@/views/base_data/permission/permission')
       },
       {
         path: 'params_config',

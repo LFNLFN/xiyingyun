@@ -49,7 +49,7 @@ export default {
   padding: 10px 40px;
   .el-form-item {
     margin: 20px auto;
-    @include flex-center;
+    @include flex-layout(center, center, null, null);
     .el-input {
       width: 300px;
       margin-left: 10px;

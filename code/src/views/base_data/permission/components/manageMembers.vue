@@ -62,14 +62,14 @@ export default {
 <style ref="styleshheet/scss" lang="scss" scoped>
 @import "src/styles/mixin.scss";
 .members-search-wrap {
-  padding: 20px;
+  padding: 30px 0;
   .el-input {
     width: 300px;
     margin-right: 20px;
   }
 }
 .members-table-wrap {
-  padding: 0 15px;
+  // padding: 0 15px;
 }
 .members-pagination {
   text-align: center;

@@ -69,8 +69,8 @@
   </el-container>
 </template>
 <script>
-import AddAccountBox from '@/views/base_data/components/accounts/AddAccountBox'
-import ResetPassword from '@/views/base_data/components/accounts/ResetPassword'
+import AddAccountBox from '@/views/base_data/accounts/components/AddAccountBox'
+import ResetPassword from '@/views/base_data/accounts/components/ResetPassword'
 import { getUsers, disableAcc, enableAcc, batchOperateAcc } from '@/api/base_data/accounts'
 export default{
   components: { AddAccountBox, ResetPassword },
@@ -322,16 +322,13 @@ export default{
   .el-footer {
     padding: 0;
     margin-top: 30px;
-    @include flex-space-between-center;
-    @include flex-wrap;
+    @include flex-layout(space-between, center, null, wrap);
     .el-select {
       width: 100px;
       margin: 0 10px;
     }
     .footer-operatete-wrap {
-      display: flex;
-      flex-wrap: nowrap;
-      align-items: center;
+      @include flex-layout(null, center, null, nowrap);
     }
   }
 }

@@ -65,8 +65,8 @@
   </el-container>
 </template>
 <script>
-import AddStaffBox from '@/views/base_data/components/suppliers/AddStaffBox'
-import PullStaffBox from '@/views/base_data/components/suppliers/PullStaffBox'
+import AddStaffBox from '@/views/base_data/suppliers/components/AddStaffBox'
+import PullStaffBox from '@/views/base_data/suppliers/components/PullStaffBox'
 export default{
   components: { AddStaffBox, PullStaffBox },
   // name: 'Details'
@@ -133,7 +133,7 @@ export default{
   .detail-header {
     @include boxShadow-container;
     .detail-header-title {
-      @include flex-space-between-center;
+      @include flex-layout(space-between, center, null, null);
       @include gray-header;
     }
     .detail-header-row {
@@ -156,16 +156,13 @@ export default{
   .el-footer {
     padding: 0;
     margin-top: 30px;
-    @include flex-space-between-center;
-    @include flex-wrap;
+    @include flex-layout(space-between, center, null, wrap);
     .el-select {
       width: 100px;
       margin: 0 10px;
     }
     .footer-operate-wrap {
-      display: flex;
-      flex-wrap: nowrap;
-      align-items: center;
+      @include flex-layout(null, center, null, nowrap);
     }
   }
 }

@@ -30,7 +30,7 @@ service.interceptors.request.use(
 // response 拦截器
 service.interceptors.response.use(
   response => {
-    console.log('response:', response)
+    // console.log('response:', response)
     return handleCode(response)
   },
   error => {
@@ -39,8 +39,12 @@ service.interceptors.response.use(
 )
 
 function handleCode(response) {
-  const code = response.status || response.data.status
+  let code = response.status || response.data.status
   const message = response.data.message || '请求异常，请重试或检查网络'
+  // 2开头的状态码一律当200处理
+  if (/^2\d*/.test(code)) {
+    code = 200
+  }
   return new Promise((resolve, reject) => {
     switch (code) {
       case 200:

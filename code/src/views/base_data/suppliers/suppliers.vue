@@ -146,7 +146,7 @@ export default{
   .suppliers-header {
     @include boxShadow-container;
     .suppliers-header-title {
-      @include flex-space-between-center;
+      @include flex-layout(space-between, center, null, null);
       @include gray-header;
       .show-advance-search-btn {
         padding: 7px 10px;
@@ -195,7 +195,7 @@ export default{
   .el-footer {
     padding: 0;
     margin-top: 30px;
-    @include flex-center;
+    @include flex-layout(center, center, null, null);
   }
 }
 </style>

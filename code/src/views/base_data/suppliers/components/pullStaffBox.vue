@@ -57,18 +57,18 @@ export default {
 @import "src/styles/mixin.scss";
 
 .pull-staff-header {
-  padding: 20px;
+  padding: 30px 0;
   .el-input {
     width: 300px;
     margin-right: 20px;
   }
 }
 .pull-staff-main {
-  padding: 0 15px;
+  // padding: 0 15px;
 }
 .pull-staff-footer {
   text-align: center;
-  padding: 0 30px;
+  // padding: 0 30px;
   margin: 30px 0 10px 0;
 }
 </style>

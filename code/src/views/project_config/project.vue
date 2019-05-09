@@ -89,8 +89,7 @@ export default {
   .footer-wrap {
     padding: 0;
     margin-top: 30px;
-    @include flex-space-between-center;
-    @include flex-wrap;
+    @include flex-layout(space-between, center, null, wrap);
     .el-select {
       width: 100px;
       margin: 0 10px;

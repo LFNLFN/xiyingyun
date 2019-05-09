@@ -154,9 +154,15 @@ export default {
 @import "src/styles/mixin.scss";
 .el-form {
   padding: 20px 50px;
+  .el-form-item {
+    width: 100% !important;
+    .el-input {
+      width: 100% !important;
+    }
+  }
   .btn-warp {
     margin-top: 30px;
-    @include flex-center;
+    @include flex-layout(center, center, null, null);
   }
 }
 </style>
