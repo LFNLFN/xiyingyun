@@ -1,6 +1,6 @@
 <template>
-  <publicPopups v-loading="isLoading" :title-text="titleText" width="600px" v-on="$listeners" @formConfirm="submitForm">
-    <template slot="main-content">
+  <publicPopups :title-text="titleText" width="600px" v-on="$listeners" @formConfirm="submitForm" @closePupupsBox="submittedHandle">
+    <template v-loading="isLoading" slot="main-content">
       <el-form ref="addRolesForm" :model="addRolesForm" :rules="rolesFormRules" class="add-roles-from">
         <el-form-item label="角色名称" prop="name">
           <el-input v-model="addRolesForm.name" placeholder="请输入角色名称" />
@@ -14,7 +14,7 @@
 </template>
 <script>
 import PublicPopups from '@/components/Pop-ups/PublicPopups'
-import { addRoles } from '@/api/base_data/permission.js'
+import { addRoles, editRoles } from '@/api/base_data/permission.js'
 export default {
   components: { PublicPopups },
   props: {
@@ -49,7 +49,8 @@ export default {
         'edit': '编辑角色'
       },
       titleText: '新增角色',
-      isLoading: false
+      isLoading: false,
+      isSubmit: false
     }
   },
   watch: {
@@ -67,21 +68,34 @@ export default {
     submitForm() {
       this.$refs.addRolesForm.validate(valid => {
         if (valid) {
+          let _method
           this.isLoading = true
-          addRoles(this.addRolesForm).then(resp => {
-            console.log('resp', resp)
+          if (this.eventType === 'add') {
+            _method = addRoles(this.addRolesForm)
+          } else if (this.eventType === 'edit') {
+            _method = editRoles(this.addRolesForm)
+          }
+          _method.then(resp => {
             this.isLoading = false
+            this.isSubmit = true
             this.$message({
               showClose: true,
               message: `${this.titleText}成功`,
               type: 'success',
               duration: 3 * 1000
             })
+            this.submittedHandle()
           }).catch(rej => {
             this.isLoading = false
           })
         }
       })
+    },
+    submittedHandle() {
+      this.$emit('submitComplete', this.isSubmit)
+      // 重置数据
+      this.$refs.addRolesForm.resetFields()
+      this.isSubmit = false
     }
   }
 }

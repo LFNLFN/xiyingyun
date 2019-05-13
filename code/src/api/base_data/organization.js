@@ -72,7 +72,7 @@ export function editPosition(id, datas) {
 // 查询岗位
 export function getPosition(datas) {
   return request({
-    url: '/position',
+    url: '/position/tree',
     method: 'get',
     params: datas
   })
@@ -84,5 +84,24 @@ export function delPosition(id) {
   return request({
     url: urlStr,
     method: 'delete'
+  })
+}
+
+/* --------------- 人员相关 ---------------------*/
+// 新增人员
+export function addPerson(datas) {
+  return request({
+    url: '/person/detail',
+    method: 'post',
+    data: JSON.stringify(datas)
+  })
+}
+
+// 获取人员信息
+export function gerPersons(datas) {
+  return request({
+    url: '/person',
+    method: 'get',
+    params: datas
   })
 }

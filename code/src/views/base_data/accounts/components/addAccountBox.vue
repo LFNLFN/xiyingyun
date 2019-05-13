@@ -37,27 +37,12 @@
 </template>
 <script>
 import PublicPopups from '@/components/Pop-ups/PublicPopups'
-import { isvalidUsername } from '@/utils/validate'
+import { isvalidUsername, isvalidPhoneNum } from '@/utils/validate'
 import { addAccount } from '@/api/base_data/accounts'
 
 export default {
   components: { PublicPopups },
   data() {
-    const validateUserName = (rule, value, callback) => {
-      const { valid, msg } = isvalidUsername(value)
-      if (!valid) {
-        callback(new Error(msg))
-      } else {
-        callback()
-      }
-    }
-    const validatePhone = (rule, value, callback) => {
-      if (value.length < 11) {
-        callback(new Error('手机号格式不正确'))
-      } else {
-        callback()
-      }
-    }
     const validateExpireTime = (rule, value, callback) => {
       if (this.expireDateRadio === 'expire' && value.length === 0) {
         callback(new Error('请选择日期'))
@@ -75,8 +60,8 @@ export default {
         password: ''
       },
       addAccountRules: {
-        name: [{ required: true, trigger: 'blur', validator: validateUserName }],
-        phone: [{ required: true, trigger: 'blur', validator: validatePhone }],
+        name: [{ required: true, trigger: 'blur', validator: isvalidUsername }],
+        phone: [{ required: true, trigger: 'blur', validator: isvalidPhoneNum }],
         expireTime: [{ required: true, trigger: 'change', validator: validateExpireTime }]
       },
       expireDateRadio: '',

@@ -55,7 +55,7 @@ export default {
   top: 0;
   left: 0;
   z-index: 999;
-  background: rgba(255, 255, 255, .6);
+  background: rgba(0, 0, 0,.5);
   @include flex-layout(center, center, null, null);
   .container {
     border-radius: 10px;

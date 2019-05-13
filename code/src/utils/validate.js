@@ -1,21 +1,24 @@
-/**
- * Created by jiachenpan on 16/11/18.
- */
-
-export function isvalidUsername(str) {
-  if (str.length === 0) {
-    return { valid: false, msg: '用户名不能为空' }
+export function isvalidUsername(rule, value, callback) {
+  if (value === 0) {
+    callback(new Error('用户名不能为空'))
   }
-  return { valid: true, msg: '' }
+  callback()
 }
 
-export function isvalidPassword(str) {
-  if (str.length < 5) {
-    return { valid: false, msg: '密码不能少于5位' }
+export function isvalidPassword(rule, value, callback) {
+  if (value.length < 5) {
+    callback(new Error('密码不能少于5位'))
   }
-  return { valid: true, msg: '' }
+  callback()
 }
 
 export function isExternal(path) {
   return /^(https?:|mailto:|tel:)/.test(path)
+}
+
+export function isvalidPhoneNum(rule, value, callback) {
+  if (value.length < 11) {
+    callback(new Error('手机号格式不正确'))
+  }
+  callback()
 }

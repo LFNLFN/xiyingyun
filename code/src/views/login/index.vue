@@ -41,14 +41,6 @@ import { isvalidUsername } from '@/utils/validate'
 export default {
   name: 'Login',
   data() {
-    // 用户名验证规则
-    const validateUsername = (rule, value, callback) => {
-      if (!isvalidUsername(value)) {
-        callback(new Error('请输入正确的用户名'))
-      } else {
-        callback()
-      }
-    }
     // 用户密码验证规则
     const validatePass = (rule, value, callback) => {
       if (value.length < 5) {
@@ -64,7 +56,7 @@ export default {
         password: ''
       },
       loginRules: {
-        username: [{ required: true, trigger: 'blur', validator: validateUsername }],
+        username: [{ required: true, trigger: 'blur', validator: isvalidUsername }],
         password: [{ required: true, trigger: 'blur', validator: validatePass }]
       },
       loading: false,

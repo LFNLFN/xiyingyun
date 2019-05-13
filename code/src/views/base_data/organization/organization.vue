@@ -9,7 +9,7 @@
         v-loading="organTreeLoading"
         ref="organTree"
         :data="organTreeData"
-        :props="organTreeProps"
+        :props="organTreeProp"
         :expand-on-click-node="false"
         :render-content="addTreeContRender"
         node-key="id"
@@ -29,12 +29,14 @@
             ref="postTable"
             :show-header="false"
             :data="postTableData"
+            :cell-class-name="postTableCellClass"
+            row-key="id"
             class="post-table">
             <el-table-column prop="name" />
             <el-table-column width="250" align="center">
               <template slot-scope="scope">
-                <el-button size="mini" type="primary" class="post-table-btn">添加人员</el-button>
-                <el-button size="mini" type="primary" class="post-table-btn">新增人员</el-button>
+                <el-button size="mini" type="primary" class="post-table-btn" @click="pullMemberCtrl(scope.row)">添加人员</el-button>
+                <el-button size="mini" type="primary" class="post-table-btn" @click="addMemberCtrl(scope.row)">新增人员</el-button>
                 <el-dropdown size="small" @command="(order)=>handleyDropdown(order, scope.row, 'position')">
                   <el-button size="mini" type="primary" class="post-table-btn">更多操作</el-button>
                   <el-dropdown-menu slot="dropdown">
@@ -48,30 +50,6 @@
           </el-table>
         </div>
       </div>
-      <!-- <div class="staff-table-wrap">
-        <div class="header">
-          <span>人员</span>
-          <div>
-            <el-button type="primary" size="mini" icon="el-icon-circle-plus-outline">引入成员</el-button>
-            <el-button type="primary" size="mini" icon="el-icon-circle-plus-outline">新增成员</el-button>
-          </div>
-        </div>
-        <el-table
-          ref="staffTable"
-          :data="staffTableData"
-          border
-          class="staff-table">
-          <el-table-column prop="name" width="100" label="姓名" align="center" />
-          <el-table-column prop="username" label="账号" align="center" />
-          <el-table-column prop="phone" label="手机号" align="center" />
-          <el-table-column prop="expireTime" label="失效时间" align="center" />
-          <el-table-column width="80" label="操作" align="center">
-            <template slot-scope="scope">
-              <el-button size="mini" type="primary" class="staff-table-btn">移除</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-      </div> -->
     </el-main>
     <addOrganization
       v-show="isAddOrganShow"
@@ -87,20 +65,31 @@
       :edit-post-data="editPostData"
       :event-type="eventType"
       @submitComplete="submitComplete"/>
+    <addMember
+      v-show="isAddMemberShow"
+      :position-data="memberPostData"
+      @submitComplete="submitComplete"/>
+    <PullMember
+      v-show="isPullMemberShow"
+      :organ-tree-data="organTreeData"
+      :organ-tree-prop="organTreeProp"
+      @submitComplete="submitComplete"/>
   </el-container>
 </template>
 <script>
 import AddOrganization from '@/views/base_data/organization/components/addOrganization'
 import AddPosition from '@/views/base_data/organization/components/addPosition'
+import AddMember from '@/views/base_data/organization/components/AddMember'
+import PullMember from '@/views/base_data/organization/components/PullMember'
 import { getOrganization, delOrganization, getOrgType } from '@/api/base_data/organization'
 import { getPosition, delPosition } from '@/api/base_data/organization'
 export default {
-  components: { AddOrganization, AddPosition },
+  components: { AddOrganization, AddPosition, AddMember, PullMember },
   data() {
     return {
       // 组织架构相关
       organTreeData: [],
-      organTreeProps: {
+      organTreeProp: {
         label: 'name',
         children: 'children'
       },
@@ -116,6 +105,11 @@ export default {
       editPostData: {}, // 要编辑的岗位数据
       postParentId: '', // 父级岗位或公司/部门ID
       postDepartmentId: '', // 职位所属的公司或部门ID
+      // 新增人员相关
+      isAddMemberShow: false,
+      memberPostData: {}, // 新增人员的岗位信息
+      // 添加人员相关
+      isPullMemberShow: false,
       // 传送到子组件的数据
       eventType: 'add' // 事件类型，add：新增组织架构，edit：编辑
     }
@@ -126,6 +120,14 @@ export default {
     this.getOrgTypeFunc()
   },
   methods: {
+    // 设置岗位信息表格单元格的classname
+    postTableCellClass(data) {
+      if (!data.row.children && data.columnIndex === 0) {
+        return 'isnt-tree'
+      } else if (data.row.children) {
+        return 'is-tree'
+      }
+    },
     // 获取组织架构树
     getOrganTree() {
       this.organTreeLoading = true
@@ -134,6 +136,7 @@ export default {
         this.handleNodeClick(this.organTreeData[0])
         this.organTreeLoading = false
       }).catch(() => {
+        this.postInfoLoading = false
         this.organTreeLoading = false
       })
     },
@@ -157,7 +160,7 @@ export default {
         'terms[0].value': data.id
       }
       getPosition(params).then(resp => {
-        this.postTableData = resp.result.data
+        this.postTableData = resp.result
         this.postInfoLoading = false
       }).catch(() => {
         this.postInfoLoading = false
@@ -171,7 +174,21 @@ export default {
       this.postInfoLoading = true
       this.getPositionFunc(data)
     },
-    // 控制弹新增窗组件显隐
+    // 增加人员组件的控制
+    addMemberCtrl(data) {
+      if (data) {
+        this.memberPostData = data
+      }
+      this.isAddMemberShow = !this.isAddMemberShow
+    },
+    // 引入人员组件的控制
+    pullMemberCtrl(data) {
+      if (data) {
+        console.log('data')
+      }
+      this.isPullMemberShow = !this.isPullMemberShow
+    },
+    // 控制弹窗组件显隐
     boxCtrl(boxType) {
       switch (boxType) {
         case 'organization':
@@ -180,6 +197,12 @@ export default {
         case 'position':
           this.isAddPostShow = !this.isAddPostShow
           this.postDepartmentId = this.$refs.organTree.getCurrentNode().id
+          break
+        case 'addMember':
+          this.isAddMemberShow = !this.isAddMemberShow
+          break
+        case 'pullMember':
+          this.isPullMemberShow = !this.isPullMemberShow
           break
       }
     },
@@ -224,6 +247,7 @@ export default {
       this.editPostData = {}
       this.postParentId = ''
       this.eventType = 'add'
+      this.memberPostData = {}
       if (submit) {
         if (boxType === 'organization') {
           this.getOrganTree()
@@ -234,7 +258,6 @@ export default {
     },
     // 下拉菜单处理
     handleyDropdown(order, data, type) {
-      console.log('data', data)
       this.eventType = order
       switch (order) {
         case 'add':
@@ -321,6 +344,19 @@ export default {
         .el-table {
           .el-dropdown {
             margin-left: 10px;
+          }
+          .is-tree {
+            .el-table__expand-icon {
+              margin-right: 10px;
+            }
+          }
+          .isnt-tree {
+            .cell:before {
+              content: '';
+              display: inline-block;
+              width: 14px;
+              margin-right: 10px;
+            }
           }
         }
       }

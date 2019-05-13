@@ -1,6 +1,6 @@
 <template>
-  <publicPopups v-loading="isLoading" :title-text="titleText" width="600px" v-on="$listeners" @formConfirm="submitForm" @closePupupsBox="closeHandle">
-    <template slot="main-content">
+  <publicPopups :title-text="titleText" width="600px" v-on="$listeners" @formConfirm="submitForm" @closePupupsBox="closeHandle">
+    <template v-loading="isLoading" slot="main-content">
       <el-form ref="addOrganForm" :model="addOrganForm" :rules="organFormRules" class="add-organ-from">
         <el-form-item label="机构编码" prop="code">
           <el-input v-model="addOrganForm.code" placeholder="请输入机构名称" />
@@ -28,6 +28,7 @@
 </template>
 <script>
 import PublicPopups from '@/components/Pop-ups/PublicPopups'
+import { emptyTarget } from '@/utils/public'
 import { addOrganization, editOrganization } from '@/api/base_data/organization'
 export default {
   components: { PublicPopups },
@@ -138,6 +139,7 @@ export default {
       // 重置数据
       this.$emit('submitComplete', this.isSubmit, 'organization')
       this.$refs.addOrganForm.resetFields()
+      this.addOrganForm = emptyTarget(this.addOrganForm)
       this.orgTypeSelect = ''
       this.isSubmit = false
     }

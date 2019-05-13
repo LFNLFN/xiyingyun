@@ -19,6 +19,7 @@
 </template>
 <script>
 import PublicPopups from '@/components/Pop-ups/PublicPopups'
+import { emptyTarget } from '@/utils/public'
 import { addPosition, editPosition } from '@/api/base_data/organization'
 export default {
   components: { PublicPopups },
@@ -107,6 +108,7 @@ export default {
       // 重置数据
       this.$emit('submitComplete', this.isSubmit, 'position')
       this.$refs.addPostForm.resetFields()
+      this.addPostForm = emptyTarget(this.addPostForm)
       this.isSubmit = false
     }
   }

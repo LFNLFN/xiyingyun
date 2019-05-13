@@ -1,6 +1,6 @@
 <template>
   <el-container>
-    <el-aside width="250px" class="roles-tree-wrap">
+    <el-aside v-loading="roleTreeLoading" width="250px" class="roles-tree-wrap">
       <div class="header">
         <span>角色列表</span>
         <el-button type="primary" circle size="small" class="el-icon-plus add-roles-btn" @click="addRolesBoxCtrl"/>
@@ -9,13 +9,8 @@
         :data="rolesTreeData"
         :props="rolesTreeProps"
         :expand-on-click-node="false"
-        class="roles-tree" />
-        <!-- <el-tree
-        :data="rolesTreeData"
-        :props="rolesTreeProps"
-        :expand-on-click-node="false"
         :render-content="addTreeContRender"
-        class="roles-tree" /> -->
+        class="roles-tree" />
     </el-aside>
     <el-main class="roles-detail-wrap">
       <div class="roles-members">
@@ -41,13 +36,14 @@
       v-show="isAddRolesShow"
       :role-data="editRoleData"
       :event-type="addOrEditRole"
-      @closePupupsBox="addRolesBoxCtrl"/>
+      @submitComplete="submitComplete"/>
   </el-container>
 </template>
 <script>
+import { mapActions, mapMutations } from 'vuex'
 import ManegeMembers from '@/views/base_data/permission/components/manageMembers'
 import AddRoles from '@/views/base_data/permission/components/addRoles'
-import { getRoles } from '@/api/base_data/permission.js'
+import { delRoles } from '@/api/base_data/permission.js'
 export default {
   components: { ManegeMembers, AddRoles },
   data() {
@@ -60,6 +56,7 @@ export default {
       rolesmembres: ['张三', '赵茜', '五五', 'sunny', 'sbs'],
       isManageMemberShow: false,
       isAddRolesShow: false,
+      roleTreeLoading: false,
       editRoleData: {}, // 保存要编辑的角色的数据
       addOrEditRole: '' // 决定添加角色还是编辑角色，add：添加，edit：编辑
 
@@ -69,6 +66,12 @@ export default {
     this.getRolesList()
   },
   methods: {
+    ...mapActions([
+      'getPerRoles'
+    ]),
+    ...mapMutations({
+      clearRoles: 'CLEAR_PER_ROLES'
+    }),
     // 成员管理组件显隐控制
     membersBoxCtrl() {
       this.isManageMemberShow = !this.isManageMemberShow
@@ -78,19 +81,35 @@ export default {
       this.isAddRolesShow = !this.isAddRolesShow
     },
     // 删除角色
-    deleteRole() {
+    deleteRole(data) {
       this.$confirm('确定删除该角色？', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'wraning'
       }).then(action => {
-        console.log('delete role')
+        this.roleTreeLoading = true
+        delRoles(data.id).then(resp => {
+          this.$message({
+            showClose: true,
+            message: '删除成功',
+            type: 'success',
+            duration: 3 * 1000
+          })
+          this.clearRoles()
+          this.getRolesList()
+        }).catch(() => {
+          this.roleTreeLoading = false
+        })
       })
     },
     // 获取角色列表
     getRolesList(params = {}) {
-      getRoles(params).then(resp => {
-        this.rolesTreeData = resp.result.data
+      this.roleTreeLoading = true
+      this.getPerRoles().then(resp => {
+        this.roleTreeLoading = false
+        this.rolesTreeData = resp
+      }).catch(() => {
+        this.roleTreeLoading = false
       })
     },
     // 下拉菜单处理
@@ -109,30 +128,37 @@ export default {
           this.addRolesBoxCtrl()
           break
         case 'delete':
-          this.deleteRole()
+          this.deleteRole(data)
           break
       }
-    }
+    },
+    // 新增角色后处理
+    submitComplete(submit) {
+      this.addRolesBoxCtrl()
+      if (submit) {
+        // 清空vuex中保存的权限角色，重新加载
+        this.clearRoles()
+        this.getRolesList()
+      }
+    },
     // 角色树渲染函数
-    // addTreeContRender(h, { node, data, store }) {
-    //   console.log('data', data)
-    //   const roleData = data
-    //   return (
-    //     <span class='custom-tree-node'>
-    //       <span>{node.label}</span>
-    //       <span>
-    //         <el-dropdown trigger='click' on-command={ (order) => this.dropdownHandle(order, roleData) }>
-    //           <el-button type='primary' circle size='mini' class='el-icon-edit tree-edit-btn'></el-button>
-    //           <el-dropdown-menu slot='dropdown'>
-    //             <el-dropdown-item command='add'>新增</el-dropdown-item>
-    //             <el-dropdown-item command='edit'>编辑</el-dropdown-item>
-    //             <el-dropdown-item command='delete'>删除</el-dropdown-item>
-    //           </el-dropdown-menu>
-    //         </el-dropdown>
-    //       </span>
-    //     </span>
-    //   )
-    // }
+    addTreeContRender(h, { node, data, store }) {
+      const roleData = data
+      return (
+        <span class='custom-tree-node'>
+          <span>{node.label}</span>
+          <span>
+            <el-dropdown on-command={ (order) => this.dropdownHandle(order, roleData) }>
+              <el-button type='primary' circle size='mini' class='el-icon-edit tree-edit-btn'></el-button>
+              <el-dropdown-menu slot='dropdown'>
+                <el-dropdown-item command='edit'>编辑</el-dropdown-item>
+                <el-dropdown-item command='delete'>删除</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </span>
+        </span>
+      )
+    }
   }
 }
 </script>

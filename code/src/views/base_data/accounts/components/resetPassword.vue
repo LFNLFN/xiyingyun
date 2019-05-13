@@ -50,10 +50,7 @@ export default {
   },
   data() {
     const validPassword = (rule, val, callback) => {
-      const { valid, msg } = isvalidPassword(val)
-      if (!valid) {
-        callback(new Error(msg))
-      } else if (this.passwordForm.oldPassword === this.passwordForm.newPassword) {
+      if (this.passwordForm.oldPassword === val) {
         callback(new Error('新旧密码不能一样'))
       } else {
         callback()
@@ -71,8 +68,11 @@ export default {
         reputNewPassword: ''
       },
       passwordRules: {
-        oldPassword: [{ required: true, trigger: 'change', validator: validPassword }],
-        newPassword: [{ required: true, trigger: 'change', validator: validPassword }],
+        oldPassword: [{ required: true, trigger: 'change', validator: isvalidPassword }],
+        newPassword: [
+          { required: true, trigger: 'change', validator: isvalidPassword },
+          { validator: validPassword }
+        ],
         reputNewPassword: [{ required: true, trigger: 'change', validator: validReputPassword }]
       },
       resetLoading: false
