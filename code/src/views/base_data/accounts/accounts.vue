@@ -32,17 +32,17 @@
         <el-table-column type="selection" width="55" align="center"/>
         <el-table-column prop="name" width="100" label="姓名" align="center" />
         <el-table-column prop="phone" label="手机号" align="center" />
-        <el-table-column prop="username" label="账号" align="center" />
+        <!-- <el-table-column prop="username" label="账号" align="center" /> -->
         <el-table-column prop="email" label="邮箱" align="center" />
-        <el-table-column prop="expireTime" label="失效时间" align="center" />
+        <!-- <el-table-column prop="expireTime" label="失效时间" align="center" /> -->
         <el-table-column width="220" label="操作" align="center">
           <template slot-scope="scope">
             <el-button size="mini" type="primary" class="account-table-btn" @click="editAccount">编辑</el-button>
-            <el-button size="mini" type="primary" class="account-table-btn" @click="passwordBoxShow(false, scope.$index)">重置密码</el-button>
+            <el-button size="mini" type="primary" class="account-table-btn" @click="passwordBoxShow(scope.row)">重置密码</el-button>
             <!-- status === 1 正常用户 -->
-            <el-button v-if="scope.row.status===1" size="mini" type="primary" class="account-table-btn" @click="accountOperate(scope.$index)">禁用</el-button>
+            <el-button v-if="scope.row.status===1" size="mini" type="primary" class="account-table-btn" @click="accountOperate(scope.row)">禁用</el-button>
             <!-- status === 0 被禁用用户 -->
-            <el-button v-else size="mini" type="primary" class="account-table-btn" @click="accountOperate(scope.$index)">启用</el-button>
+            <el-button v-else size="mini" type="primary" class="account-table-btn" @click="accountOperate(scope.row)">启用</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -71,26 +71,16 @@
 <script>
 import AddAccountBox from '@/views/base_data/accounts/components/AddAccountBox'
 import ResetPassword from '@/views/base_data/accounts/components/ResetPassword'
-import { getUsers, disableAcc, enableAcc, batchOperateAcc } from '@/api/base_data/accounts'
+import { getUsers, batchOperateAcc } from '@/api/base_data/accounts'
 export default{
   components: { AddAccountBox, ResetPassword },
   data() {
-    const validsearchForm = (rule, value, callback) => {
-      if (this.searchForm.name.length === 0 && this.searchForm.phone.length === 0) {
-        callback(new Error('请输入用户名称或手机号码'))
-      } else {
-        callback()
-      }
-    }
     return {
       searchForm: {
         name: '',
         phone: ''
       },
-      searchRules: {
-        name: [{ trigger: 'blur', validator: validsearchForm }],
-        phone: [{ trigger: 'blur', validator: validsearchForm }]
-      },
+      searchRules: {},
       accountTableData: [],
       batchOperateValue: '',
       allCheckdeValue: false,
@@ -125,13 +115,13 @@ export default{
       console.log('event', evt)
     },
     // 重置密码组件显隐
-    passwordBoxShow(isBatch, index) {
-      if (isBatch) {
+    passwordBoxShow(row) {
+      if (row) {
+        this.resetPasswordAccs.splice(0, this.resetPasswordAccs.length)
+        this.resetPasswordAccs.push(row)
+      } else {
         this.resetPasswordAccs = this.multipleSelectedAcc
         this.isBatchResetPassword = true
-      } else {
-        this.resetPasswordAccs.splice(0, this.resetPasswordAccs.length)
-        this.resetPasswordAccs.push(this.accountTableData[index])
       }
       this.showPasswordBox = true
     },
@@ -162,22 +152,20 @@ export default{
     },
     // 根据条件查询账号信息
     filterAccountInfo() {
-      this.$refs.searchForm.validate(valid => {
-        if (valid) {
-          this.isLoading = true
-          const params = {
-            pageIndex: 1,
-            pageSize: 10,
-            name: this.searchForm.name,
-            phone: this.searchForm.phone
-          }
-          this.getUsersFunc(params)
-        }
-      })
+      this.isLoading = true
+      const params = {
+        'terms[0].column': 'name',
+        'terms[0].value': this.searchForm.name,
+        'terms[1].column': 'name',
+        'terms[1].value': this.searchForm.phone,
+        pageIndex: 1,
+        pageSize: 10
+      }
+      this.getUsersFunc(params)
     },
     // 对账号进行启用/禁用操作
-    accountOperate(index) {
-      const user = this.accountTableData[index]
+    accountOperate(row) {
+      const user = row
       let tipsText = ''
       if (user.id.length === 0) {
         this.$message({
@@ -196,10 +184,11 @@ export default{
       }).then((action) => {
         this.isLoading = true
         let method
+        const idList = Array.of(user.id)
         if (user.status === 1) {
-          method = disableAcc(user.id)
+          method = batchOperateAcc('disable', idList)
         } else if (user.status === 0) {
-          method = enableAcc(user.id)
+          method = batchOperateAcc('enable', idList)
         }
         method.then(resp => {
           this.$message({
@@ -248,7 +237,7 @@ export default{
     batchSelected() {
       switch (this.batchOperateValue) {
         case 'changePassword':
-          this.passwordBoxShow(true)
+          this.passwordBoxShow()
           break
         default:
           this.batchAccountOperate(this.batchOperateValue, this.multipleSelectedAcc)

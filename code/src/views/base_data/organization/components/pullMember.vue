@@ -1,5 +1,5 @@
 <template>
-  <publicPopups v-show="true" title-text="添加人员" width="800px" v-on="$listeners" @closePupupsBox="closeHandle">
+  <publicPopups v-loading="containerLoading" v-show="true" title-text="添加人员" width="800px" v-on="$listeners" @closePupupsBox="closeHandle" @formConfirm="submitMember">
     <template slot="main-content">
       <div class="selected-member-warp">
         <div class="title-text">已选择：</div>
@@ -32,7 +32,7 @@
           <div class="header-title">
             <span>人员列表</span>
           </div>
-          <el-form :model="searchFormData" :inline="true" class="search-wrap">
+          <el-form ref="searchForm" :model="searchFormData" :inline="true" class="search-wrap">
             <el-form-item label="姓名" prop="name">
               <el-input v-model="searchFormData.name" size="small" placeholder="请输入姓名"/>
             </el-form-item>
@@ -40,20 +40,25 @@
               <el-input v-model="searchFormData.phone" size="small" placeholder="请输入手机号"/>
             </el-form-item>
             <el-form-item class="form-btn-wrap">
-              <el-button type="primary" size="small">查询</el-button>
-              <el-button size="small">重置</el-button>
+              <el-button type="primary" size="small" @click="searchHandle">查询</el-button>
+              <el-button size="small" @click="resetSearchForm">重置</el-button>
             </el-form-item>
           </el-form>
           <el-table
+            v-loading="tableLoading"
             ref="membersTable"
             :data="membersTableData"
             :header-row-class-name="() => 'table-header'"
+            show-overflow-tooltip
+            height="235px"
             size="mini"
-            class="member-table">
+            class="member-table"
+            @select="selectedHandle"
+            @select-all="selectedAllHandle">
             <el-table-column type="selection" width="55" align="center"/>
             <el-table-column prop="name" width="100" label="姓名" align="center" />
             <el-table-column prop="phone" label="联系方式" align="center" />
-            <el-table-column prop="department" width="180" label="所属部门" align="center" />
+            <el-table-column prop="department" width="170" label="所属部门" align="center" />
             <el-table-column prop="position" label="岗位" align="center" />
           </el-table>
           <el-pagination
@@ -70,7 +75,7 @@
 </template>
 <script>
 import PublicPopups from '@/components/Pop-ups/PublicPopups'
-import { gerPersons } from '@/api/base_data/organization'
+import { gerPersons, addPostMember } from '@/api/base_data/organization'
 export default {
   components: { PublicPopups },
   props: {
@@ -85,6 +90,16 @@ export default {
       default: () => {
         return {}
       }
+    },
+    positionData: {
+      type: Object,
+      default: () => {
+        return {}
+      }
+    },
+    boxShow: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -94,29 +109,39 @@ export default {
         phone: ''
       },
       membersTableData: [],
-      selectedmemberList: [],
+      selectedmemberList: [], // 保存已选择的人员数据
+      containerLoading: false,
       tableLoading: false,
       pageTotal: 25
     }
   },
-  created() {
-    this.gerPersonsFunc()
+  watch: {
+    boxShow: function(newVal) {
+      if (newVal) {
+        this.gerPersonsFunc()
+      }
+    }
   },
+  // created() {
+  //   this.gerPersonsFunc()
+  // },
   methods: {
+    // 分页处理
     pageChangeHandle(index) {
-      console.log('change page', index)
       this.gerPersonsFunc({ pageIndex: index - 1 })
     },
+    // 获取人员数据
     gerPersonsFunc(obj = {}) {
-      const { pageIndex } = obj
+      const { pageIndex, name, phone } = obj
       const params = {
         'terms[0].column': 'name',
-        'terms[0].value': 'zmb1',
-        'terms[0].column': 'phone',
-        'terms[0].value': '13760026661',
+        'terms[0].value': name || '',
+        'terms[1].column': 'phone',
+        'terms[1].value': phone || '',
         pageSize: 4,
         pageIndex: pageIndex || 0
       }
+      this.tableLoading = true
       gerPersons(params).then(resp => {
         const data = resp.result
         this.membersTableData = data.data
@@ -125,6 +150,76 @@ export default {
       }).catch(() => {
         this.tableLoading = false
       })
+    },
+    // 按条件搜索人员处理
+    searchHandle() {
+      const searchData = this.searchFormData
+      const param = {
+        name: searchData.name,
+        phone: searchData.phone
+      }
+      this.gerPersonsFunc(param)
+    },
+    // 单选处理
+    selectedHandle(val, row) {
+      if (val.includes(row)) {
+        this.selectedmemberList.push(row)
+      } else {
+        const index = this.selectedmemberList.findIndex(item => {
+          return item === row
+        })
+        this.selectedmemberList.splice(index, 1)
+      }
+    },
+    // 全选处理
+    selectedAllHandle(val) {
+      if (val.length === 0 && this.selectedmemberList.length > 0) {
+        // 取消选择
+        const _arr = []
+        this.selectedmemberList.forEach(item => {
+          if (!this.membersTableData.includes(item)) {
+            _arr.push(item)
+          }
+        })
+        this.selectedmemberList = _arr
+      } else {
+        // 添加选择
+        val.forEach(item => {
+          if (!this.selectedmemberList.includes(item)) {
+            this.selectedmemberList.push(item)
+          }
+        })
+      }
+    },
+    // 提交人员信息绑定岗位
+    submitMember() {
+      this.$confirm('确定添加?', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.containerLoading = true
+        const positionId = this.positionData.positionId
+        const personIds = []
+        this.selectedmemberList.forEach(item => {
+          personIds.push(item.personId)
+        })
+        addPostMember(positionId, personIds).then(resp => {
+          this.containerLoading = false
+          this.$message({
+            showClose: false,
+            message: '添加成功',
+            type: 'success',
+            duration: 3 * 1000
+          })
+        }).catch(() => {
+          this.containerLoading = false
+        })
+      })
+    },
+    // 重置表单
+    resetSearchForm() {
+      this.$refs.searchForm.resetFields()
     },
     // handleNodeClick(data, node, com) {
     //   this.$nextTick(function() {
@@ -135,18 +230,20 @@ export default {
     // },
     closeHandle() {
       // 重置数据
+      this.$refs.searchForm.resetFields()
       this.$emit('submitComplete', false, 'pullMember')
+      this.selectedmemberList = []
     }
   }
 }
 </script>
 <style ref="styleshheet/scss" lang="scss" scoped>
 @import "src/styles/mixin.scss";
-@import "src/styles/element-ui.scss";
+@import "../reset-style/components/pullMember.scss";
 
 .selected-member-warp {
   height: 100%;
-  margin-top: 25px;
+  margin-top: 15px;
   font-size: 12px;
   padding: 5px;
   @include flex-layout(flex-start, flex-start, nowrap, null);
@@ -179,7 +276,7 @@ export default {
   .side-tree-wrap {
     padding: 0;
     width: 200px;
-    height: 420px;
+    height: 405px;
     margin-top: 10px;
     border: 1px solid #e6e6e6;
     border-radius: 5px;
@@ -196,7 +293,7 @@ export default {
   .main-cont-wrap {
     padding: 0;
     width: 500px;
-    height: 420px;
+    height: 405px;
     margin: 10px 0 0 20px;
     border: 1px solid #e6e6e6;
     border-radius: 5px;
@@ -205,7 +302,7 @@ export default {
       .el-form-item {
         margin: 10px 0;
         .el-input {
-          width: 110px;
+          width: 120px;
         }
       }
       .form-btn-wrap {
@@ -213,7 +310,7 @@ export default {
       }
     }
     .el-pagination {
-      margin-top: 20px;
+      margin-top: 15px;
       float: right;
     }
     .el-button {

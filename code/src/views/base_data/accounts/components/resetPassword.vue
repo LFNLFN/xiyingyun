@@ -2,9 +2,9 @@
   <publicPopups title-text="重置密码" v-on="$listeners" @closePupupsBox="closeBox" @formConfirm="resetHandle">
     <template slot="main-content">
       <el-form ref="passwordForm" :model="passwordForm" :rules="passwordRules">
-        <el-form-item v-if="!isBatch" label="请输入旧密码" prop="oldPassword">
+        <!-- <el-form-item v-if="!isBatch" label="请输入旧密码" prop="oldPassword">
           <el-input v-model="passwordForm.oldPassword" type="password" />
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="请输入新密码" prop="newPassword">
           <el-input v-model="passwordForm.newPassword" type="password" />
         </el-form-item>
@@ -17,7 +17,7 @@
 </template>
 <script>
 import PublicPopups from '@/components/Pop-ups/PublicPopups'
-import { resetPassword, batchResetPswd } from '@/api/base_data/accounts'
+import { batchResetPswd } from '@/api/base_data/accounts'
 import { isvalidPassword } from '@/utils/validate'
 export default {
   components: { PublicPopups },
@@ -68,7 +68,7 @@ export default {
         reputNewPassword: ''
       },
       passwordRules: {
-        oldPassword: [{ required: true, trigger: 'change', validator: isvalidPassword }],
+        // oldPassword: [{ required: true, trigger: 'change', validator: isvalidPassword }],
         newPassword: [
           { required: true, trigger: 'change', validator: isvalidPassword },
           { validator: validPassword }
@@ -81,33 +81,7 @@ export default {
   methods: {
     resetHandle() {
       console.log('this.passwordForm', this.passwordForm)
-      if (this.isBatch) {
-        this.batchResetSubmit()
-      } else {
-        this.passwordSubmit()
-      }
-    },
-    passwordSubmit() {
-      const userId = this.userData[0].id
-      if (userId.length === 0) {
-        this.$message({
-          showClose: true,
-          message: '重置密码失败，用户信息不完整',
-          type: 'warning',
-          duration: 3 * 1000
-        })
-        return
-      }
-      this.resetLoading = true
-      const passwordObj = {
-        'oldPassword': String(this.passwordForm.oldPassword),
-        'password': String(this.passwordForm.reputNewPassword)
-      }
-      resetPassword(userId, passwordObj).then(resp => {
-        this.resetSuccess()
-      }).catch(() => {
-        this.resetLoading = false
-      })
+      this.batchResetSubmit()
     },
     batchResetSubmit() {
       const idArr = []

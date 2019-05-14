@@ -36,3 +36,13 @@ export function delRoles(id) {
     method: 'delete'
   })
 }
+
+// 查询角色用户
+export function getRolesPerson(id, paramsObj) {
+  const _url = `/person/roleId/${id}`
+  return request({
+    url: _url,
+    method: 'get',
+    params: paramsObj
+  })
+}

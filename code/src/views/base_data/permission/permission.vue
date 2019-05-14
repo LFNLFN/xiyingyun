@@ -6,11 +6,15 @@
         <el-button type="primary" circle size="small" class="el-icon-plus add-roles-btn" @click="addRolesBoxCtrl"/>
       </div>
       <el-tree
+        ref="rolesTree"
         :data="rolesTreeData"
         :props="rolesTreeProps"
         :expand-on-click-node="false"
         :render-content="addTreeContRender"
-        class="roles-tree" />
+        node-key="id"
+        highlight-current
+        class="roles-tree"
+        @node-click="nodeClickHandle" />
     </el-aside>
     <el-main class="roles-detail-wrap">
       <div class="roles-members">
@@ -18,15 +22,44 @@
           <span>人员列表 </span>
           <el-button type="primary" size="small" class="manage-members-btn" @click="membersBoxCtrl">管理</el-button>
         </div>
-        <el-row type="flex" justify="center" class="members-list">
-          <el-col v-for="( mem, idx ) in rolesmembres" :key="idx" class="members-list-item">{{ mem }}</el-col>
-        </el-row>
-      </div>
-      <div class="roles-premission">
-        <div class="header">
-          <span>角色权限</span>
-          <el-button type="primary" size="small" class="manage-premission-btn">管理权限</el-button>
+        <div class="search-wrap">
+          <el-form
+            ref="searchForm"
+            :inline="true"
+            :model="searchFormData">
+            <el-form-item label="姓名">
+              <el-input v-model="searchFormData.name" size="small" placeholder="请输入姓名"/>
+            </el-form-item>
+            <el-form-item label="手机号">
+              <el-input v-model="searchFormData.phone" size="small" placeholder="请输入手机号"/>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" @click="searchHandle">查询</el-button>
+            </el-form-item>
+          </el-form>
         </div>
+        <div class="table-wrap">
+          <el-table
+            v-loading="iStableLoading"
+            ref="memberTable"
+            :data="memberTableData"
+            size="small"
+            class="member-table">
+            <el-table-column prop="name" width="100" label="姓名" align="center" />
+            <el-table-column prop="phone" label="手机" align="center" />
+            <el-table-column label="操作" width="120" align="center">
+              <template slot-scope="scope">
+                <el-button>删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+        <el-pagination
+          :total="pageTotal"
+          :page-size="10"
+          background
+          layout="prev, pager, next, jumper"
+          @current-change="pageChangeHandle"/>
       </div>
     </el-main>
     <manegeMembers
@@ -43,7 +76,7 @@
 import { mapActions, mapMutations } from 'vuex'
 import ManegeMembers from '@/views/base_data/permission/components/manageMembers'
 import AddRoles from '@/views/base_data/permission/components/addRoles'
-import { delRoles } from '@/api/base_data/permission.js'
+import { delRoles, getRolesPerson } from '@/api/base_data/permission.js'
 export default {
   components: { ManegeMembers, AddRoles },
   data() {
@@ -53,13 +86,18 @@ export default {
         label: 'name',
         children: 'children'
       },
-      rolesmembres: ['张三', '赵茜', '五五', 'sunny', 'sbs'],
+      memberTableData: [],
+      searchFormData: {
+        name: '',
+        phone: ''
+      },
       isManageMemberShow: false,
       isAddRolesShow: false,
       roleTreeLoading: false,
+      iStableLoading: false,
       editRoleData: {}, // 保存要编辑的角色的数据
-      addOrEditRole: '' // 决定添加角色还是编辑角色，add：添加，edit：编辑
-
+      addOrEditRole: '', // 决定添加角色还是编辑角色，add：添加，edit：编辑
+      pageTotal: 0
     }
   },
   created() {
@@ -79,6 +117,48 @@ export default {
     // 添加角色组件显隐控制
     addRolesBoxCtrl() {
       this.isAddRolesShow = !this.isAddRolesShow
+    },
+    // 分页查询控制
+    pageChangeHandle(index) {
+
+    },
+    // 获取角色用户
+    getRolesPersonFun(data, paramObj = {}) {
+      this.iStableLoading = true
+      const { name, phone, pageIndex } = paramObj
+      const param = {
+        name: name || '',
+        phone: phone || '',
+        pageIndex: pageIndex || 0,
+        pageSize: 10
+      }
+      getRolesPerson(data.id, param).then(resp => {
+        this.memberTableData = resp.result
+        if (resp.pageTotal) {
+          this.pageTotal = resp.pageTotal
+        } else {
+          this.pageTotal = resp.result.length
+        }
+        this.iStableLoading = false
+      }).catch(() => {
+        this.iStableLoading = false
+      })
+    },
+    // 按条件查询角色人员
+    searchHandle() {
+      const param = {
+        name: this.searchFormData.name,
+        phone: this.searchFormData.phone,
+      }
+      const data = this.$refs.rolesTree.getCurrentNode()
+      this.getRolesPersonFun(data, param)
+    },
+    // 角色节点点击处理
+    nodeClickHandle(data, node) {
+      this.$nextTick(function() {
+        this.$refs.rolesTree.setCurrentKey(data.id)
+      })
+      this.getRolesPersonFun(data)
     },
     // 删除角色
     deleteRole(data) {
@@ -188,24 +268,38 @@ export default {
     }
   }
   .roles-detail-wrap {
+    padding-left: 0;
     .roles-members {
       @include boxShadow-container;
       .manage-members-btn {
         // float: right;
         // margin: 5
       }
-      .members-list {
-        padding: 15px;
-        .members-list-item {
-          padding: 5px;
-          text-align: center;
-          margin: 5px;
+    }
+    .search-wrap {
+      padding: 30px 20px;
+      .el-form {
+        .el-form-item {
+          margin-bottom: 0px;
+        }
+        .el-input {
+          width: 150px;
+        }
+        .el-button {
+          margin-left: 20px;
         }
       }
     }
-    .roles-premission {
-      margin-top: 40px;
-      @include boxShadow-container;
+    .table-wrap {
+      padding: 0 20px;
+      .member-table {
+        border: 1px solid #ccc;
+        margin-bottom: 20px;
+      }
+    }
+    .el-pagination {
+      text-align: center;
+      margin-bottom: 20px;
     }
   }
 }

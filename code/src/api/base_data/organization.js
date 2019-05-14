@@ -87,6 +87,26 @@ export function delPosition(id) {
   })
 }
 
+// 岗位人员取消绑定
+export function delPostMember(id, datas) {
+  const _url = `/person/batch/removePosition/${id}`
+  return request({
+    url: _url,
+    method: 'post',
+    data: JSON.stringify(datas)
+  })
+}
+
+// 批量绑定岗位人员
+export function addPostMember(id, datas) {
+  const _url = `/person/batch/bindPosition/${id}`
+  return request({
+    url: _url,
+    method: 'post',
+    data: JSON.stringify(datas)
+  })
+}
+
 /* --------------- 人员相关 ---------------------*/
 // 新增人员
 export function addPerson(datas) {
@@ -103,5 +123,14 @@ export function gerPersons(datas) {
     url: '/person',
     method: 'get',
     params: datas
+  })
+}
+
+// 获取某岗位的人员列表
+export function gerPersonsByPost(id) {
+  const _url = `/person/in-position/${id}`
+  return request({
+    url: _url,
+    method: 'get'
   })
 }

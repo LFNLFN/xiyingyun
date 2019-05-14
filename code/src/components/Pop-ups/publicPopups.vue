@@ -46,18 +46,20 @@ export default {
   }
 }
 </script>
-<style ref="styleshheet/scss" lang="scss">
+<style ref="styleshheet/scss" lang="scss" scoped>
 @import "src/styles/mixin.scss";
+
 .container-shadow {
   width: 100vw;
   height: 100vh;
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 999;
+  z-index: 9999;
   background: rgba(0, 0, 0,.5);
   @include flex-layout(center, center, null, null);
   .container {
+    max-height: 670px;
     border-radius: 10px;
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.2);
     background: #fff;
@@ -77,13 +79,6 @@ export default {
     }
     .main {
       padding: 0 20px;
-      .el-form {
-        .el-form-item:not(.is-required) {
-          .el-form-item__label {
-            margin-left: 10px;
-          }
-        }
-      }
     }
     .footer {
       height: 70px;

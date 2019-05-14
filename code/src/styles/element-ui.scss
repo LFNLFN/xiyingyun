@@ -1,14 +1,8 @@
 //to reset element-ui default css
-.el-table--mini td {
-  padding: 2px !important;
-  height: 46px;
-}
-
-.el-table .table-header {
-  th {
-    padding: 2px;
-    background: #f8f8f9;
-    border-top: 1px solid #80848f;
-    height: 46px;
+.el-form {
+  .el-form-item:not(.is-required) {
+    .el-form-item__label {
+      margin-left: 10px;
+    }
   }
 }

@@ -8,13 +8,13 @@
         <el-form-item label="手机" prop="phone">
           <el-input v-model.number="addAccountForm.phone" />
         </el-form-item>
-        <el-form-item label="账号" prop="username">
+        <!-- <el-form-item label="账号" prop="username">
           <el-input v-model="addAccountForm.username" />
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="邮箱" prop="email">
           <el-input v-model="addAccountForm.email" />
         </el-form-item>
-        <el-form-item label="特殊资源">
+        <!-- <el-form-item label="特殊资源">
           <el-radio-group v-model="expireDateRadio" prop="expireDateRadio">
             <el-radio label="permanent">永久有效</el-radio>
             <el-radio label="expire">失效时间</el-radio>
@@ -30,7 +30,7 @@
             placeholder="选择日期"
             format="yyyy 年 MM 月 dd 日"
             value-format="yyyy-MM-dd" />
-        </el-form-item>
+        </el-form-item> -->
       </el-form>
     </template>
   </publicPopups>
@@ -43,28 +43,28 @@ import { addAccount } from '@/api/base_data/accounts'
 export default {
   components: { PublicPopups },
   data() {
-    const validateExpireTime = (rule, value, callback) => {
-      if (this.expireDateRadio === 'expire' && value.length === 0) {
-        callback(new Error('请选择日期'))
-      } else {
-        callback()
-      }
-    }
+    // const validateExpireTime = (rule, value, callback) => {
+    //   if (this.expireDateRadio === 'expire' && value.length === 0) {
+    //     callback(new Error('请选择日期'))
+    //   } else {
+    //     callback()
+    //   }
+    // }
     return {
       addAccountForm: {
         name: '',
         phone: '',
-        username: '',
-        email: '',
-        expireTime: '',
-        password: ''
+        // username: '',
+        email: ''
+        // expireTime: '',
+        // password: ''
       },
       addAccountRules: {
         name: [{ required: true, trigger: 'blur', validator: isvalidUsername }],
-        phone: [{ required: true, trigger: 'blur', validator: isvalidPhoneNum }],
-        expireTime: [{ required: true, trigger: 'change', validator: validateExpireTime }]
+        phone: [{ required: true, trigger: 'blur', validator: isvalidPhoneNum }]
+        // expireTime: [{ required: true, trigger: 'change', validator: validateExpireTime }]
       },
-      expireDateRadio: '',
+      // expireDateRadio: '',
       datePickerDisable: false,
       addAccountLoading: false,
       addAccountCount: 0,
@@ -72,17 +72,17 @@ export default {
     }
   },
   watch: {
-    // 监测有效时间单选框
-    expireDateRadio(newVal) {
-      if (newVal === 'permanent') {
-        this.datePickerDisable = true
-        if (this.addAccountForm.expireTime !== '') {
-          this.addAccountForm.expireTime = ''
-        }
-      } else {
-        this.datePickerDisable = false
-      }
-    }
+    // // 监测有效时间单选框
+    // expireDateRadio(newVal) {
+    //   if (newVal === 'permanent') {
+    //     this.datePickerDisable = true
+    //     if (this.addAccountForm.expireTime !== '') {
+    //       this.addAccountForm.expireTime = ''
+    //     }
+    //   } else {
+    //     this.datePickerDisable = false
+    //   }
+    // }
   },
   methods: {
     closeBox() {
@@ -115,7 +115,7 @@ export default {
     // 重置表单
     resetForm(formName) {
       this.$refs[formName].resetFields()
-      this.expireDateRadio = ''
+      // this.expireDateRadio = ''
     }
   }
 }
