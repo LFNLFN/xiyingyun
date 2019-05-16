@@ -31,7 +31,7 @@
             :data="postTableData"
             :cell-class-name="postTableCellClass"
             row-key="id"
-            class="post-table"
+            class="post-table el-table_base-data-position"
             @row-click="postMemberCtrl">
             <el-table-column prop="name" />
             <el-table-column width="250" align="center">
@@ -147,7 +147,8 @@ export default {
     getOrganTree() {
       this.organTreeLoading = true
       getOrganization().then(resp => {
-        this.organTreeData = resp.result
+        const treeList = resp.result
+        this.organTreeData = treeList.filter(tree => tree.type === 0)
         this.handleNodeClick(this.organTreeData[0])
         this.organTreeLoading = false
       }).catch(() => {
@@ -183,6 +184,10 @@ export default {
     },
     // 组织架构树某节点被点击时的回调函数
     handleNodeClick(data, node, com) {
+      if (!data) {
+        this.postInfoLoading = false
+        return
+      }
       this.$nextTick(function() {
         this.$refs.organTree.setCurrentKey(data.id)
       })
@@ -339,7 +344,7 @@ export default {
   }
 }
 </script>
-<style ref="stylesheet/scss" lang="scss">
+<style ref="stylesheet/scss" lang="scss" scoped>
 @import "src/styles/mixin.scss";
 
 .container {
@@ -355,12 +360,6 @@ export default {
       min-width: 250px;
       min-height: 300px;
       padding: 10px;
-      .el-tree-node__content {
-        margin: 5px 0;
-        // &:hover {
-        //   background: #fff !important;
-        // }
-      }
     }
     .add-check-item-btn {
       font-size: 28px;
@@ -376,44 +375,18 @@ export default {
       @include boxShadow-container;
       .post-table-wrap{
         padding: 20px 10px;
-        .el-table {
+        .post-table {
           .el-table__body {
             tr {
-              cursor: pointer;
+              cursor: pointer !important;
             }
           }
           .el-dropdown {
             margin-left: 10px;
           }
-          .is-tree {
-            .el-table__expand-icon {
-              margin-right: 10px;
-            }
-          }
-          .isnt-tree {
-            .cell:before {
-              content: '';
-              display: inline-block;
-              width: 14px;
-              margin-right: 10px;
-            }
-          }
         }
       }
     }
-  }
-}
-.custom-tree-node {
-  @include flex-layout(space-between, center, null, null);
-  padding: 4px 8px;
-  flex: 1;
-  .tree-edit-btn {
-    padding: 3px;
-  }
-
-  &.is-selected {
-    background: #f5f5f5;
-    border-radius: 8px;
   }
 }
 </style>

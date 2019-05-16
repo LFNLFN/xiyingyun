@@ -20,7 +20,7 @@
       <div class="roles-members">
         <div class="header">
           <span>人员列表 </span>
-          <el-button type="primary" size="small" class="manage-members-btn" @click="membersBoxCtrl">管理</el-button>
+          <!-- <el-button type="primary" size="small" class="manage-members-btn" @click="membersBoxCtrl">添加人员</el-button> -->
         </div>
         <div class="search-wrap">
           <el-form
@@ -62,9 +62,6 @@
           @current-change="pageChangeHandle"/>
       </div>
     </el-main>
-    <manegeMembers
-      v-show="isManageMemberShow"
-      @closePupupsBox="membersBoxCtrl"/>
     <AddRoles
       v-show="isAddRolesShow"
       :role-data="editRoleData"
@@ -74,11 +71,10 @@
 </template>
 <script>
 import { mapActions, mapMutations } from 'vuex'
-import ManegeMembers from '@/views/base_data/permission/components/manageMembers'
 import AddRoles from '@/views/base_data/permission/components/addRoles'
 import { delRoles, getRolesPerson } from '@/api/base_data/permission.js'
 export default {
-  components: { ManegeMembers, AddRoles },
+  components: { AddRoles },
   data() {
     return {
       rolesTreeData: [],
@@ -91,7 +87,6 @@ export default {
         name: '',
         phone: ''
       },
-      isManageMemberShow: false,
       isAddRolesShow: false,
       roleTreeLoading: false,
       iStableLoading: false,
@@ -110,10 +105,6 @@ export default {
     ...mapMutations({
       clearRoles: 'CLEAR_PER_ROLES'
     }),
-    // 成员管理组件显隐控制
-    membersBoxCtrl() {
-      this.isManageMemberShow = !this.isManageMemberShow
-    },
     // 添加角色组件显隐控制
     addRolesBoxCtrl() {
       this.isAddRolesShow = !this.isAddRolesShow
@@ -148,7 +139,7 @@ export default {
     searchHandle() {
       const param = {
         name: this.searchFormData.name,
-        phone: this.searchFormData.phone,
+        phone: this.searchFormData.phone
       }
       const data = this.$refs.rolesTree.getCurrentNode()
       this.getRolesPersonFun(data, param)

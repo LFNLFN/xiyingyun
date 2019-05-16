@@ -1,8 +1,54 @@
 //to reset element-ui default css
+
+// 设置form表单非必填行的样式
 .el-form {
   .el-form-item:not(.is-required) {
     .el-form-item__label {
       margin-left: 10px;
+    }
+  }
+}
+
+//  设置树形结构的节点样式
+.el-tree {
+  .el-tree-node {
+    margin: 5px 0;
+    .custom-tree-node {
+      @include flex-layout(space-between, center, null, null);
+      padding: 4px 8px;
+      flex: 1;
+      .tree-edit-btn {
+        padding: 3px;
+      }
+
+      &.is-selected {
+        background: #f5f5f5;
+        border-radius: 8px;
+      }
+    }
+  }
+}
+
+.el-table_base-data-position {
+  .el-table__body {
+    tr {
+      cursor: pointer !important;
+    }
+  }
+  .el-dropdown {
+    margin-left: 10px;
+  }
+  .is-tree {
+    .el-table__expand-icon {
+      margin-right: 10px;
+    }
+  }
+  .isnt-tree {
+    .cell:before {
+      content: '';
+      display: inline-block;
+      width: 14px;
+      margin-right: 10px;
     }
   }
 }

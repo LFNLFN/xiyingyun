@@ -16,17 +16,17 @@
       <el-container class="content-container">
         <el-aside width="no" class="side-tree-wrap">
           <div class="header-title">
-            <span>组织架构</span>
+            <span>供应商</span>
           </div>
           <el-tree
-            ref="organTree"
-            :data="organTreeData"
-            :props="organTreeProp"
+            ref="suppTree"
+            :data="suppTreeData"
+            :props="suppTreeProp"
             :expand-on-click-node="false"
             node-key="id"
             highlight-current
             current-node-key
-            class="organization-tree"/>
+            class="suppliers-tree"/>
         </el-aside>
         <el-main class="main-cont-wrap">
           <div class="header-title">
@@ -75,17 +75,17 @@
 </template>
 <script>
 import PublicPopups from '@/components/Pop-ups/PublicPopups'
-import { gerPersons, addPostMember } from '@/api/base_data/organization'
+import { gerPersons, addPostMember } from '@/api/base_data/suppliers'
 export default {
   components: { PublicPopups },
   props: {
-    organTreeData: {
+    suppTreeData: {
       type: Array,
       default: () => {
         return []
       }
     },
-    organTreeProp: {
+    suppTreeProp: {
       type: Object,
       default: () => {
         return {}
@@ -223,7 +223,7 @@ export default {
     },
     // handleNodeClick(data, node, com) {
     //   this.$nextTick(function() {
-    //     this.$refs.organTree.setCurrentKey(data.id)
+    //     this.$refs.suppTree.setCurrentKey(data.id)
     //   })
     //   this.tableLoading = true
     //   this.gerPersonsFunc(data)
@@ -281,7 +281,7 @@ export default {
     margin-top: 10px;
     border: 1px solid #e6e6e6;
     border-radius: 5px;
-    .organization-tree {
+    .suppliers-tree {
       font-size: 14px;
       // min-width: 200px;
       // height: 350px;
