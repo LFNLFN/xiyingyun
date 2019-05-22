@@ -9,6 +9,7 @@
               action="https://jsonplaceholder.typicode.com/posts/"
               class="avatar-uploader">
               <img :src="imageUrl" class="avatar-img">
+              <i class="el-icon-edit avatar-edit-icon"/>
             </el-upload>
           </template>
         </el-form-item>
@@ -17,11 +18,11 @@
         </el-form-item>
         <el-form-item label="手机号码" prop="phone">
           <el-input v-model="userInfoForm.phone" disabled class="no-border"/>
-          <el-button class="change-info-btn">更改手机号</el-button>
+          <el-button class="change-info-btn" @click="changePhoneBoxCtrl">更改手机号</el-button>
         </el-form-item>
         <el-form-item label="密码" prop="phone">
           <el-input v-model="userInfoForm.phone" type="password" disabled class="no-border" />
-          <el-button class="change-info-btn">更改密码</el-button>
+          <el-button class="change-info-btn" @click="resetPswBoxCtrl">更改密码</el-button>
         </el-form-item>
         <el-form-item label="姓名" prop="name">
           <el-input v-model="userInfoForm.name" placeholder="请输入姓名"/>
@@ -49,11 +50,20 @@
         <el-button type="primary">保存</el-button>
       </div>
     </footer>
+    <resetUserPassword
+      v-show="isResetPswShow"
+      :is-reset-psw-show.sync="isResetPswShow"/>
+    <changePhoneNum
+      v-show="isChangePhoneShow"
+      :is-change-phone-show.sync="isChangePhoneShow" />
   </el-container>
 </template>
 <script>
+import ResetUserPassword from '@/views/user/user_set/components/ResetUserPassword'
+import ChangePhoneNum from '@/views/user/user_set/components/ChangePhoneNum'
 import { getUserInfo } from '@/api/user/userSet'
 export default {
+  components: { ResetUserPassword, ChangePhoneNum },
   data() {
     return {
       userInfoForm: {
@@ -67,7 +77,9 @@ export default {
         }
       },
       imageUrl: this.$store.getters.avatar,
-      isLoading: true
+      isLoading: true,
+      isResetPswShow: false,
+      isChangePhoneShow: false
     }
   },
   created() {
@@ -76,6 +88,14 @@ export default {
       console.log('resp', resp)
       // this.userInfoForm = resp.result
     })
+  },
+  methods: {
+    resetPswBoxCtrl() {
+      this.isResetPswShow = !this.isResetPswShow
+    },
+    changePhoneBoxCtrl() {
+      this.isChangePhoneShow = !this.isChangePhoneShow
+    }
   }
 }
 </script>
@@ -103,8 +123,28 @@ export default {
         border-radius: 65px;
         overflow: hidden;
         border: none;
+        position: relative;
         cursor: pointer;
         @include flex-layout(center, center, null, nowrap);
+        .avatar-edit-icon {
+          display: block;
+          width: 100%;
+          height: 100%;
+          line-height: 130px;
+          position: absolute;
+          top: 0;
+          left: 0;
+          font-size: 30px;
+          color: #fff;
+          background: rgba(0, 0, 0, .3);
+          opacity: 0;
+        }
+        &:hover {
+          .avatar-edit-icon {
+            opacity: 1;
+            transition: opacity 0.5s;
+          }
+        }
         .avatar-img {
           width: 100%;
           height: 100%;

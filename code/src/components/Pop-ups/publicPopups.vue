@@ -81,8 +81,8 @@ export default {
       padding: 0 20px;
     }
     .footer {
-      height: 70px;
-      @include flex-layout(center, center, null, null);
+      min-height: 70px;
+      @include flex-layout(center, center, null, wrap);
       .el-button {
         margin: 0 20px;
       }

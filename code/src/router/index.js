@@ -178,12 +178,12 @@ export const constantRouterMap = [
     redirect: '/user/user_set',
     meta: { title: '我的', icon: '' },
     children: [
-      {
-        path: 'security',
-        name: 'security',
-        meta: { title: '安全设置', icon: '' },
-        component: () => import('@/views/user/security/security')
-      },
+      // {
+      //   path: 'security',
+      //   name: 'security',
+      //   meta: { title: '安全设置', icon: '' },
+      //   component: () => import('@/views/user/security/security')
+      // },
       {
         path: 'user_set',
         name: 'userSet',
