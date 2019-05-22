@@ -1,5 +1,5 @@
 <template>
-  <publicPopups title-text="重置密码" v-on="$listeners" @closePupupsBox="closeBox" @formConfirm="resetHandle">
+  <publicPopups title-text="重置密码" v-on="$listeners" @closePopupsBox="closeBox" @formConfirm="resetHandle">
     <template slot="main-content">
       <el-form ref="passwordForm" :model="passwordForm" :rules="passwordRules">
         <!-- <el-form-item v-if="!isBatch" label="请输入旧密码" prop="oldPassword">
@@ -116,6 +116,7 @@ export default {
       })
       this.$refs['passwordForm'].resetFields()
       this.resetLoading = false
+      this.closeBox()
     },
     closeBox() {
       this.$refs['passwordForm'].resetFields()

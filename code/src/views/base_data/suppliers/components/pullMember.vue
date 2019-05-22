@@ -1,5 +1,5 @@
 <template>
-  <publicPopups v-loading="containerLoading" v-show="true" title-text="添加人员" width="800px" v-on="$listeners" @closePupupsBox="closeHandle" @formConfirm="submitMember">
+  <publicPopups v-loading="containerLoading" v-show="true" title-text="添加人员" width="800px" v-on="$listeners" @closePopupsBox="closeHandle" @formConfirm="submitMember">
     <template slot="main-content">
       <div class="selected-member-warp">
         <div class="title-text">已选择：</div>

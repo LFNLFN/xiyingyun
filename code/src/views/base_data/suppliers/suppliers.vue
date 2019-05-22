@@ -31,15 +31,15 @@
             :data="postTableData"
             :cell-class-name="postTableCellClass"
             row-key="id"
-            class="post-table el-table_base-data-position"
+            class="post-table el-table_tree"
             @row-click="postMemberCtrl">
             <el-table-column prop="name" />
             <el-table-column width="250" align="center">
               <template slot-scope="scope">
-                <el-button size="mini" type="primary" class="post-table-btn" @click.stop="pullMemberCtrl(scope.row)">添加人员</el-button>
-                <el-button size="mini" type="primary" class="post-table-btn" @click.stop="addMemberCtrl(scope.row)">新增人员</el-button>
+                <el-button size="mini" class="post-table-btn no-border" @click.stop="pullMemberCtrl(scope.row)">添加人员</el-button>
+                <el-button size="mini" class="post-table-btn no-border" @click.stop="addMemberCtrl(scope.row)">新增人员</el-button>
                 <el-dropdown size="small" @command="(order)=>handleyDropdown(order, scope.row, 'position')">
-                  <el-button size="mini" type="primary" class="post-table-btn">更多操作</el-button>
+                  <el-button size="mini" class="post-table-btn no-border">更多操作</el-button>
                   <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item command="add">新增子级</el-dropdown-item>
                     <el-dropdown-item command="edit">编辑</el-dropdown-item>

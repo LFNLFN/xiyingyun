@@ -55,26 +55,47 @@ export const constantRouterMap = [
       {
         path: 'project',
         name: 'project',
+        redirect: '/project_config/project/index',
         meta: { title: '项目管理', icon: '' },
-        component: () => import('@/views/project_config/project')
+        component: () => import('@/views/project_config/project/index'),
+        children: [
+          {
+            path: 'index',
+            component: () => import('@/views/project_config/project/project'),
+            name: 'projectIndex',
+            hidden: true
+          },
+          {
+            path: 'projectStage/:projectId',
+            component: () => import('@/views/project_config/project/projectStage'),
+            name: 'ProjectStage',
+            hidden: true
+          },
+          {
+            path: 'stageSection',
+            component: () => import('@/views/project_config/project/stageSection'),
+            name: 'stageSection',
+            hidden: true
+          }
+        ]
       },
       {
         path: 'plan',
         name: 'Plan',
         meta: { title: '平面图管理', icon: '' },
-        component: () => import('@/views/project_config/plan')
+        component: () => import('@/views/project_config/plan/plan')
       },
       {
         path: 'building',
         name: 'Building',
         meta: { title: '楼栋管理', icon: '' },
-        component: () => import('@/views/project_config/building')
+        component: () => import('@/views/project_config/building/building')
       },
       {
         path: 'participant',
         name: 'Participant',
         meta: { title: '参建方管理', icon: '' },
-        component: () => import('@/views/project_config/participant')
+        component: () => import('@/views/project_config/participant/participant')
       }
     ]
   },
@@ -161,33 +182,13 @@ export const constantRouterMap = [
         path: 'security',
         name: 'security',
         meta: { title: '安全设置', icon: '' },
-        component: () => import('@/views/user/security')
-        // children: [
-        //   {
-        //     path: 'index',
-        //     name: 'index',
-        //     hidden: true,
-        //     component: () => import('@/views/user/security/index')
-        //   },
-        //   {
-        //     path: 'phone_num',
-        //     name: 'poneNum',
-        //     component: () => import('@/views/user/security/phone_num'),
-        //     meta: { title: '更换手机号码', icon: '' }
-        //   },
-        //   {
-        //     path: 'password',
-        //     name: 'password',
-        //     component: () => import('@/views/user/security/password'),
-        //     meta: { title: '更改密码', icon: '' }
-        //   }
-        // ]
+        component: () => import('@/views/user/security/security')
       },
       {
         path: 'user_set',
         name: 'userSet',
         meta: { title: '个人设置', icon: '' },
-        component: () => import('@/views/user/user_set')
+        component: () => import('@/views/user/user_set/user_set')
       },
       {
         path: 'my_company',

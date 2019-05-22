@@ -19,7 +19,7 @@
     <el-main class="accounts-main">
       <div class="header">
         <span class="el-icon-tickets">数据列表</span>
-        <el-button type="primary" size="small" icon="el-icon-circle-plus-outline" class="account-add-btn" @click.native="addAccountBoxShow">新增</el-button>
+        <el-button type="primary" size="small" icon="el-icon-circle-plus-outline" class="account-add-btn" @click.native="addAccountBoxCtrl('add')">新增</el-button>
       </div>
       <el-table
         v-loading="isLoading"
@@ -37,7 +37,7 @@
         <!-- <el-table-column prop="expireTime" label="失效时间" align="center" /> -->
         <el-table-column width="220" label="操作" align="center">
           <template slot-scope="scope">
-            <el-button size="mini" type="primary" class="account-table-btn" @click="editAccount">编辑</el-button>
+            <el-button size="mini" type="primary" class="account-table-btn" @click="addAccountBoxCtrl('edit', scope.row)">编辑</el-button>
             <el-button size="mini" type="primary" class="account-table-btn" @click="passwordBoxShow(scope.row)">重置密码</el-button>
             <!-- status === 1 正常用户 -->
             <el-button v-if="scope.row.status===1" size="mini" type="primary" class="account-table-btn" @click="accountOperate(scope.row)">禁用</el-button>
@@ -64,8 +64,17 @@
         layout="prev, pager, next, jumper"
         @current-change="pageChangeHandle"/>
     </el-footer>
-    <AddAccountBox v-show="showStarffBox" @closeAddAccountBox="addAccountBoxShow" />
-    <ResetPassword v-show="showPasswordBox" :is-batch="isBatchResetPassword" :user-data="resetPasswordAccs" @closePasswordBox="passwordBoxHidden"/>
+    <AddAccountBox
+      v-show="showStarffBox"
+      :edit-account-data="editAccountData"
+      :event-type="eventType"
+      :show-starff-box="showStarffBox"
+      @accSubmitHandle="accSubmitHandle"/>
+    <ResetPassword
+      v-show="showPasswordBox"
+      :is-batch="isBatchResetPassword"
+      :user-data="resetPasswordAccs"
+      @closePasswordBox="passwordBoxHidden"/>
   </el-container>
 </template>
 <script>
@@ -84,13 +93,15 @@ export default{
       accountTableData: [],
       batchOperateValue: '',
       allCheckdeValue: false,
-      multipleSelectedAcc: [],
+      multipleSelectedAcc: [], // 保存已选择的账号
       showStarffBox: false,
       showPasswordBox: false,
       isBatchResetPassword: false,
-      resetPasswordAccs: [],
+      resetPasswordAccs: [], // 保存需要重置密码的账号
       pageTotal: 0,
-      isLoading: true
+      isLoading: true,
+      editAccountData: {}, // 保存要编辑的账号数据
+      eventType: 'add'
     }
   },
   created() {
@@ -104,15 +115,17 @@ export default{
       }
     },
     // 控制添加用户组件显隐
-    addAccountBoxShow(addCount) {
-      this.showStarffBox = !this.showStarffBox
-      if (typeof addCount === 'number' && addCount > 0) {
+    addAccountBoxCtrl(type, data) {
+      this.showStarffBox = true
+      this.eventType = type
+      if (data) this.editAccountData = data
+    },
+    // 更改、新增用户后处理
+    accSubmitHandle(addCount) {
+      this.showStarffBox = false
+      if (addCount) {
         this.getUsersFunc()
       }
-    },
-    // 编辑用户
-    editAccount(evt) {
-      console.log('event', evt)
     },
     // 重置密码组件显隐
     passwordBoxShow(row) {

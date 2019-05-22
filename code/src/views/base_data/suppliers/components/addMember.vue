@@ -1,5 +1,5 @@
 <template>
-  <publicPopups title-text="新增人员" width="600px" v-on="$listeners" @closePupupsBox="closeHandle" @formConfirm="addAccountSubmit">
+  <publicPopups title-text="新增人员" width="600px" v-on="$listeners" @closePopupsBox="closeHandle" @formConfirm="addAccountSubmit">
     <template v-loading="addMemberLoading" slot="main-content">
       <el-form ref="addMemberForm" :model="addMemberForm" :rules="addMemberRules" class="add-member-from">
         <el-form-item label="姓名" prop="name">
@@ -105,6 +105,7 @@ export default {
           }
           this.addMemberLoading = true
           const params = {
+            isManager: 0,
             name: this.addMemberForm.name,
             phone: this.addMemberForm.phone,
             email: this.addMemberForm.eail || '',

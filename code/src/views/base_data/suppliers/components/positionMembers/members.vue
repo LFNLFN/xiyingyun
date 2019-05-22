@@ -17,6 +17,17 @@
       <el-table-column prop="name" width="100" label="姓名" align="center" />
       <el-table-column prop="phone" label="联系方式" align="center" />
       <el-table-column :formatter="tableFormatter" width="180" label="所属部门" align="center" />
+      <el-table-column width="180" label="是否是项目经理" align="center">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.isManager"
+            :active-value="1"
+            :inactive-value="0"
+            active-color="#13ce66"
+            inactive-color="#adadad"
+            @change="managerChangeHandle(scope.row)"/>
+        </template>
+      </el-table-column>
       <el-table-column width="80" align="center">
         <template slot-scope="scope">
           <el-button size="mini" @click="deleteMember(scope.row)">移除</el-button>
@@ -26,7 +37,7 @@
   </div>
 </template>
 <script>
-import { gerPersonsByPost, delPostMember } from '@/api/base_data/suppliers'
+import { gerPersonsByPost, delPostMember, editPersonInfo } from '@/api/base_data/suppliers'
 export default {
   name: 'Members',
   props: {
@@ -60,6 +71,34 @@ export default {
       gerPersonsByPost(id).then(resp => {
         this.isLoading = false
         this.membersData = resp.result
+      })
+    },
+    managerChangeHandle(row) {
+      console.log('row before', row)
+      let text = ''
+      if (row.isManager) {
+        text = `确定升级 ${row.name} 为项目经理？`
+      } else {
+        text = `确定取消 ${row.name} 的项目经理职位？`
+      }
+      this.$confirm(text, {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(bool => {
+        this.isLoading = true
+        editPersonInfo(row).then(resp => {
+          this.$message({
+            type: 'success',
+            message: '修改成功'
+          })
+          this.isLoading = false
+        }).catch(() => {
+          row.isManager = Number(Boolean(!row.isManager))
+          this.isLoading = false
+        })
+      }).catch(() => {
+        row.isManager = Number(Boolean(!row.isManager))
       })
     },
     // 移除成员

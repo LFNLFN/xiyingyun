@@ -1,5 +1,18 @@
 //to reset element-ui default css
 
+// 无边框按钮
+.el-button.no-border {
+  border: none;
+  background-color: transparent;
+  &:hover {
+    border-color: transparent;
+    background-color: transparent;
+  }
+  &:active {
+    border-color: transparent;
+  }
+}
+
 // 设置form表单非必填行的样式
 .el-form {
   .el-form-item:not(.is-required) {
@@ -29,7 +42,7 @@
   }
 }
 
-.el-table_base-data-position {
+.el-table_tree {
   .el-table__body {
     tr {
       cursor: pointer !important;

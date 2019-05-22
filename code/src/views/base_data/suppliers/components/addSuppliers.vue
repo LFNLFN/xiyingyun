@@ -1,5 +1,5 @@
 <template>
-  <publicPopups :title-text="titleText" width="600px" v-on="$listeners" @formConfirm="submitForm" @closePupupsBox="closeHandle">
+  <publicPopups :title-text="titleText" width="600px" v-on="$listeners" @formConfirm="submitForm" @closePopupsBox="closeHandle">
     <template v-loading="isLoading" slot="main-content">
       <el-form ref="addSuppForm" :model="addSuppForm" :rules="suppFormRules" class="add-supp-from">
         <el-form-item label="机构编码" prop="code">

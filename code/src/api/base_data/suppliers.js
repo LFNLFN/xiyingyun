@@ -134,3 +134,13 @@ export function gerPersonsByPost(id) {
     method: 'get'
   })
 }
+
+// 修改人员信息
+export function editPersonInfo(datas) {
+  const _url = `/person/${datas.id}`
+  return request({
+    url: _url,
+    method: 'put',
+    data: JSON.stringify(datas)
+  })
+}

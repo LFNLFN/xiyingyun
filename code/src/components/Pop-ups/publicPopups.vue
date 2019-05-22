@@ -11,8 +11,8 @@
       </main>
       <footer class="footer">
         <slot name="footer-content">
-          <el-button @click="emitClosePop">取消</el-button>
-          <el-button type="primary" @click="emitConfirm">确定</el-button>
+          <el-button size="small" @click="emitClosePop">取消</el-button>
+          <el-button type="primary" size="small" @click="emitConfirm">确定</el-button>
         </slot>
       </footer>
     </div>
@@ -38,7 +38,7 @@ export default {
   },
   methods: {
     emitClosePop() {
-      this.$emit('closePupupsBox')
+      this.$emit('closePopupsBox')
     },
     emitConfirm() {
       this.$emit('formConfirm')

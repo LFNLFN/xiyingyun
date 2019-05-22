@@ -31,15 +31,15 @@
             :data="postTableData"
             :cell-class-name="postTableCellClass"
             row-key="id"
-            class="post-table el-table_base-data-position"
+            class="post-table el-table_tree"
             @row-click="postMemberCtrl">
             <el-table-column prop="name" />
             <el-table-column width="250" align="center">
               <template slot-scope="scope">
-                <el-button size="mini" type="primary" class="post-table-btn" @click.stop="pullMemberCtrl(scope.row)">添加人员</el-button>
-                <el-button size="mini" type="primary" class="post-table-btn" @click.stop="addMemberCtrl(scope.row)">新增人员</el-button>
+                <el-button size="mini" class="post-table-btn no-border" @click.stop="pullMemberCtrl(scope.row)">添加人员</el-button>
+                <el-button size="mini" class="post-table-btn no-border" @click.stop="addMemberCtrl(scope.row)">新增人员</el-button>
                 <el-dropdown size="small" @command="(order)=>handleyDropdown(order, scope.row, 'position')">
-                  <el-button size="mini" type="primary" class="post-table-btn">更多操作</el-button>
+                  <el-button size="mini" class="post-table-btn no-border">更多操作</el-button>
                   <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item command="add">新增子级</el-dropdown-item>
                     <el-dropdown-item command="edit">编辑</el-dropdown-item>
@@ -86,12 +86,14 @@
   </el-container>
 </template>
 <script>
+import { mapActions, mapMutations } from 'vuex'
 import AddOrganization from '@/views/base_data/organization/components/addOrganization'
 import AddPosition from '@/views/base_data/organization/components/addPosition'
 import AddMember from '@/views/base_data/organization/components/AddMember'
 import PullMember from '@/views/base_data/organization/components/PullMember'
 import PositionMembers from '@/views/base_data/organization/components/PositionMembers'
-import { getOrganization, delOrganization, getOrgType } from '@/api/base_data/organization'
+// import { getOrganization, delOrganization, getOrgType } from '@/api/base_data/organization'
+import { delOrganization, getOrgType } from '@/api/base_data/organization'
 import { getPosition, delPosition } from '@/api/base_data/organization'
 import { emptyTarget } from '@/utils/public.js'
 export default {
@@ -135,6 +137,12 @@ export default {
     this.getOrgTypeFunc()
   },
   methods: {
+    ...mapActions({
+      getOrganization: 'getOrganizationData'
+    }),
+    ...mapMutations({
+      clearOrgan: 'CLEAR_ORGANIZATION'
+    }),
     // 设置岗位信息表格单元格的classname
     postTableCellClass(data) {
       if (!data.row.children && data.columnIndex === 0) {
@@ -146,9 +154,8 @@ export default {
     // 获取组织架构树
     getOrganTree() {
       this.organTreeLoading = true
-      getOrganization().then(resp => {
-        const treeList = resp.result
-        this.organTreeData = treeList.filter(tree => tree.type === 0)
+      this.getOrganization().then(resp => {
+        this.organTreeData = resp
         this.handleNodeClick(this.organTreeData[0])
         this.organTreeLoading = false
       }).catch(() => {
@@ -261,6 +268,7 @@ export default {
               type: 'success',
               duration: 3 * 1000
             })
+            this.clearOrgan()
             this.getOrganTree()
           })
         } else if (type === 'position') {
@@ -290,6 +298,7 @@ export default {
       this.pullMemberPostData = {}
       if (submit) {
         if (boxType === 'organization') {
+          this.clearOrgan()
           this.getOrganTree()
         } else if (boxType === 'position') {
           this.getPositionFunc(this.$refs.organTree.getCurrentNode())

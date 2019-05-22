@@ -10,11 +10,21 @@ export function getUsers(paramObj) {
 }
 
 // 增加账号
-export function addAccount(paramObj) {
+export function addAccount(datas) {
   return request({
-    url: '/person',
+    url: '/person/custom/detail',
     method: 'post',
-    data: JSON.stringify(paramObj)
+    data: JSON.stringify(datas)
+  })
+}
+
+// 修改账号信息
+export function editAccountInfo(datas) {
+  const _url = `/person/${datas.id}`
+  return request({
+    url: _url,
+    method: 'put',
+    data: JSON.stringify(datas)
   })
 }
 

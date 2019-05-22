@@ -1,11 +1,11 @@
-import { login, logout, getInfo } from '@/api/login'
+import { login, logout, getUserInfo } from '@/api/login'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 
 const user = {
   state: {
     token: getToken(),
     name: '',
-    avatar: '@/assets/navbar_images/message.png',
+    avatar: require('@/assets/user_images/avatar.png'),
     roles: []
   },
 
@@ -17,7 +17,9 @@ const user = {
       state.name = name
     },
     SET_AVATAR: (state, avatar) => {
-      state.avatar = avatar
+      if (avatar) {
+        state.avatar = avatar
+      }
     },
     SET_ROLES: (state, roles) => {
       state.roles = roles
@@ -43,14 +45,14 @@ const user = {
     // 获取用户信息
     GetInfo({ commit, state }) {
       return new Promise((resolve, reject) => {
-        getInfo(state.token).then(response => {
+        getUserInfo().then(response => {
           const data = response.result
           if (data.roles && data.roles.length > 0) { // 验证返回的roles是否是一个非空数组
             commit('SET_ROLES', data.roles)
           } else {
             reject('getInfo: roles must be a non-null array !')
           }
-          commit('SET_NAME', data.user.name)
+          commit('SET_NAME', data.name)
           commit('SET_AVATAR', data.avatar)
           resolve(response)
         }).catch(error => {

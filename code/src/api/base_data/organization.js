@@ -111,7 +111,7 @@ export function addPostMember(id, datas) {
 // 新增人员
 export function addPerson(datas) {
   return request({
-    url: '/person/detail',
+    url: '/person/custom/detail',
     method: 'post',
     data: JSON.stringify(datas)
   })

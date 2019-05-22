@@ -22,7 +22,7 @@ router.beforeEach((to, from, next) => {
           next()
         }).catch((err) => {
           store.dispatch('FedLogOut').then(() => {
-            Message.error(err || 'Verification failed, please login again')
+            Message.error(err || '登录失败，请检查网络或重试')
             next({ path: '/' })
           })
         })

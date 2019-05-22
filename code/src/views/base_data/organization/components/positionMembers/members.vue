@@ -19,7 +19,7 @@
       <el-table-column :formatter="tableFormatter" width="180" label="所属部门" align="center" />
       <el-table-column width="80" align="center">
         <template slot-scope="scope">
-          <el-button @click="deleteMember(scope.row)">移除</el-button>
+          <el-button class="no-border" @click="deleteMember(scope.row)">移除</el-button>
         </template>
       </el-table-column>
     </el-table>

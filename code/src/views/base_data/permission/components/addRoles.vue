@@ -1,5 +1,5 @@
 <template>
-  <publicPopups :title-text="titleText" width="600px" v-on="$listeners" @formConfirm="submitForm" @closePupupsBox="submittedHandle">
+  <publicPopups :title-text="titleText" width="600px" v-on="$listeners" @formConfirm="submitForm" @closePopupsBox="submittedHandle">
     <template v-loading="isLoading" slot="main-content">
       <el-form ref="addRolesForm" :model="addRolesForm" :rules="rolesFormRules" class="add-roles-from">
         <el-form-item label="角色名称" prop="name">

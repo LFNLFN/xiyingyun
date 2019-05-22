@@ -1,5 +1,5 @@
 <template>
-  <publicPopups v-loading="isLoading" :title-text="titleText" width="600px" v-on="$listeners" @formConfirm="submitForm" @closePupupsBox="closeHandle">
+  <publicPopups v-loading="isLoading" :title-text="titleText" width="600px" v-on="$listeners" @formConfirm="submitForm" @closePopupsBox="closeHandle">
     <template slot="main-content">
       <el-form ref="addPostForm" :model="addPostForm" :rules="addPostFormRules" class="add-post-from">
         <el-form-item label="岗位名称" prop="name">

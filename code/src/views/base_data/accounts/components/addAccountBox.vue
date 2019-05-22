@@ -1,5 +1,5 @@
 <template>
-  <publicPopups title-text="重置密码" v-on="$listeners" @closePupupsBox="closeBox" @formConfirm="addAccountSubmit">
+  <publicPopups title-text="重置密码" v-on="$listeners" @closePopupsBox="closeBox" @formConfirm="addAccountSubmit">
     <template slot="main-content">
       <el-form ref="addAccountForm" :model="addAccountForm" :rules="addAccountRules" class="add-account-from">
         <el-form-item label="姓名" prop="name">
@@ -8,11 +8,18 @@
         <el-form-item label="手机" prop="phone">
           <el-input v-model.number="addAccountForm.phone" />
         </el-form-item>
-        <!-- <el-form-item label="账号" prop="username">
-          <el-input v-model="addAccountForm.username" />
-        </el-form-item> -->
         <el-form-item label="邮箱" prop="email">
           <el-input v-model="addAccountForm.email" />
+        </el-form-item>
+        <el-form-item label="角色" prop="roles">
+          <template>
+            <el-select v-model="roleSelecteList" multiple placeholder="请选择">
+              <el-option
+                v-for="(item, idx) in permissionRoles"
+                :key="idx"
+                :value="item.name"/>
+            </el-select>
+          </template>
         </el-form-item>
         <!-- <el-form-item label="特殊资源">
           <el-radio-group v-model="expireDateRadio" prop="expireDateRadio">
@@ -38,10 +45,27 @@
 <script>
 import PublicPopups from '@/components/Pop-ups/PublicPopups'
 import { isvalidUsername, isvalidPhoneNum } from '@/utils/validate'
-import { addAccount } from '@/api/base_data/accounts'
+import { addAccount, editAccountInfo } from '@/api/base_data/accounts'
+import { mapActions } from 'vuex'
 
 export default {
   components: { PublicPopups },
+  props: {
+    showStarffBox: {
+      type: Boolean,
+      default: false
+    },
+    editAccountData: {
+      type: Object,
+      default: () => {
+        return {}
+      }
+    },
+    eventType: {
+      type: String,
+      default: ''
+    }
+  },
   data() {
     // const validateExpireTime = (rule, value, callback) => {
     //   if (this.expireDateRadio === 'expire' && value.length === 0) {
@@ -54,24 +78,45 @@ export default {
       addAccountForm: {
         name: '',
         phone: '',
-        // username: '',
-        email: ''
+        email: '',
         // expireTime: '',
-        // password: ''
+        roles: []
       },
       addAccountRules: {
         name: [{ required: true, trigger: 'blur', validator: isvalidUsername }],
         phone: [{ required: true, trigger: 'blur', validator: isvalidPhoneNum }]
-        // expireTime: [{ required: true, trigger: 'change', validator: validateExpireTime }]
       },
       // expireDateRadio: '',
-      datePickerDisable: false,
+      // datePickerDisable: false,
+      rolesIdList: [], // 保存选择的角色数据的ID
+      roleSelecteList: [], // 保存选择的角色数据
+      permissionRoles: [], // 保存获取到的角色数据
       addAccountLoading: false,
-      addAccountCount: 0,
-      token: this.$store.getters.token
+      isAddAccount: false
     }
   },
   watch: {
+    // 监测角色选择
+    roleSelecteList: function(newVal) {
+      const roles = this.addAccountForm.roles
+      roles.splice(0, roles.length)
+      this.permissionRoles.forEach(role => {
+        if (newVal.find(s => s === role.name)) {
+          roles.push(role.id)
+        }
+      })
+    },
+    showStarffBox: function(newVal) {
+      if (newVal) {
+        if (this.eventType === 'edit') {
+          const _keys = Object.keys(this.addAccountForm)
+          _keys.forEach(key => {
+            this.addAccountForm[key] = this.editAccountData[key]
+          })
+          console.log('this.addAccountForm', this.addAccountForm)
+        }
+      }
+    }
     // // 监测有效时间单选框
     // expireDateRadio(newVal) {
     //   if (newVal === 'permanent') {
@@ -84,25 +129,36 @@ export default {
     //   }
     // }
   },
+  created() {
+    this.getPerRoles().then(resp => {
+      this.permissionRoles = resp
+    })
+  },
   methods: {
-    closeBox() {
-      this.$emit('closeAddAccountBox', this.addAccountCount)
-      this.addAccountCount = 0
-    },
+    ...mapActions([
+      'getPerRoles'
+    ]),
     // 发送添加员工请求
     addAccountSubmit() {
       this.$refs.addAccountForm.validate(vaild => {
         if (vaild) {
+          let _method, msg
           this.addAccountLoading = true
-          this.addAccountForm.password = this.addAccountForm.phone
-          addAccount(this.addAccountForm).then(respon => {
+          if (this.eventType === 'add') {
+            _method = addAccount(this.addAccountForm)
+            msg = '新增成功'
+          } else if (this.eventType === 'edit') {
+            _method = editAccountInfo(this.addAccountForm)
+            msg = '编辑成功'
+          }
+          _method.then(respon => {
             this.addAccountLoading = false
-            this.addAccountCount += 1
+            this.isAddAccount = true
             // 重置表单
-            this.resetForm('addAccountForm')
+            this.closeBox()
             this.$message({
               showClose: true,
-              message: '新增成功',
+              message: msg,
               type: 'success',
               duration: 3 * 1000
             })
@@ -112,10 +168,12 @@ export default {
         }
       })
     },
-    // 重置表单
-    resetForm(formName) {
-      this.$refs[formName].resetFields()
-      // this.expireDateRadio = ''
+    // 重置数据，关闭窗口
+    closeBox() {
+      this.$emit('accSubmitHandle', this.isAddAccount)
+      this.$refs.addAccountForm.resetFields()
+      this.roleSelecteList = []
+      this.isAddAccount = false
     }
   }
 }
@@ -129,7 +187,7 @@ export default {
     width: 80%;
     margin: 20px auto;
   }
-  .el-input {
+  .el-input, .el-select {
     width: 80%;
     margin-left: 10px;
   }

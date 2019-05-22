@@ -1,4 +1,6 @@
 import { getRoles } from '@/api/base_data/permission.js'
+import { getOrganization } from '@/api/base_data/organization.js'
+// import { Message } from 'element-ui'
 
 const baseData = {
   state: {
@@ -19,7 +21,8 @@ const baseData = {
         name: 'Measured'
       }
     ],
-    permissionRoles: []
+    permissionRoles: [],
+    organizationData: []
   },
   mutations: {
     SET_PER_ROLES: (state, roles) => {
@@ -27,6 +30,12 @@ const baseData = {
     },
     CLEAR_PER_ROLES: (state) => {
       state.permissionRoles.splice(0, state.permissionRoles.length)
+    },
+    SET_ORGANIZATION: (state, tree) => {
+      state.organizationData = tree
+    },
+    CLEAR_ORGANIZATION: (state) => {
+      state.organizationData.splice(0, state.organizationData.length)
     }
   },
   actions: {
@@ -38,9 +47,27 @@ const baseData = {
             const data = resp.result.data
             commit('SET_PER_ROLES', data)
             resolve(data)
+          }).catch(() => {
+            reject()
           })
         } else {
           resolve(state.permissionRoles)
+        }
+      })
+    },
+    // 获取组织架构数据
+    getOrganizationData({ commit, state }) {
+      return new Promise((resolve, reject) => {
+        if (state.organizationData.length === 0) {
+          getOrganization().then(resp => {
+            const data = resp.result.filter(tree => tree.type === 0)
+            commit('SET_ORGANIZATION', data)
+            resolve(data)
+          }).catch(err => {
+            reject(err)
+          })
+        } else {
+          resolve(state.organizationData)
         }
       })
     }
