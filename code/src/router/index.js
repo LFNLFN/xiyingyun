@@ -66,7 +66,7 @@ export const constantRouterMap = [
             hidden: true
           },
           {
-            path: 'projectStage/:projectId',
+            path: 'projectStage',
             component: () => import('@/views/project_config/project/projectStage'),
             name: 'ProjectStage',
             hidden: true

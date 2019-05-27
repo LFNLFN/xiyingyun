@@ -43,13 +43,15 @@
 }
 
 .el-table_tree {
-  .el-table__body {
-    tr {
-      cursor: pointer !important;
+  .el-table__expand-icon {
+    .el-icon {
+      width: 25px;
+      height: 25px;
+      text-align: center;
+      line-height: 25px;
+      margin-top: -13px;
+      margin-left: -10px;
     }
-  }
-  .el-dropdown {
-    margin-left: 10px;
   }
   .is-tree {
     .el-table__expand-icon {

@@ -2,7 +2,8 @@
   <div :style="{'width': width + 'px'}" class="select-tree">
     <el-popover
       :width="width"
-      class="select-tree_wrap">
+      class="select-tree_wrap"
+      @hide="popoverHideHandle">
       <el-tree
         ref="tree"
         :data="treeData"
@@ -13,7 +14,7 @@
       <el-input
         slot="reference"
         :value="value"
-        :class="{'active': inputActive}"
+        :class="{'active': inputActive, 'nomal': !inputActive}"
         readonly="readonly"
         class="select-tree_input"
         @click.native="iptClickHandle"/>
@@ -25,7 +26,11 @@ export default {
   props: {
     width: {
       type: String,
-      default: '200px'
+      default: '200'
+    },
+    prop: {
+      type: String,
+      default: '200'
     },
     treeData: {
       type: Array,
@@ -46,19 +51,22 @@ export default {
   },
   data() {
     return {
-      organizationData: [], // 保存所有公司信息
-      organTreeProp: {
-        label: 'name',
-        children: 'children'
-      },
       inputActive: false,
       selectVal: ''
     }
   },
   methods: {
+    // // 计算树形空间宽度
+    // treeWidth(str) {
+    //   const width = Number(/^\d*/g.test(str))
+    //   console.log('width', width)
+    //   return strreplace(/^\d*/g, width - 24)
+    // },
     nodeClickHandle(data, node, com) {
-      // this.value = data.name
-      this.$emit('input', data.name)
+      this.$emit('input', data[this.prop])
+    },
+    popoverHideHandle() {
+      this.inputActive = false
     },
     iptClickHandle() {
       this.inputActive = !this.inputActive
@@ -69,6 +77,9 @@ export default {
 <style ref="styleshheet/scss" lang="scss" scoped>
 .select-tree {
   .select-tree_wrap {
+    .select-tree_tree {
+      width: 100%;
+    }
     .select-tree_input {
       &/deep/ input {
         cursor: pointer;
@@ -85,6 +96,13 @@ export default {
         border-left: 8px solid #ccc;
         border-right: 8px solid transparent;
       }
+      &.nomal {
+        // &:after {
+        //   right: 0px;
+        //   transform: rotate(0);
+        //   transition: transform 0.5s;
+        // }
+      }
       &.active {
         &:after {
           right: 5px;
@@ -94,8 +112,5 @@ export default {
       }
     }
   }
-}
-.el-popover {
-  width: 300px;
 }
 </style>

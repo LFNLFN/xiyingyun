@@ -37,7 +37,9 @@ export default {
   margin-right: 15px;
 
   .user-info-warp {
-    height: 100%;
+    width: 36px;
+    height: 36px;
+    margin-top: 7px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -49,8 +51,8 @@ export default {
     }
 
     .user-img {
-      width: 40px;
-      height: 40px;
+      width: 100%;
+      height: 100%;
       border-radius: 10px;
       margin-right: 5px;
     }

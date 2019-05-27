@@ -15,15 +15,14 @@
 .message-container  {
   cursor: pointer;
   height: 50px;
+  margin-right: 7px;
   .message-logo-wrap {
-    height: 50px;
-    width: 50px;
-
+    height: 36px;
+    width: 36px;
+    margin-top: 7px;
     .message-logo {
-      width: 70%;
-      height: 70%;
-      margin-top: 15%;
-      margin-left: 15%;
+      width: 100%;
+      height: 100%;
     }
   }
 }

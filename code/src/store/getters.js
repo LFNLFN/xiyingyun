@@ -9,10 +9,19 @@ const getters = {
   permissionRoles: state => state.baseData.permissionRoles,
   projectList: state => {
     let _list
-    try {
+    if (localStorage.projectList) {
       _list = JSON.parse(localStorage.projectList)
-    } catch (e) {
+    } else {
       _list = state.projectConfig.projectList
+    }
+    return _list
+  },
+  projectDetails: state => {
+    let _list
+    try {
+      _list = JSON.parse(localStorage.projectDetails)
+    } catch (e) {
+      _list = state.projectConfig.projectDetails
       console.log('set localStorage error: ', e)
     }
     return _list

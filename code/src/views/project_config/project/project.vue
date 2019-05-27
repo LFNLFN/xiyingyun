@@ -8,13 +8,13 @@
         <el-form-item prop="projectName" label="项目名称">
           <el-input v-model="searchForm.projectName" type="text" auto-complete="off" placeholder="请输入项目名称" />
         </el-form-item>
-        <el-button type="primary" size="small" class="search-btn" click="searchProjectHandle">查询</el-button>
+        <el-button type="primary" size="small" class="search-btn" @click="searchProjectHandle">查询</el-button>
       </el-form>
     </el-header>
     <el-main class="main-wrap">
       <div class="header">
         <span class="el-icon-tickets">数据列表</span>
-        <el-button type="primary" size="mini" icon="el-icon-circle-plus-outline" class="account-add-btn" @click="projectCtrl('add')">新增</el-button>
+        <el-button type="primary" size="mini" icon="el-icon-circle-plus-outline" class="account-add-btn" @click="projectOperaHandle('addProject')">新增</el-button>
       </div>
       <el-table
         v-loading="projectTableLoading"
@@ -22,21 +22,45 @@
         :data="projectTableData"
         :cell-style="tableCellStyleFcun"
         :header-cell-style="tableCellStyleFcun"
+        :cell-class-name="tableCellClass"
+        :indent="4"
         row-key="id"
         class="project-table el-table_tree">
         <el-table-column prop="name" label="项目名称" align="left" />
         <el-table-column prop="companyName" width="120" label="状态" align="center" />
-        <el-table-column width="220" label="操作" align="center">
+        <el-table-column width="200" label="操作" align="center">
           <template slot-scope="scope">
-            <el-button size="mini" class="no-border" @click="projectCtrl('edit', scope.row)">编辑</el-button>
-            <el-dropdown size="small" @command="(order)=>projectOperaHandle(order, scope.row)">
-              <el-button size="mini" class="no-border">更多操作</el-button>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item command="addStage">新增分期</el-dropdown-item>
-                <el-dropdown-item command="edit">设置运营图</el-dropdown-item>
-                <el-dropdown-item command="delete">删除</el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
+            <template v-if="scope.row.type === 0">
+              <el-button size="mini" class="no-border" @click="projectOperaHandle('editProject', scope.row)">编辑</el-button>
+              <el-dropdown size="small" @command="(order)=>projectOperaHandle(order, scope.row)">
+                <el-button size="mini" class="no-border">更多操作</el-button>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item command="addStage">新增分期</el-dropdown-item>
+                  <el-dropdown-item command="setMap">设置运营图</el-dropdown-item>
+                  <el-dropdown-item command="delete">删除</el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+            </template>
+            <template v-else-if="scope.row.type === 1">
+              <el-button size="mini" class="no-border" @click="projectOperaHandle('editStage', scope.row)">编辑</el-button>
+              <el-dropdown size="small" @command="(order)=>projectOperaHandle(order, scope.row)">
+                <el-button size="mini" class="no-border">更多操作</el-button>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item command="addSection">新增标段</el-dropdown-item>
+                  <el-dropdown-item command="delete">删除</el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+            </template>
+            <template v-else-if="scope.row.type === 2">
+              <el-button size="mini" class="no-border" @click="projectOperaHandle('editSection', scope.row)">编辑</el-button>
+              <el-dropdown size="small" @command="(order)=>projectOperaHandle(order, scope.row)">
+                <el-button size="mini" class="no-border">更多操作</el-button>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item command="setContract">分包设置</el-dropdown-item>
+                  <el-dropdown-item command="delete">删除</el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+            </template>
           </template>
         </el-table-column>
       </el-table>
@@ -57,14 +81,14 @@
     <addProject
       v-show="isAddProjectShow"
       :edit-project-data="editProjectData"
-      :event-type="eventType"
+      :event-type.sync="eventType"
       :is-add-project-show.sync="isAddProjectShow"
       @projectOperaedHandle="projectOperaedHandle"/>
   </el-container>
 </template>
 <script>
 import AddProject from '@/views/project_config/project/components/addProject'
-import { getProject, delProject } from '@/api/project_config/project'
+import { getProject, getProjectTree, getProjectDetail, delProject } from '@/api/project_config/project'
 import { mapMutations } from 'vuex'
 export default {
   components: { AddProject },
@@ -82,11 +106,13 @@ export default {
     }
   },
   created() {
-    this.getProjectFunc()
+    this.getProjectTreeFunc()
+    this.getProjectDetailFunc()
   },
   methods: {
     ...mapMutations({
-      saveProjectList: 'SET_PROJECT_LIST'
+      saveProjectList: 'SET_PROJECT_LIST',
+      saveProjectDetails: 'SET_PROJECT_DETAILS'
     }),
     // 表格样式操作
     tableCellStyleFcun({ row, column, rowIndex, columnIndex }) {
@@ -94,11 +120,19 @@ export default {
         return 'padding: 10px 20px;'
       }
     },
+    // 表格样式操作
+    tableCellClass(data) {
+      if (!data.row.children && data.columnIndex === 0) {
+        return 'isnt-tree'
+      } else if (data.row.children) {
+        return 'is-tree'
+      }
+    },
     // 加载项目列表
-    getProjectFunc(params = {}) {
+    getProjectTreeFunc() {
       this.projectTableLoading = true
-      getProject(params).then(resp => {
-        const list = resp.result.data
+      getProjectTree().then(resp => {
+        const list = resp.result
         this.projectTableLoading = false
         this.projectTableData = list
         this.saveProjectList(list)
@@ -106,20 +140,91 @@ export default {
         this.projectTableLoading = false
       })
     },
-    // 查询项目处理
-    searchProjectHandle() {
-      const params = {
-        'items[0].column': 'name',
-        'items[0].value': this.searchForm.projectName
-      }
-      this.getProjectFunc(params)
+    // 加载项目详情树
+    getProjectDetailFunc() {
+      getProjectDetail().then(resp => {
+        this.saveProjectDetails(resp.result)
+      })
     },
-    // 添加、编辑项目处理
-    projectCtrl(order, data) {
-      this.isAddProjectShow = !this.isAddProjectShow
-      if (order === 'edit') {
-        this.editProjectData = data
-        this.eventType = 'edit'
+    // 按条件查询项目处理
+    searchProjectHandle() {
+      this.projectTableLoading = true
+      const params = {
+        'terms[0].column': 'name',
+        'terms[0].value': this.searchForm.projectName
+      }
+      getProject(params).then(resp => {
+        const list = resp.result.data
+        this.projectTableLoading = false
+        this.projectTableData = list
+      }).catch(() => {
+        this.projectTableLoading = false
+      })
+    },
+    // // 添加、编辑项目处理
+    // projectCtrl(order, data) {
+    //   this.isAddProjectShow = !this.isAddProjectShow
+    //   if (order === 'edit') {
+    //     this.editProjectData = data
+    //     this.eventType = 'edit'
+    //   }
+    // },
+    // 项目操作完成后要执行的操作
+    projectOperaedHandle(order) {
+      if (order) {
+        this.getProjectTreeFunc()
+        this.getProjectDetailFunc()
+      }
+    },
+    // 项目操作处理
+    projectOperaHandle(order, data) {
+      switch (order) {
+        // 新增项目
+        case 'addProject':
+          this.isAddProjectShow = !this.isAddProjectShow
+          break
+        // 编辑项目
+        case 'editProject':
+          this.isAddProjectShow = !this.isAddProjectShow
+          this.editProjectData = data
+          this.eventType = 'edit'
+          break
+        // 增加项目分期
+        case 'addStage':
+          this.$router.push({ name: 'ProjectStage', query: {
+            projectId: data.id,
+            eventType: 'add'
+          }})
+          break
+        // 编辑项目分期
+        case 'editStage':
+          this.$router.push({ name: 'ProjectStage', query: {
+            projectId: data.id,
+            eventType: 'edit'
+          }})
+          break
+        // 设置运营图
+        case 'setMap':
+          console.log('setNap')
+          break
+        // 增加分期标段
+        case 'addSection':
+          this.$router.push({ name: 'stageSection', query: {
+            projectId: data.id,
+            eventType: 'add'
+          }})
+          break
+        // 编辑分期标段
+        case 'editSection':
+          console.log('editSection')
+          break
+        // 标段分包设置
+        case 'setContract':
+          console.log('setContract')
+          break
+        // 删除处理
+        case 'delete':
+          this.delProjectHandle(data)
       }
     },
     // 删除项目处理
@@ -135,26 +240,12 @@ export default {
             message: '删除项目成功',
             type: 'success'
           })
-          this.getProjectFunc()
+          this.getProjectTreeFunc()
+          this.getProjectDetailFunc()
         }).catch(() => {
           this.projectTableLoading = false
         })
       })
-    },
-    // 项目操作处理
-    projectOperaHandle(order, data) {
-      switch (order) {
-        case 'addStage':
-          console.log('data.id', data.id)
-          this.$router.push({ name: 'ProjectStage', params: { projectId: data.id }})
-          break
-        case 'delete':
-          this.delProjectHandle(data)
-      }
-    },
-    // 项目操作完成后要执行的操作
-    projectOperaedHandle() {
-      this.getProjectFunc()
     }
   }
 }
@@ -180,6 +271,9 @@ export default {
     margin-top: 30px;
     @include boxShadow-container;
     .project-table {
+      .el-dropdown {
+        margin-left: 10px;
+      }
     }
   }
   .footer-wrap {
@@ -199,5 +293,8 @@ export default {
 }
 .el-dropdown-menu {
   text-align: center;
+  .el-dropdown-menu__item {
+    padding: 3px 15px;
+  }
 }
 </style>

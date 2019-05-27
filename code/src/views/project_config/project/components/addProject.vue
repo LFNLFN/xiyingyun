@@ -13,6 +13,7 @@
             v-model="companySelected"
             :tree-data="organizationData"
             :tree-prop="organTreeProp"
+            prop="name"
             width="300"/>
         </el-form-item>
       </el-form>
@@ -61,7 +62,8 @@ export default {
         label: 'name',
         children: 'children'
       },
-      isLoading: true
+      isLoading: true,
+      isChangeProject: false
     }
   },
   watch: {
@@ -104,10 +106,10 @@ export default {
         if (item[key] === val) {
           return item
         } else if (item.children && item.children.length > 0) {
-          return this.getorganData(item.children, key, val)
+          const _data = this.getorganData(item.children, key, val)
+          if (_data) { return _data }
         }
       }
-      return
     },
     addProjectHandle() {
       this.$refs.addProjectForm.validate(valid => {
@@ -127,6 +129,7 @@ export default {
               type: 'success'
             })
             this.isLoading = false
+            this.isChangeProject = true
             this.closeBox()
           }).catch(() => {
             this.isLoading = false
@@ -138,9 +141,9 @@ export default {
       this.$emit('update:isAddProjectShow', false)
       this.$emit('update:editProjectData', emptyTarget(this.editProjectData))
       this.$emit('update:eventType', 'add')
-      this.$emit('projectOperaedHandle')
+      this.$emit('projectOperaedHandle', this.isChangeProject)
       this.$refs.addProjectForm.resetFields()
-      this.$refs.companySelected = ''
+      this.companySelected = ''
     }
   }
 }

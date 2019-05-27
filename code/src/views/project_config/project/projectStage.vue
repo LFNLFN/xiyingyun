@@ -1,65 +1,109 @@
 <template>
-  <el-container direction="vertical">
+  <el-container v-loading="stageLoading" direction="vertical">
     <el-main class="stage-info-watp">
       <div class="header">
         <span>基础信息</span>
       </div>
-      <el-form class="stage-Info-form">
-        <el-form-item label="项目名称">
-          <el-input size="small" placeholder="请输入项目名称"/>
+      <el-form
+        ref="stageForm"
+        :model="stageFormData"
+        :rules="stageFormRules"
+        class="stage-Info-form">
+        <el-form-item prop="name" label="项目名称">
+          <el-input v-model="stageFormData.name" size="small" placeholder="请输入项目名称"/>
         </el-form-item>
-        <el-form-item label="项目编码">
-          <el-input size="small" placeholder="请输入项目编码"/>
+        <el-form-item prop="code" label="项目编码">
+          <el-input v-model="stageFormData.code" size="small" placeholder="请输入项目编码"/>
         </el-form-item>
-        <el-form-item label="项目地址">
-          <el-input size="small" placeholder="请输入地址">
+        <el-form-item prop="address" label="项目地址">
+          <el-input v-model="stageFormData.address" size="small" placeholder="请输入地址">
             <!-- <el-button slot="append">查询经纬度</el-button> -->
             <a slot="append" href="https://lbs.amap.com/console/show/picker" target="_blank">查询经纬度</a>
           </el-input>
         </el-form-item>
-        <el-form-item label="项目状态">
-          <el-select v-model="prjectStatusSel" size="small" placeholder="请选择">
+        <el-form-item prop="estateProjectDetailEntity.typeId" label="项目状态">
+          <el-select
+            v-model="stageFormData.estateProjectDetailEntity.typeId"
+            :loading="selectLoading"
+            size="small"
+            placeholder="请选择"
+            @visible-change="(visiable) => getSelectData(visiable, 'projectStatus')">
             <el-option
-              value="在建" />
+              v-for="(item, idx) in projectStatus"
+              :key="idx"
+              :label="item.value"
+              :value="item.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="所属公司">
-          <el-input size="small"/>
+          <el-input v-model="belongCompany" size="small" disabled/>
         </el-form-item>
-        <el-form-item label="所在城市">
-          <el-select v-model="prjectStatusSel" size="small" placeholder="请选择">
+        <el-form-item prop="estateProjectDetailEntity.cityId" label="所在城市">
+          <el-select
+            v-model="stageFormData.estateProjectDetailEntity.cityId"
+            :loading="selectLoading"
+            size="small"
+            placeholder="请选择"
+            @visible-change="(visiable) => getSelectData(visiable, 'cityData')">
             <el-option
-              value="在建" />
+              v-for="(item, idx) in cityData"
+              :key="idx"
+              :label="item.value"
+              :value="item.id" />
           </el-select>
         </el-form-item>
-        <el-form-item label="状态">
-          <el-select v-model="prjectStatusSel" size="small" placeholder="请选择">
+        <el-form-item prop="status" label="状态">
+          <el-select
+            v-model="stageFormData.status"
+            size="small"
+            placeholder="请选择">
             <el-option
-              value="在建" />
+              v-for="(item, idx) in enableStatus"
+              :key="idx"
+              :label="item.value"
+              :value="item.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="建筑面积">
-          <el-input size="small" placeholder="请输入地址">
+          <el-input v-model="stageFormData.estateProjectDetailEntity.constructionArea" size="small" placeholder="请输入面积">
             <span slot="append" class="area-text">㎡</span>
           </el-input>
         </el-form-item>
         <el-form-item label="交付类型">
-          <el-select v-model="deliverTypeSel" size="small" placeholder="请选择">
+          <el-select
+            v-model="stageFormData.estateProjectDetailEntity.deliveryType"
+            :loading="selectLoading"
+            size="small"
+            placeholder="请选择"
+            @visible-change="(visiable) => getSelectData(visiable, 'deliveryType')">
             <el-option
-              value="毛坯交付" />
+              v-for="(item, idx) in deliveryType"
+              :key="idx"
+              :label="item.value"
+              :value="item.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="施工阶段">
-          <el-select v-model="constructStageSel" size="small" placeholder="请选择">
+          <el-select
+            v-model="stageFormData.estateProjectDetailEntity.constructionStage"
+            :loading="selectLoading"
+            size="small"
+            placeholder="请选择"
+            @visible-change="(visiable) => getSelectData(visiable, 'constructionType')">
             <el-option
-              value="1阶段" />
+              v-for="(item, idx) in constructionType"
+              :key="idx"
+              :label="item.value"
+              :value="item.id" />
           </el-select>
         </el-form-item>
       </el-form>
       <div class="aerialview-upload-wrap">
         <span class="title-text">上传鸟瞰图 (建议不超过50M)</span>
         <el-upload
-          action="https://jsonplaceholder.typicode.com/posts/">
+          :on-success="uploadedAerialviewHandle"
+          :on-progress="uploadingAerialviewHandle"
+          action="https://static-dev.gzxiyingyun.com">
           <img :src="null">
           <i class="el-icon-plus" />
         </el-upload>
@@ -72,45 +116,39 @@
       <div class="table-wrap">
         <el-table
           :data="houseTypeData"
+          :row-class-name="tableRowClassHandle"
           class="house-type-table">
-          <!-- <template>
-            <el-table-column label="名称" align="center">
+          <template>
+            <el-table-column prop="name" label="名称" align="center">
               <template slot-scope="scope">
-                <el-input size="small" placeholder="请输入户型名称"/>
+                <span class="td-text">{{ scope.row.name }}</span>
+                <el-input v-model="houseTypeForm.name" size="small" class="td-input" placeholder="请输入名称"/>
               </template>
             </el-table-column>
-            <el-table-column label="面积" align="center">
+            <el-table-column prop="constructionArea" label="面积" align="center">
               <template slot-scope="scope">
-                <el-input size="small" placeholder="请输入地址">
-                  <span slot="append" class="area-text">㎡</span>
+                <span class="td-text">{{ scope.row.constructionArea }}</span>
+                <el-input v-model="houseTypeForm.constructionArea" size="small" class="td-input" placeholder="请输入面积">
+                  <span slot="append" class="input-area-text">㎡</span>
                 </el-input>
               </template>
             </el-table-column>
-            <el-table-column label="房间结构" align="center">
+            <el-table-column prop="structure" label="房间结构" align="center">
               <template slot-scope="scope">
-                <el-input size="small" placeholder="请输入户型结构"/>
+                <span class="td-text">{{ scope.row.structure }}</span>
+                <el-input v-model="houseTypeForm.structure" size="small" class="td-input" placeholder="请输入户型结构"/>
               </template>
             </el-table-column>
-            <el-table-column width="160" label="操作" align="center">
+            <el-table-column width="180" label="操作" align="center">
               <template slot-scope="scope">
-                <el-button size="mini" type="primary">保存</el-button>
-                <el-button size="mini" type="primary">删除</el-button>
-              </template>
-            </el-table-column>
-          </template> -->
-          <template>
-            <el-table-column porp="" label="名称" align="center"/>
-            <el-table-column porp="" label="面积" align="center"/>
-            <el-table-column porp="" label="房间结构" align="center"/>
-            <el-table-column porp="" width="250" label="操作" align="center">
-              <template slot-scope="scope">
-                <el-button size="mini" type="primary">编辑</el-button>
-                <el-button size="mini" type="primary">删除</el-button>
+                <el-button size="mini" type="primary" class="save-btn" @click="addHouseTypeHandle(scope.$index, scope.row)">保存</el-button>
+                <el-button size="mini" type="primary" class="edit-btn" @click="editHouseTypeHandle(scope.row)">编辑</el-button>
+                <el-button size="mini" type="primary" @click="deleteHoseType(scope.$index, scope.row)">删除</el-button>
               </template>
             </el-table-column>
           </template>
         </el-table>
-        <el-button size="small" plain class="add-house-property-btn" @click="addHouseProperty">
+        <el-button size="small" plain class="add-house-property-btn" @click="addHouseTypeCtrl">
           <i class="el-icon-plus" />
           新增属性
         </el-button>
@@ -119,40 +157,247 @@
     <footer class="footer">
       <div class="btn-warp">
         <el-button @click="cancelHandle">取消</el-button>
-        <el-button type="primary">确定</el-button>
+        <el-button type="primary" @click="submitHandle">确定</el-button>
       </div>
     </footer>
   </el-container>
 </template>
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
+import { findArrByKeyVal } from '@/utils/public'
+import { addProjectStage, editProjectStage } from '@/api/project_config/project'
+import AddHouseType from '@/views/project_config/project/components/addHouseType'
+import { emptyTarget } from '@/utils/public'
 export default {
+  components: { AddHouseType },
   data() {
     return {
-      houseTypeData: [],
-      prjectStatusSel: '',
-      citySel: '',
-      dataStatusSel: '',
-      deliverTypeSel: '',
-      constructStageSel: '',
-      isAddHouseProperty: true
+      // ----------- 添加项目分期表单数据 -----------
+      stageFormData: {
+        parentId: '',
+        type: 1,
+        status: '',
+        name: '',
+        code: '',
+        address: '',
+        estateProjectDetailEntity: {
+          typeId: '',
+          cityId: '',
+          constructionStage: '',
+          constructionArea: '',
+          deliveryType: '',
+          aerialView: '',
+          houseTypeEntityList: []
+        }
+      },
+      stageFormRules: {
+        name: [{ required: true, trigger: 'blur', message: '项目名称不能为空' }],
+        code: [{ required: true, trigger: 'blur', message: '项目编码不能为空' }],
+        status: [{ required: true, trigger: 'change', message: '请选择状态' }],
+        estateProjectDetailEntity: {
+          cityId: [{ required: true, trigger: 'change', message: '请选择城市' }],
+          typeId: [{ required: true, trigger: 'change', message: '请选择项目状态' }]
+        }
+      },
+      // ------------------ 添加户型表单数据 -------------------
+      houseTypeForm: {
+        name: '',
+        structure: '',
+        constructionArea: ''
+      },
+      // ----------- 保存下拉选择框的option需要的数据 -----------
+      projectStatus: [], // 保存项目状态数据
+      deliveryType: [], // 保存交付类型数据
+      constructionType: [], // 保存施工阶段数据
+      cityData: [], // 保存城市数据
+      enableStatus: [
+        { id: 0, value: '禁用' },
+        { id: 1, value: '启用' }
+      ], // 保存项目状态
+      belongCompany: '', // 保存项目所属公司
+      houseTypeData: [], // 保存添加的户型数据
+      // ----------- 数据字典dictId与本地数据对照关系 -------------------
+      selectDectionary: {
+        projectStatus: {
+          dictId: 'project_status'
+        },
+        cityData: {
+          dictId: 'city'
+        },
+        constructionType: {
+          dictId: 'construction_type'
+        },
+        deliveryType: {
+          dictId: 'delivery_type'
+        }
+      },
+      // ----------- 状态数据 -------------------
+      stageLoading: false,
+      selectLoading: false
     }
   },
   computed: {
     ...mapGetters([
-      'projectList'
+      'projectList',
+      'projectDetails'
     ])
   },
   created() {
-    const projectId = this.$route.params.projectId
-    const curProject = this.projectList.find(item => {
-      return item.id === projectId
-    })
-    console.log('curProject', curProject)
+    const projectId = this.$route.query.projectId
+    const eventType = this.$route.query.eventType
+    if (eventType === 'add') {
+      // 添加分期，获取父级项目ID以及所属公司
+      const curProject = findArrByKeyVal(this.projectList, 'id', projectId)
+      this.stageFormData.parentId = projectId
+      if (curProject) {
+        this.belongCompany = curProject.name
+      }
+    } else if (eventType === 'edit') {
+      // 编辑项目分期，加载表单数据
+      const curProject = findArrByKeyVal(this.projectDetails, 'id', projectId)
+      if (curProject) {
+        const parentId = curProject.parentId
+        const _keys = Object.keys(curProject)
+        const parentProject = findArrByKeyVal(this.projectList, 'id', parentId)
+        // 加载所属公司
+        if (parentProject) {
+          this.belongCompany = parentProject.name
+        }
+        // 加载表单数据
+        _keys.forEach(key => {
+          this.stageFormData[key] = curProject[key]
+        })
+        // 加载下拉选择框数据
+        const _dictKey = Object.keys(this.selectDectionary)
+        _dictKey.forEach(key => {
+          if (this[key].length === 0) {
+            this.getSelectData(true, key)
+          }
+        })
+        // 加载户型数据
+        this.houseTypeData = curProject.estateProjectDetailEntity.houseTypeEntityList
+      }
+    }
   },
   methods: {
-    addHouseProperty() {
-      console.log('addHouseProperty')
+    ...mapActions([
+      'getDictionaryItem'
+    ]),
+    // 处理表格行的样式
+    tableRowClassHandle({ row, rowIndex }) {
+      if (row.virtual) {
+        return 'add-house-type-row'
+      }
+    },
+    // 获取下拉框数据
+    getSelectData(visiable, dataKey) {
+      if (visiable && this[dataKey].length === 0) {
+        const dictId = this.selectDectionary[dataKey].dictId
+        this.selectLoading = true
+        this.getDictionaryItem({ dictId, dataKey }).then(resp => {
+          this[dataKey] = resp
+          this.selectLoading = false
+        })
+      }
+    },
+    // 鸟瞰图上传过程处理
+    uploadingAerialviewHandle(resp, file, fileList) {
+      console.log('uploading resp', resp)
+      console.log('uploading file', file)
+      console.log('uploading fileList', fileList)
+    },
+    // 鸟瞰图上传完成处理
+    uploadedAerialviewHandle(resp, file, fileList) {
+      console.log('uploaded resp', resp)
+      console.log('uploaded file', file)
+      console.log('uploaded fileList', fileList)
+    },
+    // 显示添加户型填写表单
+    addHouseTypeCtrl() {
+      const lastData = this.houseTypeData.filter(type => {
+        if (type.virtual) {
+          return true
+        }
+      })
+      if (lastData.length) {
+        return
+      }
+      // 新增虚拟数据到表格
+      const _obj = {
+        name: '',
+        structure: '',
+        constructionArea: '',
+        virtual: true
+      }
+      this.houseTypeData.push(_obj)
+    },
+    // 添加户型处理
+    addHouseTypeHandle(index, data) {
+      if (this.houseTypeForm.name === '' || this.houseTypeForm.structure === '' || this.houseTypeForm.constructionArea === '') {
+        this.$message({
+          type: 'warning',
+          message: '请填写完整数据'
+        })
+        return
+      }
+      const _obj = {
+        name: this.houseTypeForm.name,
+        structure: this.houseTypeForm.structure,
+        constructionArea: this.houseTypeForm.constructionArea
+      }
+      // 如果是table中的最后一行，则按新增数据处理，否则按编辑数据处理
+      if (index === this.houseTypeData.length - 1) {
+        this.houseTypeData = this.houseTypeData.filter(type => {
+          if (!type.virtual) {
+            return true
+          }
+        })
+        this.houseTypeData.push(_obj)
+      } else {
+        this.houseTypeData[index] = _obj
+      }
+      this.stageFormData.estateProjectDetailEntity.houseTypeEntityList = this.houseTypeData
+      this.houseTypeForm = emptyTarget(this.houseTypeForm)
+    },
+    // 编辑户型数据
+    editHouseTypeHandle(data) {
+      const _keys = Object.keys(this.houseTypeForm)
+      _keys.forEach(key => {
+        this.houseTypeForm[key] = data[key]
+      })
+      this.$set(data, 'virtual', true)
+    },
+    // 删除户型
+    deleteHoseType(index, data) {
+      this.houseTypeData.splice(index, 1)
+      this.stageFormData.estateProjectDetailEntity.houseTypeEntityList = this.houseTypeData
+    },
+    // 添加分期处理
+    submitHandle() {
+      this.$refs.stageForm.validate(valid => {
+        if (valid) {
+          let _method, _msg
+          this.stageLoading = true
+          const eventType = this.$route.query.eventType
+          console.log('this.stageFormData', this.stageFormData)
+          if (eventType === 'add') {
+            _method = addProjectStage(this.stageFormData)
+            _msg = '新增项目分期成功'
+          } else if (eventType === 'edit') {
+            _method = editProjectStage(this.stageFormData)
+            _msg = '编辑项目分期成功'
+          }
+          _method.then(resp => {
+            this.$message({
+              message: _msg,
+              type: 'success'
+            })
+            this.stageLoading = false
+          }).catch(() => {
+            this.stageLoading = false
+          })
+        }
+      })
     },
     cancelHandle() {
       this.$router.go(-1)
@@ -168,11 +413,13 @@ export default {
   height: 100%;
   background: #f0f1f5;
   .header {
-    padding: 15px;
+    height: 50px;
+    padding: 0 15px;
     font-size: 18px;
     font-weight: bold;
     background: #fff;
     border-bottom: 1px solid #ccc;
+    @include flex-layout(space-between, center, null, null);
   }
   .stage-info-watp {
     padding: 0;
@@ -236,6 +483,26 @@ export default {
             border-bottom: 1px solid #ccc;
           }
         }
+        & /deep/.el-table__row {
+          .td-input {
+            display: none;
+          }
+          .save-btn {
+            display: none;
+            margin-left: 10px;
+          }
+          .el-input-group__append {
+            padding: 0 8px;
+          }
+        }
+        & /deep/.add-house-type-row {
+          .td-input, .save-btn {
+            display: inline-table;
+          }
+          .td-text, .edit-btn {
+            display: none;
+          }
+        }
       }
     }
     .add-house-property-btn {
@@ -261,5 +528,8 @@ export default {
       margin-right: 30px;
     }
   }
+}
+/deep/.el-popper {
+  margin-top: 0;
 }
 </style>

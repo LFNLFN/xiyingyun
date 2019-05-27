@@ -30,6 +30,7 @@
             :show-header="false"
             :data="postTableData"
             :cell-class-name="postTableCellClass"
+            :indent="4"
             row-key="id"
             class="post-table el-table_tree"
             @row-click="postMemberCtrl">
@@ -382,6 +383,16 @@ export default {
       @include boxShadow-container;
       .post-table-wrap{
         padding: 20px 10px;
+        .post-table {
+          &/deep/.el-table__body {
+            tr {
+              cursor: pointer !important;
+            }
+          }
+          .el-dropdown {
+            margin-left: 10px;
+          }
+        }
       }
     }
   }

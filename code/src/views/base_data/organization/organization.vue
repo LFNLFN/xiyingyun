@@ -30,6 +30,7 @@
             :show-header="false"
             :data="postTableData"
             :cell-class-name="postTableCellClass"
+            :indent="4"
             row-key="id"
             class="post-table el-table_tree"
             @row-click="postMemberCtrl">
@@ -385,7 +386,7 @@ export default {
       .post-table-wrap{
         padding: 20px 10px;
         .post-table {
-          .el-table__body {
+          &/deep/.el-table__body {
             tr {
               cursor: pointer !important;
             }

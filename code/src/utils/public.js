@@ -19,3 +19,27 @@ export function emptyTarget(data) {
     return _obj
   }
 }
+
+export function findArrByKeyVal(arr, key, val) {
+  let backData
+  for (const item of arr) {
+    if (typeof item === 'object') {
+      if (item[key] === val) {
+        backData = item
+        break
+      } else {
+        const _keys = Object.keys(item)
+        for (const k of _keys) {
+          if (Array.isArray(item[k])) {
+            const _data = findArrByKeyVal(item[k], key, val)
+            if (_data) {
+              backData = _data
+              break
+            }
+          }
+        }
+      }
+    }
+  }
+  return backData
+}

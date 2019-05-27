@@ -4,36 +4,53 @@
       <div class="header">
         <span>基础信息</span>
       </div>
-      <el-form class="section-Info-form">
-        <el-form-item label="标段名称">
-          <el-input size="small"/>
+      <el-form
+        ref="sectionForm"
+        :data="sectionFormData"
+        :rules="secionFormRules"
+        class="section-Info-form">
+        <el-form-item prop="name" label="标段名称">
+          <el-input v-model="sectionFormData.name" size="small"/>
         </el-form-item>
         <el-form-item label="所属项目">
-          <el-select v-model="projectSel" size="small" placeholder="请选择">
+          <!-- <el-select v-model="projectSel" size="small" placeholder="请选择">
+            <el-option
+              value="在建" />
+          </el-select> -->
+          <el-input v-model="belongProject" disabled size="small"/>
+        </el-form-item>
+        <el-form-item prop="status" label="状态">
+          <el-select
+            v-model="sectionFormData.status"
+            size="small"
+            placeholder="请选择">
             <el-option
               value="在建" />
           </el-select>
         </el-form-item>
-        <el-form-item label="状态">
-          <el-select v-model="projectStatusSel" size="small" placeholder="请选择">
-            <el-option
-              value="在建" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="总包单位">
-          <el-select v-model="contractorSel" size="small" placeholder="请选择">
+        <el-form-item prop="estateProjectStageEntity.constructionOrgId" label="总包单位">
+          <el-select
+            v-model="sectionFormData.estateProjectStageEntity.constructionOrgId"
+            size="small"
+            placeholder="请选择">
             <el-option
               value="毛坯交付" />
           </el-select>
         </el-form-item>
-        <el-form-item label="监理单位">
-          <el-select v-model="supervisionSel" size="small" placeholder="请选择">
+        <el-form-item prop="estateProjectStageEntity.supervisionOrgId" label="监理单位">
+          <el-select
+            v-model="sectionFormData.estateProjectStageEntity.supervisionOrgId"
+            size="small"
+            placeholder="请选择">
             <el-option
               value="毛坯交付" />
           </el-select>
         </el-form-item>
-        <el-form-item label="施工布置图">
-          <el-select v-model="layoutPlanSel" size="small" placeholder="请选择">
+        <el-form-item prop="estateProjectStageEntity.floorPlanId" label="施工布置图">
+          <el-select
+            v-model="sectionFormData.estateProjectStageEntity.floorPlanId"
+            size="small"
+            placeholder="请选择">
             <el-option
               value="1阶段" />
           </el-select>
@@ -73,9 +90,31 @@
   </el-container>
 </template>
 <script>
+import { mapGetters } from 'vuex'
+import { findArrByKeyVal } from '@/utils/public'
 export default {
   data() {
     return {
+      sectionFormData: {
+        name: '',
+        parentId: '',
+        type: 2,
+        status: '',
+        estateProjectStageEntity: {
+          professionalEntityList: [],
+          professionalList: [],
+          supervisionOrgId: '',
+          constructionOrgId: '',
+          floorPlanId: ''
+        }
+      },
+      secionFormRules: {
+        name: [{ required: true, trigger: 'blur', message: '项目名称不能为空' }],
+        status: [{ required: true, trigger: 'change', message: '请选择状态' }],
+        estateProjectStageEntity: {
+          constructionOrgId: [{ required: true, trigger: 'change', message: '请选择城市' }]
+        }
+      },
       projectSel: '',
       projectStatusSel: '',
       contractorSel: '',
@@ -83,7 +122,37 @@ export default {
       layoutPlanSel: '',
       houseTypeData: [],
       buildingSelected: [],
+      belongProject: '', // 保存标段所属项目
       isAddHouseProperty: true
+    }
+  },
+  computed: {
+    ...mapGetters([
+      'projectList'
+    ])
+  },
+  created() {
+    const projectId = this.$route.query.projectId
+    const eventType = this.$route.query.eventType
+    const curProject = findArrByKeyVal(this.projectList, 'id', projectId)
+    if (eventType === 'add') {
+      this.sectionFormData.parentId = projectId
+      if (curProject) {
+        this.belongProject = curProject.name
+      }
+    } else if (eventType === 'edit') {
+      if (curProject) {
+        console.log('curProject', curProject)
+        // const parentId = curProject.parentId
+        // const _keys = Object.keys(curProject)
+        // const parentProject = findArrByKeyVal(this.projectList, 'id', parentId)
+        // if (parentProject) {
+        //   this.belongProject = parentProject.name
+        // }
+        // _keys.forEach(key => {
+        //   this.sectionFormData[key] = curProject[key]
+        // })
+      }
     }
   },
   methods: {
@@ -91,8 +160,6 @@ export default {
       console.log('addHouseProperty')
     },
     cancelHandle() {
-      console.log('this.$router', this.$router)
-      console.log('this.$route', this.$route)
       this.$router.history.go(-1)
     }
   }
