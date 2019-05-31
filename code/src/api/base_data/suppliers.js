@@ -1,16 +1,6 @@
 import request from '@/utils/request'
 
 /* --------------- 供应商相关 ---------------------*/
-export function getSuppType() {
-  return request({
-    url: '/dictionary-item',
-    method: 'get',
-    params: {
-      'terms[0].column': 'dict_id',
-      'terms[0].value': 'supplier_type'
-    }
-  })
-}
 
 // 查询供应商
 export function getSuppliers(datas) {

@@ -78,6 +78,9 @@
       &:hover {
         background-color: $subMenuHover !important;
       }
+      &.is-active {
+        background: $menuActive !important;
+      }
     }
   }
 

@@ -16,54 +16,56 @@
         <span class="el-icon-tickets">数据列表</span>
         <el-button type="primary" size="mini" icon="el-icon-circle-plus-outline" class="account-add-btn" @click="projectOperaHandle('addProject')">新增</el-button>
       </div>
-      <el-table
-        v-loading="projectTableLoading"
-        ref="projectTable"
-        :data="projectTableData"
-        :cell-style="tableCellStyleFcun"
-        :header-cell-style="tableCellStyleFcun"
-        :cell-class-name="tableCellClass"
-        :indent="4"
-        row-key="id"
-        class="project-table el-table_tree">
-        <el-table-column prop="name" label="项目名称" align="left" />
-        <el-table-column prop="companyName" width="120" label="状态" align="center" />
-        <el-table-column width="200" label="操作" align="center">
-          <template slot-scope="scope">
-            <template v-if="scope.row.type === 0">
-              <el-button size="mini" class="no-border" @click="projectOperaHandle('editProject', scope.row)">编辑</el-button>
-              <el-dropdown size="small" @command="(order)=>projectOperaHandle(order, scope.row)">
-                <el-button size="mini" class="no-border">更多操作</el-button>
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item command="addStage">新增分期</el-dropdown-item>
-                  <el-dropdown-item command="setMap">设置运营图</el-dropdown-item>
-                  <el-dropdown-item command="delete">删除</el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
+      <div class="table-wrap">
+        <el-table
+          v-loading="projectTableLoading"
+          ref="projectTable"
+          :data="projectTableData"
+          row-key="id"
+          class="project-table el-table_tree">
+          <el-table-column prop="name" min-width="200" label="项目名称" align="left" />
+          <el-table-column prop="companyName" label="状态" align="left">
+            <template slot-scope="scope">
+              <span v-if="scope.row.type !== 0">{{ getProjectStatus(scope.row) }}</span>
             </template>
-            <template v-else-if="scope.row.type === 1">
-              <el-button size="mini" class="no-border" @click="projectOperaHandle('editStage', scope.row)">编辑</el-button>
-              <el-dropdown size="small" @command="(order)=>projectOperaHandle(order, scope.row)">
-                <el-button size="mini" class="no-border">更多操作</el-button>
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item command="addSection">新增标段</el-dropdown-item>
-                  <el-dropdown-item command="delete">删除</el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
+          </el-table-column>
+          <el-table-column width="200" label="操作" align="center">
+            <template slot-scope="scope">
+              <template v-if="scope.row.type === 0">
+                <el-button size="mini" class="no-border" @click="projectOperaHandle('editProject', scope.row)">编辑</el-button>
+                <el-dropdown size="small" @command="(order)=>projectOperaHandle(order, scope.row)">
+                  <el-button size="mini" class="no-border">更多操作</el-button>
+                  <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item command="addStage">新增分期</el-dropdown-item>
+                    <el-dropdown-item command="setMap">设置运营图</el-dropdown-item>
+                    <el-dropdown-item command="delete">删除</el-dropdown-item>
+                  </el-dropdown-menu>
+                </el-dropdown>
+              </template>
+              <template v-else-if="scope.row.type === 1">
+                <el-button size="mini" class="no-border" @click="projectOperaHandle('editStage', scope.row)">编辑</el-button>
+                <el-dropdown size="small" @command="(order)=>projectOperaHandle(order, scope.row)">
+                  <el-button size="mini" class="no-border">更多操作</el-button>
+                  <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item command="addSection">新增标段</el-dropdown-item>
+                    <el-dropdown-item command="delete">删除</el-dropdown-item>
+                  </el-dropdown-menu>
+                </el-dropdown>
+              </template>
+              <template v-else-if="scope.row.type === 2">
+                <el-button size="mini" class="no-border" @click="projectOperaHandle('editSection', scope.row)">编辑</el-button>
+                <el-dropdown size="small" @command="(order)=>projectOperaHandle(order, scope.row)">
+                  <el-button size="mini" class="no-border">更多操作</el-button>
+                  <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item command="setContract">分包设置</el-dropdown-item>
+                    <el-dropdown-item command="delete">删除</el-dropdown-item>
+                  </el-dropdown-menu>
+                </el-dropdown>
+              </template>
             </template>
-            <template v-else-if="scope.row.type === 2">
-              <el-button size="mini" class="no-border" @click="projectOperaHandle('editSection', scope.row)">编辑</el-button>
-              <el-dropdown size="small" @command="(order)=>projectOperaHandle(order, scope.row)">
-                <el-button size="mini" class="no-border">更多操作</el-button>
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item command="setContract">分包设置</el-dropdown-item>
-                  <el-dropdown-item command="delete">删除</el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
-            </template>
-          </template>
-        </el-table-column>
-      </el-table>
+          </el-table-column>
+        </el-table>
+      </div>
     </el-main>
     <!-- <el-footer class="footer-wrap">
       <div class="footer-operatete-wrap">
@@ -87,9 +89,9 @@
   </el-container>
 </template>
 <script>
+import { mapMutations, mapActions } from 'vuex'
 import AddProject from '@/views/project_config/project/components/addProject'
-import { getProject, getProjectTree, getProjectDetail, delProject } from '@/api/project_config/project'
-import { mapMutations } from 'vuex'
+import { getProjectTree, getProjectDetail, delProject } from '@/api/project_config/project'
 export default {
   components: { AddProject },
   data() {
@@ -97,8 +99,10 @@ export default {
       searchForm: {
         projectName: ''
       },
-      projectTableData: [], // 项目数据
+      projectTableData: [], // 保存显示到table的项目数据
+      projectList: [], // 保存所有项目数据
       editProjectData: {}, // 要编辑的项目数据
+      projectIdAndStatus: {}, // key：项目id，value：项目状态
       eventType: 'add',
       projectTableLoading: false,
       isAddProjectShow: false,
@@ -106,34 +110,32 @@ export default {
     }
   },
   created() {
+    // 获取项目列表
     this.getProjectTreeFunc()
+    // 获取项目详情列表
     this.getProjectDetailFunc()
   },
+  // computed: {
+  //   // 保存显示到table的项目数据
+  //   projectTableData: function() {
+  //     return this.projectList
+  //   }
+  // },
   methods: {
     ...mapMutations({
       saveProjectList: 'SET_PROJECT_LIST',
       saveProjectDetails: 'SET_PROJECT_DETAILS'
     }),
-    // 表格样式操作
-    tableCellStyleFcun({ row, column, rowIndex, columnIndex }) {
-      if (columnIndex === 0) {
-        return 'padding: 10px 20px;'
-      }
-    },
-    // 表格样式操作
-    tableCellClass(data) {
-      if (!data.row.children && data.columnIndex === 0) {
-        return 'isnt-tree'
-      } else if (data.row.children) {
-        return 'is-tree'
-      }
-    },
+    ...mapActions([
+      'getDictionaryItemFunc'
+    ]),
     // 加载项目列表
     getProjectTreeFunc() {
       this.projectTableLoading = true
       getProjectTree().then(resp => {
         const list = resp.result
         this.projectTableLoading = false
+        this.projectList = list
         this.projectTableData = list
         this.saveProjectList(list)
       }).catch(() => {
@@ -143,32 +145,56 @@ export default {
     // 加载项目详情树
     getProjectDetailFunc() {
       getProjectDetail().then(resp => {
-        this.saveProjectDetails(resp.result)
+        const data = resp.result
+        this.getStatusFromProject(data)
+        this.saveProjectDetails(data)
       })
+    },
+    // 从项目详情中获取项目状态
+    getStatusFromProject(list) {
+      // 从数据字典中获取项目状态数据
+      this.getDictionaryItemFunc({ dictId: 'project_status', dataKey: 'projectStatus' }).then(resp => {
+        this.setProjectIdAndStatus(list, resp)
+      })
+    },
+    // 遍历项目详情，获取项目状态ID及项目状态名称
+    setProjectIdAndStatus(list, dictData) {
+      list.forEach(v => {
+        if (v.estateProjectDetailEntity) {
+          const statusId = v.estateProjectDetailEntity.typeId
+          if (statusId) {
+            this.projectIdAndStatus[v.id] = (dictData.find(val => val.id === statusId)).value
+          }
+        }
+        if (v.childrenWithDetail && v.childrenWithDetail.length > 0) {
+          this.setProjectIdAndStatus(v.childrenWithDetail, dictData)
+        }
+      })
+    },
+    // 获取项目状态显示到table中
+    getProjectStatus(data) {
+      const projectId = data.id
+      return this.projectIdAndStatus[projectId]
     },
     // 按条件查询项目处理
     searchProjectHandle() {
-      this.projectTableLoading = true
-      const params = {
-        'terms[0].column': 'name',
-        'terms[0].value': this.searchForm.projectName
+      const projectName = this.searchForm.projectName
+      if (projectName === '') {
+        this.projectTableData = this.projectList
+      } else {
+        this.projectTableData = this.getTargetsByProjects(this.projectList, 'name', projectName)
       }
-      getProject(params).then(resp => {
-        const list = resp.result.data
-        this.projectTableLoading = false
-        this.projectTableData = list
-      }).catch(() => {
-        this.projectTableLoading = false
-      })
     },
-    // // 添加、编辑项目处理
-    // projectCtrl(order, data) {
-    //   this.isAddProjectShow = !this.isAddProjectShow
-    //   if (order === 'edit') {
-    //     this.editProjectData = data
-    //     this.eventType = 'edit'
-    //   }
-    // },
+    getTargetsByProjects(projects, key, val) {
+      const backProjects = []
+      projects.forEach(pro => {
+        const match = pro[key].match(val)
+        if (match) {
+          backProjects.push(pro)
+        }
+      })
+      return backProjects
+    },
     // 项目操作完成后要执行的操作
     projectOperaedHandle(order) {
       if (order) {
@@ -216,7 +242,10 @@ export default {
           break
         // 编辑分期标段
         case 'editSection':
-          console.log('editSection')
+          this.$router.push({ name: 'stageSection', query: {
+            projectId: data.id,
+            eventType: 'edit'
+          }})
           break
         // 标段分包设置
         case 'setContract':
@@ -270,9 +299,12 @@ export default {
   .main-wrap {
     margin-top: 30px;
     @include boxShadow-container;
-    .project-table {
-      .el-dropdown {
-        margin-left: 10px;
+    .table-wrap {
+      padding: 20px;
+      .project-table {
+        .el-dropdown {
+          margin-left: 10px;
+        }
       }
     }
   }

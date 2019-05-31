@@ -27,6 +27,16 @@ router.beforeEach((to, from, next) => {
           })
         })
       } else {
+        // const reg = new RegExp('((?<=:).*(?=\/)|(?<=:).*)+', 'g')
+        const params = to.params
+        const paramKeys = Object.keys(to.params)
+        if (paramKeys.length) {
+          paramKeys.forEach(pk => {
+            if (params[pk].match(/:/)) {
+              next({ path: store.getters[pk][0].path })
+            }
+          })
+        }
         next()
       }
     }

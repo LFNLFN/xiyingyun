@@ -1,3 +1,4 @@
+import Vue from 'vue'
 import { getRoles } from '@/api/base_data/permission.js'
 import { getOrganization } from '@/api/base_data/organization.js'
 // import { Message } from 'element-ui'
@@ -26,13 +27,13 @@ const baseData = {
   },
   mutations: {
     SET_PER_ROLES: (state, roles) => {
-      state.permissionRoles = roles
+      Vue.set(state, 'permissionRoles', roles)
     },
     CLEAR_PER_ROLES: (state) => {
       state.permissionRoles.splice(0, state.permissionRoles.length)
     },
     SET_ORGANIZATION: (state, tree) => {
-      state.organizationData = tree
+      Vue.set(state, 'organizationData', tree)
     },
     CLEAR_ORGANIZATION: (state) => {
       state.organizationData.splice(0, state.organizationData.length)
@@ -56,11 +57,11 @@ const baseData = {
       })
     },
     // 获取组织架构数据
-    getOrganizationData({ commit, state }) {
+    getOrganizationData({ commit, state }, type) {
       return new Promise((resolve, reject) => {
         if (state.organizationData.length === 0) {
           getOrganization().then(resp => {
-            const data = resp.result.filter(tree => tree.type === 0)
+            const data = resp.result.filter(tree => tree.type === type)
             commit('SET_ORGANIZATION', data)
             resolve(data)
           }).catch(err => {

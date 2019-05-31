@@ -163,10 +163,10 @@ export const constantRouterMap = [
         ]
       },
       {
-        path: 'check_items/:checkItemsId',
+        path: 'check_items/:checkItems',
         name: 'checkItems',
         meta: { title: '检查项配置', icon: '' },
-        component: () => import('@/views/base_data/check_items')
+        component: () => import('@/views/base_data/check_items/check_items')
       }
     ]
   },

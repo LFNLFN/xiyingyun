@@ -1,35 +1,36 @@
 <template>
   <el-container class="container">
     <el-aside width="no" class="side-wrap">
-      <div class="header">
-        <span>供应商信息</span>
-        <span class="el-icon-circle-plus add-check-item-btn" @click="boxCtrl('supplier')"/>
+      <div class="tree-wrap">
+        <div class="header">
+          <span>供应商信息</span>
+          <span class="el-icon-circle-plus add-check-item-btn" @click="boxCtrl('supplier')"/>
+        </div>
+        <el-tree
+          v-loading="suppTreeLoading"
+          ref="suppTree"
+          :data="suppTreeData"
+          :props="suppTreeProp"
+          :expand-on-click-node="false"
+          :render-content="addTreeContRender"
+          node-key="id"
+          highlight-current
+          current-node-key
+          class="supplier-tree"
+          @node-click="handleNodeClick"/>
       </div>
-      <el-tree
-        v-loading="suppTreeLoading"
-        ref="suppTree"
-        :data="suppTreeData"
-        :props="suppTreeProp"
-        :expand-on-click-node="false"
-        :render-content="addTreeContRender"
-        node-key="id"
-        highlight-current
-        current-node-key
-        class="supplier-tree"
-        @node-click="handleNodeClick"/>
     </el-aside>
-    <el-main v-loading="postInfoLoading" class="main-wrap">
+    <el-main class="main-wrap">
       <div class="post-info-wrap">
         <div class="header">
           <span>岗位信息</span>
           <el-button type="primary" size="mini" icon="el-icon-circle-plus-outline" @click="boxCtrl('position')">添加</el-button>
         </div>
-        <div class="post-table-wrap">
+        <div v-loading="postInfoLoading" class="post-table-wrap">
           <el-table
             ref="postTable"
             :show-header="false"
             :data="postTableData"
-            :cell-class-name="postTableCellClass"
             :indent="4"
             row-key="id"
             class="post-table el-table_tree"
@@ -92,7 +93,8 @@ import AddPosition from '@/views/base_data/suppliers/components/addPosition'
 import AddMember from '@/views/base_data/suppliers/components/AddMember'
 import PullMember from '@/views/base_data/suppliers/components/PullMember'
 import PositionMembers from '@/views/base_data/suppliers/components/PositionMembers'
-import { getSuppliers, delSuppliers, getSuppType } from '@/api/base_data/suppliers'
+import { getSuppliers, delSuppliers } from '@/api/base_data/suppliers'
+import { getDictionaryItem } from '@/api/dictionary'
 import { getPosition, delPosition } from '@/api/base_data/suppliers'
 import { emptyTarget } from '@/utils/public.js'
 export default {
@@ -136,14 +138,6 @@ export default {
     this.getSuppTypeFunc()
   },
   methods: {
-    // 设置岗位信息表格单元格的classname
-    postTableCellClass(data) {
-      if (!data.row.children && data.columnIndex === 0) {
-        return 'isnt-tree'
-      } else if (data.row.children) {
-        return 'is-tree'
-      }
-    },
     // 获取供应商树
     getSuppTree() {
       this.suppTreeLoading = true
@@ -159,8 +153,12 @@ export default {
     },
     // 获取org_type，供应商类型
     getSuppTypeFunc() {
-      getSuppType().then(resp => {
-        const suppType = resp.result.data
+      const params = {
+        'terms[0].column': 'dict_id',
+        'terms[0].value': 'supplier_type'
+      }
+      getDictionaryItem(params).then(resp => {
+        const suppType = resp.result
         suppType.forEach(item => {
           const _obj = {
             id: item.id,
@@ -356,30 +354,41 @@ export default {
 @import "src/styles/mixin.scss";
 
 .container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow-y: scroll;
   .header {
     @include gray-header;
   }
   .side-wrap {
-    margin: 20px;
-    margin-right: 5px;
-    @include boxShadow-container;
-    .supplier-tree {
-      font-size: 14px;
-      min-width: 250px;
-      min-height: 300px;
-      padding: 10px;
-    }
-    .add-check-item-btn {
-      font-size: 28px;
-      color: #409EFF;
-      cursor: pointer;
+    min-height: 100%;
+    padding: 20px 0 20px 20px;
+    .tree-wrap {
+      height: 100%;
+      @include boxShadow-container;
+      .supplier-tree {
+        font-size: 14px;
+        min-width: 250px;
+        min-height: 300px;
+        padding: 10px;
+      }
+      .add-check-item-btn {
+        font-size: 28px;
+        color: #409EFF;
+        cursor: pointer;
+      }
     }
   }
   .main-wrap {
+    min-height: 100%;
     .el-button {
       padding: 5px 7px;
     }
     .post-info-wrap {
+      height: 100%;
       @include boxShadow-container;
       .post-table-wrap{
         padding: 20px 10px;

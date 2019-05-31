@@ -1,16 +1,6 @@
 import request from '@/utils/request'
 
 /* --------------- 组织架构相关 ---------------------*/
-export function getOrgType() {
-  return request({
-    url: '/dictionary-item',
-    method: 'get',
-    params: {
-      'terms[0].column': 'dict_id',
-      'terms[0].value': 'org_type'
-    }
-  })
-}
 
 // 查询组织架构
 export function getOrganization(datas) {

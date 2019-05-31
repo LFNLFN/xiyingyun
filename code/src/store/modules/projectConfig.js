@@ -1,4 +1,4 @@
-import { getDictionaryItem } from '@/api/project_config/project'
+import { getDictionaryItem } from '@/api/dictionary'
 import Vue from 'vue'
 
 // 保存项目配置部分需要的数据
@@ -9,7 +9,7 @@ const projectConfig = {
     projectStatus: [], // 保存项目状态数据
     deliveryType: [], // 保存交付类型数据
     constructionType: [], // 保存施工阶段数据
-    cityData: [] // 保存城市数据
+    districtData: [] // 保存城市数据
   },
   mutations: {
     SET_PROJECT_LIST: (state, list) => {
@@ -34,18 +34,16 @@ const projectConfig = {
     }
   },
   actions: {
-    getDictionaryItem({ commit, state }, _obj) {
+    getDictionaryItemFunc({ commit, state }, _obj) {
       const key = _obj.dataKey
-      const dictId = _obj.dictId
+      const params = _obj.params
       return new Promise((reslove, reject) => {
-        if (state[key].length === 0) {
-          const params = {
-            'terms[0].column': 'dictId',
-            'terms[0].value': dictId
-          }
+        if (state[key] === undefined || state[key].length === 0) {
           getDictionaryItem(params).then(resp => {
-            const data = resp.result.data
-            commit('SET_DICTIONARY_ITEM', { key, data })
+            const data = resp.result
+            if (state[key]) {
+              commit('SET_DICTIONARY_ITEM', { key, data })
+            }
             reslove(data)
           }).catch((err) => {
             reject(err)

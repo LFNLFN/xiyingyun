@@ -11,12 +11,13 @@
         <el-form-item label="机构全称" prop="fullName">
           <el-input v-model="addSuppForm.fullName" placeholder="请输入机构全称" />
         </el-form-item>
-        <el-form-item label="机构类型" prop="supplierType">
-          <el-select v-model="suppTypeSelect">
+        <el-form-item label="机构类型" prop="orgType">
+          <el-select v-model="addSuppForm.orgType">
             <el-option
               v-for="(item, idx) in suppTypeData"
               :key="idx"
-              :value="item.value"
+              :label="item.value"
+              :value="item.id"
               clearable>
               {{ item.value }}
             </el-option>
@@ -28,7 +29,6 @@
 </template>
 <script>
 import PublicPopups from '@/components/Pop-ups/PublicPopups'
-import { emptyTarget } from '@/utils/public'
 import { addSuppliers, editSuppliers } from '@/api/base_data/suppliers'
 export default {
   components: { PublicPopups },
@@ -72,26 +72,17 @@ export default {
         fullName: '',
         parentId: '',
         type: 1,
-        supplierType: ''
+        orgType: ''
       },
       suppFormRules: {
         name: [{ required: true, trigger: 'blur', message: '机构名称不能为空' }],
-        supplierType: [{ required: true, trigger: 'change', message: '机构类型不能为空' }]
+        orgType: [{ required: true, trigger: 'change', message: '机构类型不能为空' }]
       },
-      suppTypeSelect: '',
       isLoading: false,
       isSubmit: false // 是否有提交表单数据
     }
   },
   watch: {
-    suppTypeSelect: function(newVal) {
-      const typeSelected = this.suppTypeData.find(item => {
-        return item.value === newVal
-      })
-      if (typeSelected) {
-        this.addSuppForm.supplierType = typeSelected.id
-      }
-    },
     editSuppData: function(newVal) {
       const keys = Object.keys(this.addSuppForm)
       const newValKeys = Object.keys(newVal)
@@ -99,11 +90,7 @@ export default {
         keys.forEach(key => {
           this.addSuppForm[key] = newVal[key]
         })
-        // 判断是公司还是部门
-        const _suppType = this.suppTypeData.find(item => {
-          return item.id === newVal.supplierType
-        })
-        this.suppTypeSelect = _suppType.value
+        console.log('this.addSuppForm', this.addSuppForm)
       }
     },
     eventType: function(newVal) {
@@ -116,7 +103,7 @@ export default {
         if (valid) {
           let _method
           this.isLoading = true
-          // this.addSuppForm.id = this.editData.id
+
           if (this.eventType === 'add') {
             this.addSuppForm.parentId = this.suppParentId
             _method = addSuppliers(this.addSuppForm)
@@ -143,8 +130,8 @@ export default {
       // 重置数据
       this.$emit('submitComplete', this.isSubmit, 'supplier')
       this.$refs.addSuppForm.resetFields()
-      this.addSuppForm = emptyTarget(this.addSuppForm)
-      this.suppTypeSelect = ''
+      this.addSuppForm.id = ''
+      this.addSuppForm.parentId = ''
       this.isSubmit = false
     }
   }

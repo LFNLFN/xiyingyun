@@ -239,7 +239,6 @@ export default {
 </script>
 <style ref="styleshheet/scss" lang="scss" scoped>
 @import "src/styles/mixin.scss";
-@import "../reset-style/components/pullMember.scss";
 @import "src/styles/element-ui.scss";
 
 .selected-member-warp {
@@ -305,6 +304,18 @@ export default {
       }
       .form-btn-wrap {
         margin-left: 30px ;
+      }
+    }
+    .member-table {
+      &/deep/.el-table__header th {
+        padding: 2px;
+        background: #f8f8f9;
+        border-top: 1px solid #80848f;
+        height: 46px;
+      }
+      &/deep/ td {
+        padding: 2px !important;
+        height: 46px;
       }
     }
     .el-pagination {

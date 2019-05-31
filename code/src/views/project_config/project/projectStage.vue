@@ -39,18 +39,46 @@
           <el-input v-model="belongCompany" size="small" disabled/>
         </el-form-item>
         <el-form-item prop="estateProjectDetailEntity.cityId" label="所在城市">
-          <el-select
-            v-model="stageFormData.estateProjectDetailEntity.cityId"
-            :loading="selectLoading"
-            size="small"
-            placeholder="请选择"
-            @visible-change="(visiable) => getSelectData(visiable, 'cityData')">
-            <el-option
-              v-for="(item, idx) in cityData"
-              :key="idx"
-              :label="item.value"
-              :value="item.id" />
-          </el-select>
+          <div class="city-selects-wrap">
+            <el-select
+              v-model="provinceSelected"
+              :loading="selectLoading"
+              size="small"
+              placeholder="省"
+              @visible-change="(visiable) => getSelectData(visiable, 'provinceData')">
+              <el-option
+                v-for="(item, idx) in provinceData"
+                :key="idx"
+                :label="item.value"
+                :value="item.id" />
+            </el-select>
+            <i class="city-selects-interval"/>
+            <el-select
+              v-model="citySelected"
+              :loading="selectLoading"
+              size="small"
+              placeholder="市">
+              <!-- @visible-change="(visiable) => getSelectData(visiable, 'cityData')"> -->
+              <el-option
+                v-for="(item, idx) in cityData"
+                :key="idx"
+                :label="item.value"
+                :value="item.id" />
+            </el-select>
+            <i class="city-selects-interval"/>
+            <el-select
+              v-model="stageFormData.estateProjectDetailEntity.cityId"
+              :loading="selectLoading"
+              size="small"
+              placeholder="区">
+              <!-- @visible-change="(visiable) => getSelectData(visiable, 'districtData')"> -->
+              <el-option
+                v-for="(item, idx) in districtData"
+                :key="idx"
+                :label="item.value"
+                :value="item.id" />
+            </el-select>
+          </div>
         </el-form-item>
         <el-form-item prop="status" label="状态">
           <el-select
@@ -164,7 +192,7 @@
 </template>
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import { findArrByKeyVal } from '@/utils/public'
+import { searchArrByKeyVal } from '@/utils/public'
 import { addProjectStage, editProjectStage } from '@/api/project_config/project'
 import AddHouseType from '@/views/project_config/project/components/addHouseType'
 import { emptyTarget } from '@/utils/public'
@@ -199,7 +227,7 @@ export default {
           typeId: [{ required: true, trigger: 'change', message: '请选择项目状态' }]
         }
       },
-      // ------------------ 添加户型表单数据 -------------------
+      // ------------------ 添加户型的表单数据 -------------------
       houseTypeForm: {
         name: '',
         structure: '',
@@ -209,28 +237,43 @@ export default {
       projectStatus: [], // 保存项目状态数据
       deliveryType: [], // 保存交付类型数据
       constructionType: [], // 保存施工阶段数据
-      cityData: [], // 保存城市数据
+      districtData: [], // 保存当前城市的区县数据
+      cityData: [], // 保存当前省的城市数据
+      provinceData: [], // 保存省的数据
       enableStatus: [
         { id: 0, value: '禁用' },
         { id: 1, value: '启用' }
       ], // 保存项目状态
       belongCompany: '', // 保存项目所属公司
       houseTypeData: [], // 保存添加的户型数据
+      provinceSelected: '', // 保存选择的城市Id
+      citySelected: '', // 保存选择的城市id
       // ----------- 数据字典dictId与本地数据对照关系 -------------------
       selectDectionary: {
         projectStatus: {
-          dictId: 'project_status'
-        },
-        cityData: {
-          dictId: 'city'
+          'dictId': 'project_status'
         },
         constructionType: {
-          dictId: 'construction_type'
+          'dictId': 'construction_type'
         },
         deliveryType: {
-          dictId: 'delivery_type'
+          'dictId': 'delivery_type'
+        },
+        districtData: {
+          'dictId': 'city',
+          'parentId': ''
+        },
+        cityData: {
+          'dictId': 'city',
+          'parentId': ''
+        },
+        provinceData: {
+          'dictId': 'city',
+          'parentId': '-1'
         }
       },
+      allCityData: [],
+      allCityIndex: {},
       // ----------- 状态数据 -------------------
       stageLoading: false,
       selectLoading: false
@@ -242,23 +285,56 @@ export default {
       'projectDetails'
     ])
   },
+  watch: {
+    // 通过省ID获取城市数据
+    provinceSelected: function(newVal, oldVal) {
+      if (newVal !== '' && newVal !== oldVal) {
+        this.selectDectionary.cityData['parentId'] = newVal
+        this.cityData = []
+        this.getSelectData(true, 'cityData')
+      }
+    },
+    // 通过城市ID获取区县数据或省数据
+    citySelected: function(newVal, oldVal) {
+      if (newVal !== '' && newVal !== oldVal) {
+        this.selectDectionary.districtData['parentId'] = newVal
+        this.districtData = []
+        this.getSelectData(true, 'districtData')
+      }
+    },
+    // 编辑项目分期时，获取所有城市数据再进行处理
+    'stageFormData.estateProjectDetailEntity.cityId': function(newVal) {
+      const eventType = this.$route.query.eventType
+      if (this.districtData.length === 0 && eventType === 'edit') {
+        const params = {
+          'terms[0].column': 'dictId',
+          'terms[0].value': 'city'
+        }
+        this.getDictionaryItemFunc({ params, dataKey: '' }).then(resp => {
+          this.handleAllCityData(resp, newVal)
+          this.stageLoading = false
+        })
+      }
+    }
+  },
   created() {
     const projectId = this.$route.query.projectId
     const eventType = this.$route.query.eventType
     if (eventType === 'add') {
       // 添加分期，获取父级项目ID以及所属公司
-      const curProject = findArrByKeyVal(this.projectList, 'id', projectId)
+      const curProject = searchArrByKeyVal(this.projectList, 'id', projectId)
       this.stageFormData.parentId = projectId
       if (curProject) {
         this.belongCompany = curProject.name
       }
     } else if (eventType === 'edit') {
       // 编辑项目分期，加载表单数据
-      const curProject = findArrByKeyVal(this.projectDetails, 'id', projectId)
+      const curProject = searchArrByKeyVal(this.projectDetails, 'id', projectId)
       if (curProject) {
+        this.stageLoading = true
         const parentId = curProject.parentId
         const _keys = Object.keys(curProject)
-        const parentProject = findArrByKeyVal(this.projectList, 'id', parentId)
+        const parentProject = searchArrByKeyVal(this.projectList, 'id', parentId)
         // 加载所属公司
         if (parentProject) {
           this.belongCompany = parentProject.name
@@ -268,9 +344,11 @@ export default {
           this.stageFormData[key] = curProject[key]
         })
         // 加载下拉选择框数据
-        const _dictKey = Object.keys(this.selectDectionary)
-        _dictKey.forEach(key => {
-          if (this[key].length === 0) {
+        const _selectDictKey = Object.keys(this.selectDectionary)
+        const whiteList = ['provinceData', 'districtData', 'cityData']
+        _selectDictKey.forEach(key => {
+          // districtData, cityData, provinceData 城市相关数据另外加载
+          if (this[key].length === 0 && !whiteList.includes(key)) {
             this.getSelectData(true, key)
           }
         })
@@ -281,7 +359,7 @@ export default {
   },
   methods: {
     ...mapActions([
-      'getDictionaryItem'
+      'getDictionaryItemFunc'
     ]),
     // 处理表格行的样式
     tableRowClassHandle({ row, rowIndex }) {
@@ -289,12 +367,64 @@ export default {
         return 'add-house-type-row'
       }
     },
+    // 处理所有城市数据
+    handleAllCityData(datas, tergetDistrictId) {
+      console.log('tergetDistrictId', tergetDistrictId)
+      const beHandleData = []
+      datas.forEach(val => {
+        if (val.parentId === '-1') {
+          // 处理省
+          this.allCityData.push(val)
+          this.provinceData.push(val)
+          this.allCityIndex[val.id] = []
+        } else {
+          const keys = Object.keys(this.allCityIndex)
+          const proviIndex = keys.indexOf(val.parentId)
+          if (proviIndex >= 0) {
+            // 处理市
+            const curProvi = this.allCityData[proviIndex]
+            curProvi.children ? curProvi.children.push(val) : curProvi['children'] = Array.of(val)
+            this.allCityIndex[keys[proviIndex]].push(val.id)
+          } else {
+            // 处理区县
+            if (keys.length) {
+              keys.forEach((key, idx) => {
+                const cItyIndex = this.allCityIndex[key].indexOf(val.parentId)
+                if (cItyIndex >= 0) {
+                  const curCity = this.allCityData[idx].children[cItyIndex]
+                  curCity.children ? curCity.children.push(val) : curCity['children'] = Array.of(val)
+                  if (tergetDistrictId === val.id) {
+                    this.provinceSelected = key
+                    this.citySelected = val.parentId
+                  }
+                } else {
+                  beHandleData.push(val)
+                }
+              })
+            } else {
+              beHandleData.push(val)
+            }
+          }
+        }
+      })
+      if (beHandleData.length > 0) {
+        this.handleAllCityData(beHandleData, tergetDistrictId)
+      }
+    },
     // 获取下拉框数据
     getSelectData(visiable, dataKey) {
       if (visiable && this[dataKey].length === 0) {
-        const dictId = this.selectDectionary[dataKey].dictId
         this.selectLoading = true
-        this.getDictionaryItem({ dictId, dataKey }).then(resp => {
+        const paramsObj = this.selectDectionary[dataKey]
+        const _keys = Object.keys(paramsObj)
+        const params = {}
+        _keys.forEach((key, idx) => {
+          if (paramsObj[key] !== '') {
+            params[`terms[${idx}].column`] = key
+            params[`terms[${idx}].value`] = paramsObj[key]
+          }
+        })
+        this.getDictionaryItemFunc({ params, dataKey }).then(resp => {
           this[dataKey] = resp
           this.selectLoading = false
         })
@@ -440,6 +570,21 @@ export default {
         }
         .el-select {
           width: 100%;
+        }
+        .city-selects-wrap {
+          width: 100%;
+          display: inline-block;
+          text-align: center;
+          font-size: 0;
+          .el-select {
+            width: 30%;
+          }
+          .city-selects-interval {
+            width: 3%;
+            margin: 0 1%;
+            display: inline-block;
+            border: 1px solid #ccc;
+          }
         }
       }
     }

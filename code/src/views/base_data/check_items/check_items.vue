@@ -4,7 +4,7 @@
       <el-button
         v-for="(tab, idx) in routerTabData"
         :key="idx"
-        :class="{active: routerTabCActiveCtrl(tab)}"
+        :class="{active: routerTabActiveCtrl(tab)}"
         type="primary"
         plain
         class="router-tab-item"
@@ -108,8 +108,8 @@ export default {
     next()
   },
   methods: {
-    routerTabCActiveCtrl(tab) {
-      const itemId = this.$route.params.checkItemsId
+    routerTabActiveCtrl(tab) {
+      const itemId = this.$route.params.checkItems
       return tab.name === itemId
     },
     changeCheckItem(tab) {
@@ -141,7 +141,7 @@ export default {
   }
   .main-wrap {
     .side-wrap {
-      margin: 20px;
+      margin: 20px 0 20px 20px;
       min-height: 300px;
       @include boxShadow-container;
       .check-item-tree {

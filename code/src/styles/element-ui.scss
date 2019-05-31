@@ -43,27 +43,36 @@
 }
 
 .el-table_tree {
-  .el-table__expand-icon {
-    .el-icon {
-      width: 25px;
-      height: 25px;
-      text-align: center;
-      line-height: 25px;
-      margin-top: -13px;
-      margin-left: -10px;
-    }
-  }
-  .is-tree {
+  .el-table__body {
     .el-table__expand-icon {
-      margin-right: 10px;
+      .el-icon {
+        width: 25px;
+        height: 25px;
+        text-align: center;
+        line-height: 25px;
+        margin-top: -13px;
+        margin-left: -10px;
+      }
     }
-  }
-  .isnt-tree {
-    .cell:before {
-      content: '';
-      display: inline-block;
-      width: 14px;
-      margin-right: 10px;
+    .el-table__row--level-0 {
+      .el-table__indent {
+        padding-right: 0;
+      }
+    }
+    .el-table__row--level-1 {
+      .el-table__indent {
+        padding-right: 15px;
+      }
+    }
+    .el-table__row--level-2 {
+      .el-table__indent {
+        padding-right: 30px;
+      }
+    }
+    .el-table__row--level-3 {
+      .el-table__indent {
+        padding-right: 45px;
+      }
     }
   }
 }

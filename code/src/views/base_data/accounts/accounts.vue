@@ -167,10 +167,10 @@ export default{
     filterAccountInfo() {
       this.isLoading = true
       const params = {
-        'terms[0].column': 'name',
-        'terms[0].value': this.searchForm.name,
-        'terms[1].column': 'name',
-        'terms[1].value': this.searchForm.phone,
+        'terms[0].column': 'name$LIKE',
+        'terms[0].value': `%${this.searchForm.name}%`,
+        'terms[1].column': 'phone$LIKE',
+        'terms[1].value': `%${this.searchForm.phone}%`,
         pageIndex: 1,
         pageSize: 10
       }
