@@ -3,7 +3,7 @@ import request from '@/utils/request'
 export function login(username, password) {
   return request({
     url: '/authorize/login',
-    method: 'get',
+    method: 'post',
     data: JSON.stringify({
       username,
       password,
