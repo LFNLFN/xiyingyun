@@ -15,7 +15,7 @@
 .message-container  {
   cursor: pointer;
   height: 50px;
-  margin-right: 7px;
+  margin-right: 15px;
   .message-logo-wrap {
     height: 36px;
     width: 36px;

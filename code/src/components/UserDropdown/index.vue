@@ -31,28 +31,41 @@ export default {
 }
 </script>
 <style rel="stylesheet/scss" lang="scss" scoped>
+@import "src/styles/mixin.scss";
+
 .user-container {
   cursor: pointer;
   height: 50px;
   margin-right: 15px;
 
   .user-info-warp {
-    width: 36px;
+    // width: 36px;
     height: 36px;
     margin-top: 7px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    @include flex-layout(center, center, null, null);
 
     .user-permission{
-      display: block;
+      display: inline-block;
       height: 20px;
       line-height: 20px;
+      color: #409eff;
+      position: relative;
+      &:after {
+        content: '';
+        border-top: 6px solid #409eff;
+        border-right: 5px solid transparent;
+        border-bottom: 5px solid transparent;
+        border-left: 5px solid transparent;
+        position: absolute;
+        top: 8px;
+        right: -12px;
+      }
     }
 
     .user-img {
-      width: 100%;
-      height: 100%;
+      display: inline-block;
+      width: 36px;
+      height: 36px;
       border-radius: 10px;
       margin-right: 5px;
     }

@@ -2,7 +2,7 @@
   <div v-if="!item.hidden" class="menu-wrapper">
     <template v-if="hasOneShowingChild(item.children,item) && (!onlyOneChild.children||onlyOneChild.noShowingChildren) && !item.alwaysShow">
       <app-link :to="resolvePath(onlyOneChild.path)">
-        <el-menu-item :index="setindex(onlyOneChild)" :class="{'submenu-title-noDropdown':!isNest}">
+        <el-menu-item :index="setIndex(onlyOneChild)" :class="{'submenu-title-noDropdown':!isNest}">
           <item :meta="Object.assign({},item.meta,onlyOneChild.meta)" />
         </el-menu-item>
       </app-link>
@@ -75,7 +75,7 @@ export default {
       }
       return false
     },
-    setindex(item) {
+    setIndex(item) {
       return item.children ? item.children[0].name : item.name
     },
     resolvePath(routePath) {

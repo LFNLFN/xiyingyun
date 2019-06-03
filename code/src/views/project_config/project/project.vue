@@ -153,7 +153,11 @@ export default {
     // 从项目详情中获取项目状态
     getStatusFromProject(list) {
       // 从数据字典中获取项目状态数据
-      this.getDictionaryItemFunc({ dictId: 'project_status', dataKey: 'projectStatus' }).then(resp => {
+      const params = {
+        'terms[0].column': 'dictId',
+        'terms[0].value': 'project_status'
+      }
+      this.getDictionaryItemFunc({ dataKey: 'projectStatus', params: params }).then(resp => {
         this.setProjectIdAndStatus(list, resp)
       })
     },

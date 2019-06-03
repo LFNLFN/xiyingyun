@@ -129,10 +129,11 @@
       <div class="aerialview-upload-wrap">
         <span class="title-text">上传鸟瞰图 (建议不超过50M)</span>
         <el-upload
-          :on-success="uploadedAerialviewHandle"
-          :on-progress="uploadingAerialviewHandle"
-          action="https://static-dev.gzxiyingyun.com">
-          <img :src="null">
+          :http-request="uploadAerialview"
+          :show-file-list="false"
+          :class="{'uploaded': aerialviewSrc !== ''}"
+          action="">
+          <img :src="aerialviewSrc">
           <i class="el-icon-plus" />
         </el-upload>
       </div>
@@ -191,6 +192,7 @@
   </el-container>
 </template>
 <script>
+import { upload } from '@/utils/uploadOSS'
 import { mapGetters, mapActions } from 'vuex'
 import { searchArrByKeyVal } from '@/utils/public'
 import { addProjectStage, editProjectStage } from '@/api/project_config/project'
@@ -199,6 +201,16 @@ import { emptyTarget } from '@/utils/public'
 export default {
   components: { AddHouseType },
   data() {
+    const validCityFunc = (rule, val, callback) => {
+      if (this.provinceSelected !== '' && this.citySelected !== '') {
+        console.log('val', val)
+        if (val === '') {
+          callback(new Error('请选择城市'))
+        } else {
+          callback()
+        }
+      }
+    }
     return {
       // ----------- 添加项目分期表单数据 -----------
       stageFormData: {
@@ -223,7 +235,7 @@ export default {
         code: [{ required: true, trigger: 'blur', message: '项目编码不能为空' }],
         status: [{ required: true, trigger: 'change', message: '请选择状态' }],
         estateProjectDetailEntity: {
-          cityId: [{ required: true, trigger: 'change', message: '请选择城市' }],
+          cityId: [{ required: true, trigger: 'blur', validator: validCityFunc }],
           typeId: [{ required: true, trigger: 'change', message: '请选择项目状态' }]
         }
       },
@@ -248,6 +260,7 @@ export default {
       houseTypeData: [], // 保存添加的户型数据
       provinceSelected: '', // 保存选择的城市Id
       citySelected: '', // 保存选择的城市id
+      aerialviewSrc: '', // 鸟瞰图预览路径
       // ----------- 数据字典dictId与本地数据对照关系 -------------------
       selectDectionary: {
         projectStatus: {
@@ -331,6 +344,7 @@ export default {
       // 编辑项目分期，加载表单数据
       const curProject = searchArrByKeyVal(this.projectDetails, 'id', projectId)
       if (curProject) {
+        console.log('curProject', curProject)
         this.stageLoading = true
         const parentId = curProject.parentId
         const _keys = Object.keys(curProject)
@@ -353,7 +367,7 @@ export default {
           }
         })
         // 加载户型数据
-        this.houseTypeData = curProject.estateProjectDetailEntity.houseTypeEntityList
+        this.houseTypeData = curProject.estateProjectDetailEntity.houseTypeEntityList || []
       }
     }
   },
@@ -369,7 +383,6 @@ export default {
     },
     // 处理所有城市数据
     handleAllCityData(datas, tergetDistrictId) {
-      console.log('tergetDistrictId', tergetDistrictId)
       const beHandleData = []
       datas.forEach(val => {
         if (val.parentId === '-1') {
@@ -430,18 +443,6 @@ export default {
         })
       }
     },
-    // 鸟瞰图上传过程处理
-    uploadingAerialviewHandle(resp, file, fileList) {
-      console.log('uploading resp', resp)
-      console.log('uploading file', file)
-      console.log('uploading fileList', fileList)
-    },
-    // 鸟瞰图上传完成处理
-    uploadedAerialviewHandle(resp, file, fileList) {
-      console.log('uploaded resp', resp)
-      console.log('uploaded file', file)
-      console.log('uploaded fileList', fileList)
-    },
     // 显示添加户型填写表单
     addHouseTypeCtrl() {
       const lastData = this.houseTypeData.filter(type => {
@@ -501,6 +502,14 @@ export default {
     deleteHoseType(index, data) {
       this.houseTypeData.splice(index, 1)
       this.stageFormData.estateProjectDetailEntity.houseTypeEntityList = this.houseTypeData
+    },
+    // 上传鸟瞰图
+    uploadAerialview({ file }) {
+      console.log('file', file)
+      upload(file).then(resp => {
+        console.log('resp img', resp)
+        this.aerialviewSrc = resp.url
+      })
     },
     // 添加分期处理
     submitHandle() {
@@ -605,9 +614,22 @@ export default {
         background: #fbfdff;
         cursor: pointer;
         @include flex-layout(center, center, null, nowrap);
+        img {
+          display: none;
+          width: 85%;
+        }
         i {
           font-size: 46px;
           color: #ccc;
+        }
+      }
+      & /deep/ .uploaded {
+        background: #fff;
+        i {
+          display: none;
+        }
+        img {
+          display: block;
         }
       }
     }

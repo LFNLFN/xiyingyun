@@ -3,8 +3,8 @@
     <hamburger :toggle-click="toggleSideBar" :is-active="sidebar.opened" class="hamburger-container"/>
     <breadcrumb />
     <div class="navbar-right-part">
-      <userDropdown />
       <msgDropdown />
+      <userDropdown />
     </div>
   </div>
 </template>
