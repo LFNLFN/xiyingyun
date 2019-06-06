@@ -129,11 +129,12 @@
       <div class="aerialview-upload-wrap">
         <span class="title-text">上传鸟瞰图 (建议不超过50M)</span>
         <el-upload
+          v-loading="isUploadAerialview"
           :http-request="uploadAerialview"
           :show-file-list="false"
-          :class="{'uploaded': aerialviewSrc !== ''}"
+          :class="{'uploaded': stageFormData.estateProjectDetailEntity.aerialView !== ''}"
           action="">
-          <img :src="aerialviewSrc">
+          <img :src="stageFormData.estateProjectDetailEntity.aerialView">
           <i class="el-icon-plus" />
         </el-upload>
       </div>
@@ -192,7 +193,7 @@
   </el-container>
 </template>
 <script>
-import { upload } from '@/utils/uploadOSS'
+import { upload } from '@/utils/manageOSS'
 import { mapGetters, mapActions } from 'vuex'
 import { searchArrByKeyVal } from '@/utils/public'
 import { addProjectStage, editProjectStage } from '@/api/project_config/project'
@@ -260,7 +261,7 @@ export default {
       houseTypeData: [], // 保存添加的户型数据
       provinceSelected: '', // 保存选择的城市Id
       citySelected: '', // 保存选择的城市id
-      aerialviewSrc: '', // 鸟瞰图预览路径
+      // aerialviewSrc: '', // 鸟瞰图预览路径
       // ----------- 数据字典dictId与本地数据对照关系 -------------------
       selectDectionary: {
         projectStatus: {
@@ -289,7 +290,8 @@ export default {
       allCityIndex: {},
       // ----------- 状态数据 -------------------
       stageLoading: false,
-      selectLoading: false
+      selectLoading: false,
+      isUploadAerialview: false
     }
   },
   computed: {
@@ -505,16 +507,23 @@ export default {
     },
     // 上传鸟瞰图
     uploadAerialview({ file }) {
-      console.log('file', file)
+      this.isUploadAerialview = true
       upload(file).then(resp => {
-        console.log('resp img', resp)
-        this.aerialviewSrc = resp.url
+        // this.aerialviewSrc = resp.url
+        this.stageFormData.estateProjectDetailEntity.aerialView = resp.url
+        this.isUploadAerialview = false
       })
     },
     // 添加分期处理
     submitHandle() {
       this.$refs.stageForm.validate(valid => {
         if (valid) {
+          if (this.isUploadAerialview) {
+            this.$alert('正在上传鸟瞰图，请等待上传完！', '提示', {
+              confirmButtonText: '确定'
+            })
+            return
+          }
           let _method, _msg
           this.stageLoading = true
           const eventType = this.$route.query.eventType
@@ -539,7 +548,17 @@ export default {
       })
     },
     cancelHandle() {
-      this.$router.go(-1)
+      if (this.isUploadAerialview) {
+        this.$confirm('正在上传鸟瞰图，退出会中断上传，是否退出？', '警告', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$router.go(-1)
+        })
+      } else {
+        this.$router.go(-1)
+      }
     }
   }
 }

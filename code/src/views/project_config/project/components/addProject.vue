@@ -70,7 +70,8 @@ export default {
     isAddProjectShow: function(newVal) {
       if (newVal) {
         // 加载组织架构数据
-        this.getOrganization().then(resp => {
+        const type = this.$store.getters.organizationType.organization
+        this.getOrganization({ type }).then(resp => {
           this.isLoading = false
           this.organizationData = resp
           if (this.eventType === 'edit') {

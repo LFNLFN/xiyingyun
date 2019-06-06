@@ -1,6 +1,6 @@
 {
-  "name": "vue-admin-template",
-  "version": "3.9.0",
+  "name": "estate-web",
+  "version": "1.0.0",
   "license": "MIT",
   "description": "A vue admin template with Element UI & axios & iconfont & permission control & lint",
   "author": "Pan <panfree23@gmail.com>",
@@ -9,6 +9,7 @@
     "start": "npm run dev",
     "build": "node build/build.js",
     "build:report": "npm_config_report=true npm run build",
+    "preview": "node build/prod-server.js",
     "lint": "eslint --ext .js,.vue src",
     "test": "npm run lint",
     "svgo": "svgo -f src/icons/svg --config=src/icons/svgo.yml"
@@ -48,6 +49,7 @@
     "file-loader": "1.1.11",
     "friendly-errors-webpack-plugin": "1.7.0",
     "html-webpack-plugin": "4.0.0-alpha",
+    "http-server": "^0.11.1",
     "mini-css-extract-plugin": "0.4.1",
     "node-notifier": "5.2.1",
     "node-sass": "^4.7.2",

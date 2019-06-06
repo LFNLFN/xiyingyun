@@ -88,12 +88,13 @@
   </el-container>
 </template>
 <script>
+import { mapActions } from 'vuex'
 import AddSupplier from '@/views/base_data/suppliers/components/addSuppliers'
 import AddPosition from '@/views/base_data/suppliers/components/addPosition'
 import AddMember from '@/views/base_data/suppliers/components/AddMember'
 import PullMember from '@/views/base_data/suppliers/components/PullMember'
 import PositionMembers from '@/views/base_data/suppliers/components/PositionMembers'
-import { getSuppliers, delSuppliers } from '@/api/base_data/suppliers'
+import { delSuppliers } from '@/api/base_data/suppliers'
 import { getDictionaryItem } from '@/api/dictionary'
 import { getPosition, delPosition } from '@/api/base_data/suppliers'
 import { emptyTarget } from '@/utils/public.js'
@@ -138,12 +139,17 @@ export default {
     this.getSuppTypeFunc()
   },
   methods: {
+    ...mapActions({
+      getOrganization: 'getOrganizationData'
+    }),
     // 获取供应商树
     getSuppTree() {
       this.suppTreeLoading = true
-      getSuppliers().then(resp => {
-        const treeList = resp.result
-        this.suppTreeData = treeList.filter(tree => tree.type === 1)
+      const type = this.$store.getters.organizationType.suppliers
+      this.getOrganization({ type, reGet: true }).then(resp => {
+      // getSuppliers(getType).then(resp => {
+      //   const treeList = resp.result
+        this.suppTreeData = resp
         this.handleNodeClick(this.suppTreeData[0])
         this.suppTreeLoading = false
       }).catch(() => {

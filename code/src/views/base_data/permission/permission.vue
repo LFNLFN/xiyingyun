@@ -233,7 +233,7 @@ export default {
   }
 }
 </script>
-<style ref="stylesheet/scss" lang="scss">
+<style ref="stylesheet/scss" lang="scss" scoped>
 @import "src/styles/mixin.scss";
 
 .el-container {

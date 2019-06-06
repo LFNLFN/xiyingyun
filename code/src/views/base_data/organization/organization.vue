@@ -88,7 +88,7 @@
   </el-container>
 </template>
 <script>
-import { mapActions, mapMutations } from 'vuex'
+import { mapActions } from 'vuex'
 import AddOrganization from '@/views/base_data/organization/components/addOrganization'
 import AddPosition from '@/views/base_data/organization/components/addPosition'
 import AddMember from '@/views/base_data/organization/components/AddMember'
@@ -142,14 +142,14 @@ export default {
     ...mapActions({
       getOrganization: 'getOrganizationData'
     }),
-    ...mapMutations({
-      clearOrgan: 'CLEAR_ORGANIZATION'
-    }),
+    // ...mapMutations({
+    //   clearOrgan: 'CLEAR_ORGANIZATION'
+    // }),
     // 获取组织架构树
     getOrganTree() {
       this.organTreeLoading = true
-      const type = 0
-      this.getOrganization(type).then(resp => {
+      const type = this.$store.getters.organizationType.organization
+      this.getOrganization({ type, reGet: true }).then(resp => {
         this.organTreeData = resp
         this.handleNodeClick(this.organTreeData[0])
         this.organTreeLoading = false
@@ -267,7 +267,7 @@ export default {
               type: 'success',
               duration: 3 * 1000
             })
-            this.clearOrgan()
+            // this.clearOrgan()
             this.getOrganTree()
           })
         } else if (type === 'position') {
@@ -297,7 +297,7 @@ export default {
       this.pullMemberPostData = {}
       if (submit) {
         if (boxType === 'organization') {
-          this.clearOrgan()
+          // this.clearOrgan()
           this.getOrganTree()
         } else if (boxType === 'position') {
           this.getPositionFunc(this.$refs.organTree.getCurrentNode())

@@ -15,9 +15,6 @@ export function upload(file) {
       const imgName = 'aerialview_'
       const fileName = `${imgName}${Date.parse(new Date())}`
       client.put(fileName, file, { 'ContentType': 'image/jpeg' }).then(({ res, url, name }) => {
-        // console.log('res', res)
-        // console.log('url', url)
-        // console.log('name', name)
         reslove({ res, url, name })
       }).catch((e) => {
         reject(e)

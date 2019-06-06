@@ -16,6 +16,7 @@ const getters = {
   roles: state => state.user.roles,
   checkItems: state => state.baseData.checkItems,
   permissionRoles: state => state.baseData.permissionRoles,
+  organizationType: state => state.baseData.organizationType,
   projectList: state => {
     let _list = []
     if (state.projectConfig.projectList.length > 0) {

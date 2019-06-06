@@ -175,7 +175,7 @@ export default {
       'terms[0].value': 'supplier_type'
     }
     getDictionaryItem(dictParams).then(dresp => {
-      const supplierType = dresp.result.data
+      const supplierType = dresp.result
       let constructionId, supervisorId
       supplierType.forEach(item => {
         if (item.name === 'construction') {
@@ -184,8 +184,8 @@ export default {
           supervisorId = item.id
         }
       })
-      const getType = 1
-      this.getOrganization(getType).then(oresp => {
+      const type = this.$store.getters.organizationType.suppliers
+      this.getOrganization({ type }).then(oresp => {
         const organs = oresp
         organs.forEach(org => {
           if (org.orgType === constructionId) {

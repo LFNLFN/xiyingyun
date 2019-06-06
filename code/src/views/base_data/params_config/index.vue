@@ -25,7 +25,7 @@ export default{
 @import "src/styles/mixin.scss";
 
 .el-container {
-  padding: 20px;
+  padding: 25px;
   .el-main {
     @include boxShadow-container;
     .header {

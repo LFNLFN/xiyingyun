@@ -86,7 +86,7 @@ export default {
     getUserInfo().then(resp => {
       this.isLoading = false
       console.log('resp', resp)
-      // this.userInfoForm = resp.result
+      this.userInfoForm = resp.result
     })
   },
   methods: {

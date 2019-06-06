@@ -82,9 +82,6 @@ export default {
       batchOperateValue: '',
       pageTotal: 20
     }
-  },
-  created() {
-    console.log('runing ')
   }
 }
 </script>

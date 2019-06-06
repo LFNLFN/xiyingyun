@@ -15,10 +15,11 @@ router.beforeEach((to, from, next) => {
   if (getToken()) {
     if (to.path === '/login') {
       next({ path: '/' })
-      NProgress.done() // if current page is dashboard will not trigger	afterEach hook, so manually handle it
+      NProgress.done()
     } else {
       if (store.getters.roles.length === 0) {
-        store.dispatch('GetInfo').then(res => { // 拉取用户信息
+        // 拉取用户信息
+        store.dispatch('GetInfo').then(res => {
           next()
         }).catch((err) => {
           store.dispatch('FedLogOut').then(() => {
@@ -27,7 +28,7 @@ router.beforeEach((to, from, next) => {
           })
         })
       } else {
-        // const reg = new RegExp('((?<=:).*(?=\/)|(?<=:).*)+', 'g')
+        // 处理动态路由匹配的路径参数
         const params = to.params
         const paramKeys = Object.keys(to.params)
         if (paramKeys.length) {

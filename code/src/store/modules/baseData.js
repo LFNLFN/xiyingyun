@@ -23,7 +23,11 @@ const baseData = {
       }
     ],
     permissionRoles: [],
-    organizationData: []
+    organizationData: [],
+    organizationType: {
+      suppliers: 1,
+      organization: 0
+    }
   },
   mutations: {
     SET_PER_ROLES: (state, roles) => {
@@ -56,19 +60,21 @@ const baseData = {
         }
       })
     },
-    // 获取组织架构数据
-    getOrganizationData({ commit, state }, type) {
+    // 获取组织架构以及供应商
+    getOrganizationData({ commit, state }, _obj) {
+      const { type, reGet } = _obj
       return new Promise((resolve, reject) => {
-        if (state.organizationData.length === 0) {
+        if (state.organizationData.length === 0 || reGet) {
           getOrganization().then(resp => {
-            const data = resp.result.filter(tree => tree.type === type)
+            const data = resp.result
+            const backData = data.filter(tree => tree.type === type)
             commit('SET_ORGANIZATION', data)
-            resolve(data)
+            resolve(backData)
           }).catch(err => {
             reject(err)
           })
         } else {
-          resolve(state.organizationData)
+          resolve(state.organizationData.filter(tree => tree.type === type))
         }
       })
     }

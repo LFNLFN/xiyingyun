@@ -89,9 +89,9 @@
   </el-container>
 </template>
 <script>
-import { mapMutations, mapActions } from 'vuex'
+import { mapActions } from 'vuex'
 import AddProject from '@/views/project_config/project/components/addProject'
-import { getProjectTree, getProjectDetail, delProject } from '@/api/project_config/project'
+import { delProject } from '@/api/project_config/project'
 export default {
   components: { AddProject },
   data() {
@@ -122,32 +122,28 @@ export default {
   //   }
   // },
   methods: {
-    ...mapMutations({
-      saveProjectList: 'SET_PROJECT_LIST',
-      saveProjectDetails: 'SET_PROJECT_DETAILS'
-    }),
     ...mapActions([
-      'getDictionaryItemFunc'
+      'getDictionaryItemFunc',
+      'getProjectListVuex',
+      'getProjectDetailsVuex'
     ]),
     // 加载项目列表
     getProjectTreeFunc() {
       this.projectTableLoading = true
-      getProjectTree().then(resp => {
-        const list = resp.result
+      this.getProjectListVuex({ isGet: true }).then(resp => {
+        const list = resp
         this.projectTableLoading = false
         this.projectList = list
         this.projectTableData = list
-        this.saveProjectList(list)
       }).catch(() => {
         this.projectTableLoading = false
       })
     },
     // 加载项目详情树
     getProjectDetailFunc() {
-      getProjectDetail().then(resp => {
-        const data = resp.result
+      this.getProjectDetailsVuex({ isGet: true }).then(resp => {
+        const data = resp
         this.getStatusFromProject(data)
-        this.saveProjectDetails(data)
       })
     },
     // 从项目详情中获取项目状态

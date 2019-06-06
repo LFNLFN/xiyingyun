@@ -1,5 +1,6 @@
-import { getDictionaryItem } from '@/api/dictionary'
 import Vue from 'vue'
+import { getDictionaryItem } from '@/api/dictionary'
+import { getProjectTree, getProjectDetail } from '@/api/project_config/project'
 
 // 保存项目配置部分需要的数据
 const projectConfig = {
@@ -34,6 +35,7 @@ const projectConfig = {
     }
   },
   actions: {
+    // 从数据字典中加载项目管理需要的数据，并保存
     getDictionaryItemFunc({ commit, state }, _obj) {
       const key = _obj.dataKey
       const params = _obj.params
@@ -50,6 +52,50 @@ const projectConfig = {
           })
         } else {
           reslove(state[key])
+        }
+      })
+    },
+    // 加载项目列表并保存
+    getProjectListVuex({ commit, state }, _obj = { isGet: false }) {
+      return new Promise((reslove, reject) => {
+        let localProjectList
+        try {
+          localProjectList = JSON.parse(localStorage.projectList)
+        } catch (e) {
+          localProjectList = []
+        }
+        if ((state.projectList.length === 0 && localProjectList.length === 0) || _obj.isGet) {
+          getProjectTree().then(resp => {
+            const _list = resp.result
+            reslove(_list)
+            commit('SET_PROJECT_LIST', _list)
+          }).catch((rej) => {
+            reject(rej)
+          })
+        } else {
+          state.projectList.length > 0 ? reslove(state.projectList) : reslove(localProjectList)
+        }
+      })
+    },
+    // 加载项目详情列表
+    getProjectDetailsVuex({ commit, state }, _obj = { isGet: false }) {
+      return new Promise((reslove, reject) => {
+        let localprojectDetails
+        try {
+          localprojectDetails = JSON.parse(localStorage.projectDetails)
+        } catch (e) {
+          localprojectDetails = []
+        }
+        if ((state.projectDetails.length === 0 && localprojectDetails.length === 0) || _obj.isGet) {
+          getProjectDetail().then(resp => {
+            const _list = resp.result
+            reslove(_list)
+            commit('SET_PROJECT_DETAILS', _list)
+          }).catch((rej) => {
+            reject(rej)
+          })
+        } else {
+          state.projectDetails.length > 0 ? reslove(state.projectDetails) : reslove(localprojectDetails)
         }
       })
     }
