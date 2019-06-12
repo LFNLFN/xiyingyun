@@ -5,12 +5,21 @@ import { getProjectTree, getProjectDetail } from '@/api/project_config/project'
 // 保存项目配置部分需要的数据
 const projectConfig = {
   state: {
+    // 项目管理相关数据
     projectList: [], // 保存项目列表
     projectDetails: [], // 保存包含项目分期、标段的数据
     projectStatus: [], // 保存项目状态数据
     deliveryType: [], // 保存交付类型数据
     constructionType: [], // 保存施工阶段数据
-    districtData: [] // 保存城市数据
+    districtData: [], // 保存城市数据
+    // 楼栋管理相关数据
+    addUnitAndRoomsData: {
+      unitFormData: {},
+      roomsData: [],
+      status: 'addBuild',
+      isNextAddUnit: false,
+      isAddRomms: true
+    } // 保存添加单元以及房间所需的数据
   },
   mutations: {
     SET_PROJECT_LIST: (state, list) => {
@@ -31,7 +40,22 @@ const projectConfig = {
     },
     SET_DICTIONARY_ITEM: (state, _obj) => {
       Vue.set(state, _obj.key, _obj.data)
-      // state[_obj.key] = _obj.data
+    },
+    SET_UNITROOM_DATA: (state, _obj) => {
+      const keys = Object.keys(_obj)
+      keys.forEach(key => {
+        Vue.set(state.addUnitAndRoomsData, key, _obj[key])
+      })
+    },
+    RESET_UNITROOM_DATA: (state) => {
+      const _obj = {
+        unitFormData: {},
+        roomsData: [],
+        status: 'addBuild',
+        isNextAddUnit: false,
+        isAddRomms: true
+      }
+      Vue.set(state, 'addUnitAndRoomsData', _obj)
     }
   },
   actions: {
