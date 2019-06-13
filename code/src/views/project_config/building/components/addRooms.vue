@@ -5,9 +5,8 @@
         <el-form
           ref="roomsForm"
           :model="roomsFormData"
-          :rules="roomsFormRules"
           class="rooms-form">
-          <el-form-item prop="presaleFloorCount" label="每层房间数">
+          <el-form-item prop="roomCount" label="每层房间数">
             <el-input v-model.number="roomsFormData.roomCount" size="mini" placeholder="请输入每层房间数" />
             <el-button type="primary" size="mini" @click="addRoomsHandle">确定</el-button>
           </el-form-item>
@@ -54,7 +53,7 @@
 <script>
 import EventBus from '@/utils/eventBus'
 import PublicPopups from '@/components/Pop-ups/PublicPopups'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 import { addBuilding, addRoomsBatch } from '@/api/project_config/building'
 export default {
   components: { PublicPopups },
@@ -68,9 +67,6 @@ export default {
     return {
       roomsFormData: {
         roomCount: null
-      },
-      roomsFormRules: {
-        roomCount: [{ required: true, trigger: 'blur', message: '房间数不能为空' }]
       },
       floorData: [], // 保存楼层数据
       isAddRooms: false,
@@ -87,29 +83,41 @@ export default {
     isAddRoomsShow: function(newVal) {
       if (newVal) {
         // 初始化数据
-        this.isAddRooms = this.addUnitAndRoomsData.isAddRomms
+        this.isAddRooms = this.addUnitAndRoomsData.isAddRooms
         this.isNextAddUnit = this.addUnitAndRoomsData.isNextAddUnit
         // 根据楼栋数据加载楼栋的楼层数据
-        const unitData = this.addUnitAndRoomsData.unitFormData
-        console.log('unitData', unitData)
-        const _keys = Object.keys(unitData)
-        if (_keys.length <= 0) {
+        const { unitFormData, isNextAddUnit, roomsData } = this.addUnitAndRoomsData
+        console.log('unitFormData', unitFormData)
+        const _keys = Object.keys(unitFormData)
+        if (_keys.length === 0) {
           this.$message({
             message: '警告：项目信息不完整，无法生成房间',
             type: 'warning',
-            duration: 5,
             showClose: true
           })
           return
         }
-        const floorCount = unitData.floorCount
-        for (let i = 1; i <= floorCount; i++) {
-          this.floorData.push({
-            unitId: '',
-            name: `${i}层`,
-            parentId: '-1',
-            children: []
+        if (roomsData.length > 0 && !isNextAddUnit) {
+          roomsData.forEach(room => {
+            const _keys = Object.keys(room)
+            const _roomObj = {}
+            _keys.forEach(key => {
+              _roomObj[key] = room[key]
+            })
+            this.floorData.push(_roomObj)
           })
+        } else {
+          const floorCount = unitFormData.floorCount
+          for (let i = 1; i <= floorCount; i++) {
+            this.floorData.push({
+              unitId: '',
+              name: `${i}层`,
+              parentId: '-1',
+              children: [],
+              level: 1,
+              sortIndex: i
+            })
+          }
         }
         console.log('floorData', this.floorData)
       }
@@ -117,11 +125,13 @@ export default {
   },
   mounted() {
     EventBus.$on('building.toEditBuildingData', () => {
-      console.log('toEditBuildingData')
       this.$emit('update:isAddRoomsShow', true)
     })
   },
   methods: {
+    ...mapMutations({
+      resetunitFormData: 'RESET_UNITROOM_DATA'
+    }),
     // 为楼层添加房间
     addRoomsHandle() {
       const roomCount = this.roomsFormData.roomCount
@@ -130,14 +140,17 @@ export default {
         return
       }
       this.floorData.forEach((item, idx) => {
-        item.children.splice(0, item.children.length)
+        item.children = []
         for (let i = 1; i <= roomCount; i++) {
           let curIdx
+          const floorId = item.id && item.id !== '' ? item.id : '-1'
           i < 10 ? curIdx = `0${i}` : String(i)
           item.children.push({
             unitId: item.unitId,
             name: `${idx + 1}${curIdx}`,
-            parentId: '-1'
+            parentId: floorId,
+            level: 2,
+            sortIndex: curIdx
           })
         }
       })
@@ -146,14 +159,17 @@ export default {
     // 提交表单数据，新增单元
     submitBuildingHandle() {
       const addUnitFormData = this.addUnitAndRoomsData.unitFormData
-      addBuilding(addUnitFormData).then(resp => {
-        console.log('add unit resp', resp)
-        const unitId = resp.result
-        this.submitRoomsHandle(unitId)
-      })
+      if (this.addUnitAndRoomsData.isNextAddUnit) {
+        addBuilding(addUnitFormData).then(resp => {
+          const unitId = resp.result
+          this.addFloorRoomsSubmit(unitId)
+        })
+      } else {
+        this.addRoomsSubmit()
+      }
     },
     // 提交表单数据，新增楼层及房间
-    submitRoomsHandle(unitId) {
+    addFloorRoomsSubmit(unitId) {
       const floorData = this.floorData
       floorData.forEach(item => {
         item.unitId = unitId
@@ -170,6 +186,21 @@ export default {
         this.closeBox()
       })
     },
+    // 楼层添加房间处理
+    addRoomsSubmit() {
+      const allRoomData = []
+      this.floorData.forEach(floor => {
+        allRoomData.push(...floor.children)
+      })
+      addRoomsBatch(allRoomData).then(resp => {
+        this.$message({
+          message: '生成房间成功',
+          type: 'success'
+        })
+        this.$emit('reloadBuilding')
+        this.closeBox()
+      })
+    },
     // 返回上一步
     toPreviousHandle() {
       this.$emit('update:isAddRoomsShow', false)
@@ -177,14 +208,18 @@ export default {
       this.resetData()
     },
     closeBox() {
-      EventBus.$emit('building.addBuildCloseHandle')
+      if (this.addUnitAndRoomsData.isNextAddUnit) {
+        EventBus.$emit('building.addBuildCloseHandle')
+      }
       this.$emit('update:isAddRoomsShow', false)
       this.resetData()
     },
     resetData() {
+      console.log('this.$refs.roomsForm', this.$refs.roomsForm)
       this.floorData = []
       this.roomsDataShow = false
       this.$refs.roomsForm.resetFields()
+      this.resetunitFormData()
     }
   }
 }

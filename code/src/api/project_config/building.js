@@ -18,11 +18,29 @@ export function getBuliding(params) {
   })
 }
 
+// 编辑楼栋数据
+export function editBuild(id, datas) {
+  return request({
+    url: `/unit/${id}`,
+    method: 'put',
+    data: JSON.stringify(datas)
+  })
+}
+
 // 删除楼栋功能
 export function delBuliding(id) {
   return request({
     url: `/unit/${id}`,
     method: 'delete'
+  })
+}
+
+// 获取楼栋房间信息
+export function getRooms(params) {
+  return request({
+    url: '/room/no-paging',
+    method: 'get',
+    params: params
   })
 }
 
@@ -35,11 +53,11 @@ export function addRoomsBatch(datas) {
   })
 }
 
-// 获取楼栋房间信息
-export function getRooms(params) {
+// 批量删除房间
+export function delRoomsBatch(unitId) {
   return request({
-    url: '/room/no-paging',
-    method: 'get',
-    params: params
+    url: `/room/batch/${unitId}`,
+    method: 'delete'
   })
 }
+

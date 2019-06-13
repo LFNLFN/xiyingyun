@@ -18,7 +18,7 @@ const projectConfig = {
       roomsData: [],
       status: 'addBuild',
       isNextAddUnit: false,
-      isAddRomms: true
+      isAddRooms: true
     } // 保存添加单元以及房间所需的数据
   },
   mutations: {
@@ -53,7 +53,7 @@ const projectConfig = {
         roomsData: [],
         status: 'addBuild',
         isNextAddUnit: false,
-        isAddRomms: true
+        isAddRooms: true
       }
       Vue.set(state, 'addUnitAndRoomsData', _obj)
     }
