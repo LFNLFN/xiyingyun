@@ -20,7 +20,7 @@
             <el-input v-model.number="buildFormData.presaleFloorCount" size="mini" placeholder="请输入预售层数" />
           </el-form-item>
           <el-form-item v-show="!isEditBuild" prop="presaleFloorCount">
-            <el-checkbox v-model="addRoomsChecked">是否同步生成房间</el-checkbox>
+            <el-checkbox v-model="buildRoomsChecked">是否同步生成房间</el-checkbox>
           </el-form-item>
         </el-form>
       </div>
@@ -70,7 +70,7 @@ export default {
         presaleFloorCount: [{ required: true, trigger: 'blur', message: '预售层数不能为空' }]
       },
       addStatus: 'fill', // 当前状态：fill 填写表单，edit 编辑楼栋数据, added 新增完成
-      addRoomsChecked: true, // 选择是否生成房间
+      buildRoomsChecked: true, // 选择是否生成房间
       isEditBuild: false, // 是否是编辑模式
       isLoading: false
     }
@@ -128,7 +128,7 @@ export default {
           const _obj = {
             unitFormData: this.buildFormData,
             isNextAddUnit: true,
-            isAddRooms: this.addRoomsChecked
+            isBuildRoom: this.buildRoomsChecked
           }
           this.saveUnitFormData(_obj)
           this.toEditBuildingData()
@@ -151,7 +151,7 @@ export default {
               message: '编辑楼栋信息成功',
               type: 'success'
             })
-            this.$emit('reloadBuilding')
+            this.$emit('refreshBuilding')
             this.closeBox()
           })
         }

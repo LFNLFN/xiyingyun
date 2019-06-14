@@ -44,6 +44,31 @@ export function getRooms(params) {
   })
 }
 
+export function editRoom(id, data) {
+  return request({
+    url: `/room/${id}`,
+    method: 'put',
+    data: JSON.stringify(data)
+  })
+}
+
+// 批量增加房间
+export function addRoom(data) {
+  return request({
+    url: '/room',
+    method: 'post',
+    data: JSON.stringify(data)
+  })
+}
+
+// 删除房间
+export function delRoom(id) {
+  return request({
+    url: `/room/${id}`,
+    method: 'delete'
+  })
+}
+
 // 批量增加房间
 export function addRoomsBatch(datas) {
   return request({
@@ -53,8 +78,8 @@ export function addRoomsBatch(datas) {
   })
 }
 
-// 批量删除房间
-export function delRoomsBatch(unitId) {
+// 清空楼栋所以房间
+export function emptyRooms(unitId) {
   return request({
     url: `/room/batch/${unitId}`,
     method: 'delete'

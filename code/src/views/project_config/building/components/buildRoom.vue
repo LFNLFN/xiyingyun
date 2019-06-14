@@ -1,7 +1,7 @@
 <template>
   <publicPopups title-text="生成房间 " width="650px" @closePopupsBox="closeBox">
     <template slot="main-content">
-      <div :class="{'add-rooms-active': isAddRooms}" class="main-wrap">
+      <div :class="{'add-rooms-active': isBuildRoom}" class="main-wrap">
         <el-form
           ref="roomsForm"
           :model="roomsFormData"
@@ -58,7 +58,7 @@ import { addBuilding, addRoomsBatch } from '@/api/project_config/building'
 export default {
   components: { PublicPopups },
   props: {
-    isAddRoomsShow: {
+    isBuildRoomShow: {
       type: Boolean,
       default: false
     }
@@ -69,7 +69,7 @@ export default {
         roomCount: null
       },
       floorData: [], // 保存楼层数据
-      isAddRooms: false,
+      isBuildRoom: false,
       isNextAddUnit: false,
       roomsDataShow: false
     }
@@ -80,10 +80,10 @@ export default {
     ])
   },
   watch: {
-    isAddRoomsShow: function(newVal) {
+    isBuildRoomShow: function(newVal) {
       if (newVal) {
         // 初始化数据
-        this.isAddRooms = this.addUnitAndRoomsData.isAddRooms
+        this.isBuildRoom = this.addUnitAndRoomsData.isBuildRoom
         this.isNextAddUnit = this.addUnitAndRoomsData.isNextAddUnit
         // 根据楼栋数据加载楼栋的楼层数据
         const { unitFormData, isNextAddUnit, roomsData } = this.addUnitAndRoomsData
@@ -125,7 +125,7 @@ export default {
   },
   mounted() {
     EventBus.$on('building.toEditBuildingData', () => {
-      this.$emit('update:isAddRoomsShow', true)
+      this.$emit('update:isBuildRoomShow', true)
     })
   },
   methods: {
@@ -182,7 +182,7 @@ export default {
           message: '新增成功',
           type: 'success'
         })
-        this.$emit('reloadBuilding')
+        this.$emit('refreshBuilding')
         this.closeBox()
       })
     },
@@ -197,13 +197,13 @@ export default {
           message: '生成房间成功',
           type: 'success'
         })
-        this.$emit('reloadBuilding')
+        this.$emit('refreshBuilding')
         this.closeBox()
       })
     },
     // 返回上一步
     toPreviousHandle() {
-      this.$emit('update:isAddRoomsShow', false)
+      this.$emit('update:isBuildRoomShow', false)
       EventBus.$emit('building.toAddBuildingData')
       this.resetData()
     },
@@ -211,7 +211,7 @@ export default {
       if (this.addUnitAndRoomsData.isNextAddUnit) {
         EventBus.$emit('building.addBuildCloseHandle')
       }
-      this.$emit('update:isAddRoomsShow', false)
+      this.$emit('update:isBuildRoomShow', false)
       this.resetData()
     },
     resetData() {

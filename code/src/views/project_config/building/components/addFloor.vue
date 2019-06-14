@@ -1,5 +1,5 @@
 <template>
-  <publicPopups title-text="新增楼层" @closePopupsBox="closeBox">
+  <publicPopups title-text="新增楼层" @closePopupsBox="closeBox" @formConfirm="addFloorSubmit">
     <template slot="main-content">
       <el-form
         ref="floorForm"
@@ -19,6 +19,24 @@
 import PublicPopups from '@/components/Pop-ups/PublicPopups'
 export default {
   components: { PublicPopups },
+  props: {
+    unitData: {
+      type: Object,
+      default: () => {
+        return {}
+      }
+    },
+    allRoomsData: {
+      type: Array,
+      default: () => {
+        return []
+      }
+    },
+    isAddFloorShow: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
       floorFormData: {
@@ -28,8 +46,8 @@ export default {
     }
   },
   methods: {
+    addFloorSubmit() {},
     closeBox() {
-      console.log('closeBox')
       this.$emit('update:isAddFloorShow', false)
     }
   }
