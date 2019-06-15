@@ -25,7 +25,7 @@
               </div>
             </li>
           </ul>
-          <ul v-show="roomsDataShow" class="rooms-list">
+          <ul v-show="addRoomCompelete" class="rooms-list">
             <li class="list-header">
               <span class="floor-text">单元</span>
             </li>
@@ -71,7 +71,7 @@ export default {
       floorData: [], // 保存楼层数据
       isBuildRoom: false,
       isNextAddUnit: false,
-      roomsDataShow: false
+      addRoomCompelete: false
     }
   },
   computed: {
@@ -87,7 +87,6 @@ export default {
         this.isNextAddUnit = this.addUnitAndRoomsData.isNextAddUnit
         // 根据楼栋数据加载楼栋的楼层数据
         const { unitFormData, isNextAddUnit, roomsData } = this.addUnitAndRoomsData
-        console.log('unitFormData', unitFormData)
         const _keys = Object.keys(unitFormData)
         if (_keys.length === 0) {
           this.$message({
@@ -119,7 +118,6 @@ export default {
             })
           }
         }
-        console.log('floorData', this.floorData)
       }
     }
   },
@@ -154,21 +152,30 @@ export default {
           })
         }
       })
-      this.roomsDataShow = true
+      this.addRoomCompelete = true
     },
     // 提交表单数据，新增单元
     submitBuildingHandle() {
+      if (!this.addRoomCompelete) {
+        this.$message({
+          message: '请先添加房间信息',
+          type: 'warning'
+        })
+        return
+      }
       const addUnitFormData = this.addUnitAndRoomsData.unitFormData
+      // 如果是再新增楼栋时同步生成房间，则先添加楼栋数据
       if (this.addUnitAndRoomsData.isNextAddUnit) {
         addBuilding(addUnitFormData).then(resp => {
           const unitId = resp.result
           this.addFloorRoomsSubmit(unitId)
         })
+      // 否则直接添加房间信息
       } else {
         this.addRoomsSubmit()
       }
     },
-    // 提交表单数据，新增楼层及房间
+    // 新增楼层及房间
     addFloorRoomsSubmit(unitId) {
       const floorData = this.floorData
       floorData.forEach(item => {
@@ -217,7 +224,7 @@ export default {
     resetData() {
       console.log('this.$refs.roomsForm', this.$refs.roomsForm)
       this.floorData = []
-      this.roomsDataShow = false
+      this.addRoomCompelete = false
       this.$refs.roomsForm.resetFields()
       this.resetunitFormData()
     }

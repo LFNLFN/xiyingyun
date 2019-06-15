@@ -44,6 +44,7 @@ export function getRooms(params) {
   })
 }
 
+// 编辑房间
 export function editRoom(id, data) {
   return request({
     url: `/room/${id}`,
@@ -52,7 +53,7 @@ export function editRoom(id, data) {
   })
 }
 
-// 批量增加房间
+// 增加房间
 export function addRoom(data) {
   return request({
     url: '/room',

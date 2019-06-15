@@ -1,14 +1,24 @@
 <template>
-  <publicPopups title-text="生成房间 " @closePopupsBox="closeBox" @formConfirm="addRoomSubmit">
+  <publicPopups title-text="添加房间 " @closePopupsBox="closeBox" @formConfirm="addRoomSubmit">
     <template slot="main-content">
       <div class="form-wrap">
-        <el-form
+        <!-- <el-form
           ref="roomsForm"
           :model="roomsFormData"
           :rules="roomsFormRules"
           class="rooms-form">
           <el-form-item prop="name" label="房间名">
             <el-input v-model.number="roomsFormData.name" size="small" placeholder="请输入房间名" />
+          </el-form-item>
+        </el-form> -->
+        <el-form
+          ref="roomsForm"
+          class="rooms-form">
+          <el-form-item
+            v-for="(item, idx) in insertData"
+            :key="idx"
+            label="房间名">
+            <el-input :ref="`roomInput${idx}`" v-model="item.name" size="small" placeholder="请输入房间名" />
           </el-form-item>
         </el-form>
       </div>
@@ -17,7 +27,7 @@
 </template>
 <script>
 import PublicPopups from '@/components/Pop-ups/PublicPopups'
-import { addRoom } from '@/api/project_config/building'
+import { addRoomsBatch } from '@/api/project_config/building'
 export default {
   components: { PublicPopups },
   props: {
@@ -28,38 +38,54 @@ export default {
   },
   data() {
     return {
-      roomsFormData: {
-        unitId: '',
-        name: '',
-        parentId: '',
-        level: 2,
-        sortIndex: null
-      },
-      roomsFormRules: {
-        name: [{ required: true, trigger: 'blur', message: '楼栋名称不能为空' }]
-      },
-      floorData: {}
+      // roomsFormData: {
+      //   unitId: '',
+      //   name: '',
+      //   parentId: '',
+      //   level: 2,
+      //   sortIndex: null
+      // },
+      // roomsFormRules: {
+      //   name: [{ required: true, trigger: 'blur', message: '楼栋名称不能为空' }]
+      // },
+      floorData: [],
+      insertData: []
     }
   },
   watch: {
     floorData: function(newVal) {
-      const _keys = Object.keys(newVal)
-      if (_keys.length) {
-        const realRooms = newVal.children.filter(item => {
-          if (!item.isVirtual || item.isVirtual === undefined) {
-            return true
+      console.log('newVal', newVal)
+      if (newVal.length) {
+        newVal.forEach(val => {
+          const realRooms = val.children.filter(item => {
+            if (!item.isVirtual || item.isVirtual === undefined) {
+              return true
+            }
+          })
+          let _obj
+          if (realRooms.length > 0) {
+            const lastRoom = realRooms[realRooms.length - 1]
+            const nextSortIndex = lastRoom.sortIndex + 1
+            let curSortIndex
+            nextSortIndex < 10 ? curSortIndex = `0${nextSortIndex}` : nextSortIndex
+            _obj = {
+              unitId: lastRoom.unitId,
+              name: `${val.sortIndex}${curSortIndex}`,
+              parentId: lastRoom.parentId,
+              level: 2,
+              sortIndex: nextSortIndex
+            }
+          } else {
+            _obj = {
+              unitId: val.unitId,
+              name: `${val.sortIndex}01`,
+              parentId: val.id,
+              level: 2,
+              sortIndex: 1
+            }
           }
+          this.insertData.push(_obj)
         })
-        const lastRoom = realRooms[realRooms.length - 1]
-        const nextSortIndex = lastRoom.sortIndex + 1
-        const _obj = {
-          unitId: lastRoom.unitId,
-          parentId: lastRoom.parentId,
-          level: 2,
-          sortIndex: nextSortIndex
-        }
-        this.roomsFormData = _obj
-        console.log('this.roomsFormData', this.roomsFormData)
       }
     }
   },
@@ -70,28 +96,30 @@ export default {
       })
     },
     addRoomSubmit() {
-      this.$refs.roomsForm.validate(valid => {
-        if (valid) {
-          addRoom(this.roomsFormData).then(resp => {
-            this.$message({
-              message: '新增房间成功',
-              type: 'success'
-            })
-            this.$emit('refreshBuilding')
-            this.closeBox()
-          })
-        }
+      console.log('insertData', this.insertData)
+      const warnIndex = this.insertData.findIndex((item) => {
+        return item.name === ''
+      })
+      if (warnIndex >= 0) {
+        this.$message({
+          message: '房间名不能为空，请填写完整',
+          type: 'warning'
+        })
+        this.$refs[`roomInput${warnIndex}`][0].$el.querySelector('input').focus()
+        return
+      }
+      addRoomsBatch(this.insertData).then(resp => {
+        this.$message({
+          message: '新增房间成功',
+          type: 'success'
+        })
+        this.$emit('refreshBuilding')
+        this.closeBox()
       })
     },
     closeBox() {
       this.$emit('update:isAddRoomShow', false)
-      this.roomsFormData = {
-        unitId: '',
-        name: '',
-        parentId: '',
-        level: 2,
-        sortIndex: null
-      }
+      this.insertData = []
     }
   }
 }

@@ -3,7 +3,8 @@
     <template slot="main-content">
       <el-form
         ref="floorForm"
-        :model="floorFormData">
+        :model="floorFormData"
+        :rules="floorFormRules">
         <el-form-item prop="" label="楼层名称">
           <el-input v-model="floorFormData.name" placeholder="请输入楼层名称" />
         </el-form-item>
@@ -17,6 +18,7 @@
 </template>
 <script>
 import PublicPopups from '@/components/Pop-ups/PublicPopups'
+import { addRoom } from '@/api/project_config/building'
 export default {
   components: { PublicPopups },
   props: {
@@ -41,14 +43,49 @@ export default {
     return {
       floorFormData: {
         name: '',
-        addPlace: ''
+        addPlace: 'bottom'
+      },
+      floorFormRules: {
+        name: [{ required: true, trigger: 'blur', message: '楼层名称不能为空' }],
+        addPlace: [{ required: true, trigger: 'change', message: '请选择楼层添加位置' }]
       }
     }
   },
   methods: {
-    addFloorSubmit() {},
+    addFloorSubmit() {
+      this.$refs.floorForm.validate(valid => {
+        if (valid) {
+          let unitLastFloor, curSortIndex
+          if (this.floorFormData.addPlace === 'top') {
+            unitLastFloor = this.allRoomsData[this.allRoomsData.length - 1]
+            curSortIndex = unitLastFloor.sortIndex + 1
+          } else if (this.floorFormData.addPlace === 'bottom') {
+            unitLastFloor = this.allRoomsData[0]
+            curSortIndex = unitLastFloor.sortIndex - 1
+          }
+          console.log('unitLastFloor', unitLastFloor)
+          const _addData = {
+            unitId: this.unitData.id,
+            name: this.floorFormData.name,
+            parentId: '-1',
+            level: 1,
+            sortIndex: curSortIndex
+          }
+          console.log('_addData', _addData)
+          addRoom(_addData).then(resp => {
+            this.$message({
+              message: '新增楼层成功',
+              type: 'success'
+            })
+            this.$emit('refreshBuilding')
+            this.closeBox()
+          })
+        }
+      })
+    },
     closeBox() {
       this.$emit('update:isAddFloorShow', false)
+      this.$refs.floorForm.resetFields()
     }
   }
 }

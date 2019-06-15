@@ -60,12 +60,12 @@
           <span>楼栋列表</span>
         </div>
         <div
-          v-show="curRoomsData.length > 0"
+          v-show="floorsRoomsData.length > 0"
           class="building-wrap">
           <div class="building-wrap-header">
             <span class="building-name">{{ curUnitData.name }}</span>
             <div>
-              <el-button size="mini" type="primary">新增楼层</el-button>
+              <el-button size="mini" type="primary" @click="addFloorHandle">新增楼层</el-button>
               <el-button
                 v-if="isUnitHasRooms"
                 size="mini"
@@ -78,7 +78,7 @@
           </div>
           <div class="build-floor-wrap">
             <div
-              v-for="(item, idx) in curRoomsData"
+              v-for="(item, idx) in floorsRoomsData"
               :key="idx"
               class="building-floor">
               <div class="floor-wrap">
@@ -138,16 +138,31 @@
                   <template v-if="!child.isVirtual">
                     <div class="floor-item">
                       <div class="left-side">
-                        <el-input v-show="child.isEdit" v-model="item.name" autofocus />
-                        <div v-show="!child.isEdit" class="floor-name">{{ child.name }}</div>
-                        <div class="footer">
-                          <span class="text-wrap">楼层平面图</span>
-                          <span class="foot-operate-wrap">
-                            <i class="el-icon-picture" />
-                            <i class="el-icon-edit" @click="editRoomsHandle(item)"/>
-                            <i class="el-icon-delete-solid" @click="delRoomsHandle(child)"/>
-                          </span>
-                        </div>
+                        <el-input v-if="child.isEdit" v-model="child.name" autofocus />
+                        <div v-else class="floor-name">{{ child.name }}</div>
+                        <template v-if="child.isEdit">
+                          <div class="edit-btn-wrap">
+                            <el-button
+                              size="mini"
+                              class="edit-room-btn"
+                              @click="editRoomsHandle(child, 'cancel')">取消</el-button>
+                            <el-button
+                              type="primary"
+                              size="mini"
+                              class="edit-room-btn"
+                              @click="editRoomsHandle(child, 'confirm')">确定</el-button>
+                          </div>
+                        </template>
+                        <template v-else>
+                          <div class="footer">
+                            <span class="text-wrap">楼层平面图</span>
+                            <span class="foot-operate-wrap">
+                              <i class="el-icon-picture" />
+                              <i class="el-icon-edit" @click="editRoomsHandle(child, 'edit')"/>
+                              <i class="el-icon-delete-solid" @click="delRoomsHandle(child)"/>
+                            </span>
+                          </div>
+                        </template>
                       </div>
                     </div>
                   </template>
@@ -160,7 +175,11 @@
                 </div>
                 <div class="floor-item-wrap">
                   <template v-if="idx === 0">
-                    <el-button type="primary" size="mini" class="column-set-btn">批量添加</el-button>
+                    <el-button
+                      type="primary"
+                      size="mini"
+                      class="column-set-btn"
+                      @click="addRoomBatchHandle">批量添加</el-button>
                   </template>
                   <div class="floor-item">
                     <div class="add-rooms-item" @click="addRoomHandle(item)">添加房间</div>
@@ -180,12 +199,13 @@
     <addFloor
       v-show="isAddFloorShow"
       :unit-data="curUnitData"
-      :all-rooms-data="curRoomsData"
-      :is-add-floor-show.sync="isAddFloorShow" />
+      :all-rooms-data="floorsRoomsData"
+      :is-add-floor-show.sync="isAddFloorShow"
+      @refreshBuilding="refreshBuilding" />
     <buildRoom
       v-show="isBuildRoomShow"
-      :is-build-rooms-show.sync="isBuildRoomShow"
-      @refreshBuilding="refreshBuilding"/>
+      :is-build-room-show.sync="isBuildRoomShow"
+      @refreshBuilding="refreshBuilding" />
     <addRoom
       v-show="isAddRoomShow"
       ref="addRoomCom"
@@ -218,7 +238,7 @@ export default {
       curProjectState: {}, // 保存已选择项目的子项目
       /* -------------- 楼栋房间相关 -----------------*/
       curUnitData: {}, // 保存选择楼栋的信息
-      curRoomsData: [], // 保存选择楼栋的房间信息
+      floorsRoomsData: [], // 保存选择楼栋的楼层以及房间信息
       isUnitHasRooms: false, // 判断当前单元是否没有房间数据
       /* -------------- 状态数据 -----------------*/
       isAddBuildingShow: false,
@@ -237,7 +257,7 @@ export default {
       }
       // 重置当前楼栋，房间数据
       this.curUnitData = {}
-      this.curRoomsData = []
+      this.floorsRoomsData = []
     }
   },
   created() {
@@ -314,7 +334,6 @@ export default {
         })
         return target !== undefined
       })
-      console.log('curTreeNode', curTreeNode)
       this.treeExpandedIds = Array.of(curTreeNode.id)
       this.loadBuildingRooms(this.curUnitData)
     },
@@ -351,7 +370,7 @@ export default {
           this.$refs.projectTree.remove(data)
           if (buildingId === this.curUnitData.id) {
             this.curUnitData = {}
-            this.curRoomsData = []
+            this.floorsRoomsData = []
           }
         })
       }).catch(() => {
@@ -371,26 +390,31 @@ export default {
         const _data = resp.result
         const _floorData = []
         const _roomsData = {}
-        const _roomLengthList = []
+        let maxRoomLength = 0
         let roomCount = 0
         // 处理所有数据，筛选出楼层数据以及房间数据
         _data.forEach(item => {
           if (item.parentId === '-1') {
             _floorData.push(item)
+            if (_roomsData[item.id] === undefined) {
+              console.log()
+              _roomsData[item.id] = []
+            }
           } else {
             roomCount === 0 ? roomCount++ : roomCount
             const curParentId = item.parentId
             const index = Object.keys(_roomsData).indexOf(curParentId)
             if (index >= 0) {
               _roomsData[curParentId].push(item)
-              _roomLengthList[index] = _roomsData[curParentId].length
+              if (_roomsData[curParentId].length > maxRoomLength) {
+                maxRoomLength = _roomsData[curParentId].length
+              }
             } else {
               _roomsData[curParentId] = Array.of(item)
             }
           }
         })
-        // 添加虚拟数据，方便页面渲染添加房间按钮
-        const maxRoomLength = Math.max(..._roomLengthList)
+        // 获取最多房间的楼层房间数量，未达到该数量用虚拟数据填充，然后根据虚拟数据渲染添加房间按钮
         Object.values(_roomsData).forEach(room => {
           const diff = maxRoomLength - room.length
           if (diff > 0) {
@@ -412,14 +436,26 @@ export default {
             })
           }
         })
-        this.curRoomsData = _floorData
+        this.floorsRoomsData = _floorData
         this.isUnitHasRooms = Boolean(roomCount)
       })
+    },
+    // 添加楼层处理
+    addFloorHandle(data) {
+      this.isAddFloorShow = true
+    },
+    // 批量添加房间操作
+    addRoomBatchHandle() {
+      const _obj = {
+        floorData: this.floorsRoomsData
+      }
+      this.$refs.addRoomCom.resetDataProperty(_obj)
+      this.isAddRoomShow = true
     },
     // 添加房间操作处理
     addRoomHandle(data) {
       const _obj = {
-        floorData: data
+        floorData: Array.of(data)
       }
       this.$refs.addRoomCom.resetDataProperty(_obj)
       this.isAddRoomShow = true
@@ -428,7 +464,7 @@ export default {
     buildRoomsHandle() {
       const _data = {
         unitFormData: this.curUnitData,
-        roomsData: this.curRoomsData,
+        roomsData: this.floorsRoomsData,
         status: 'buildRooms',
         isNextAddUnit: false,
         isBuildRoom: true

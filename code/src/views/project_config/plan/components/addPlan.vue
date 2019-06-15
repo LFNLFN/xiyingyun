@@ -1,28 +1,36 @@
 <template>
-  <publicPopups width="600px" title-text="新增平面图" v-on="$listeners" @closePopupsBox="closeBox">
+  <publicPopups width="600px" title-text="新增平面图" v-on="$listeners" @closePopupsBox="closeBox" @formConfirm="submitPlanHandle">
     <template slot="main-content">
-      <el-form>
+      <el-form
+        ref="planForm"
+        :model="planFormData"
+        :rules="planFormrules">
         <el-form-item label="所属项目">
-          <el-input v-model="belongProject" size="small" disabled class="no-border"/>
+          <el-input v-model="projectData.name" size="small" disabled class="no-border"/>
         </el-form-item>
-        <el-form-item label="平面图名称" porp="name">
+        <el-form-item prop="name" label="平面图名称" porp="name">
           <el-input size="small" placeholder="请输入平面图名称"/>
         </el-form-item>
-        <el-form-item label="平面图类型" porp="type">
-          <el-radio v-model="planTypeSelected" label="1">备选项</el-radio>
-          <el-radio v-model="planTypeSelected" label="2">备选项</el-radio>
+        <el-form-item prop="" label="平面图类型" porp="type">
+          <el-radio v-model="planFormData.type" label="1">备选项</el-radio>
+          <el-radio v-model="planFormData.type" label="2">备选项</el-radio>
         </el-form-item>
-        <el-form-item label="户型/合同" porp="houseType">
-          <el-select v-model="houseTypeSelected" size="small">
+        <el-form-item prop="houseTypeId" label="户型/合同" porp="houseType">
+          <el-select v-model="planFormData.houseTypeId" size="small">
             <el-option value="三水城市花园" />
             <el-option value="市桥城市花园" />
           </el-select>
         </el-form-item>
-        <el-form-item label="平面图预览">
-          <div class="upload-wrap">
+        <el-form-item prop="imageUrl" label="平面图预览">
+          <div
+            v-loading="isUploadPlan"
+            :class="{'uploaded': planFormData.imageUrl !== ''}"
+            class="upload-wrap">
             <el-upload
-              action="https://static-dev.gzxiyingyun.com">
-              <img :src="null">
+              :http-request="uploadPlan"
+              :show-file-list="false"
+              action="">
+              <img :src="planFormData.imageUrl">
               <i class="el-icon-plus" />
             </el-upload>
             <div class="operat-wrap">
@@ -40,6 +48,8 @@
   </publicPopups>
 </template>
 <script>
+import { upload } from '@/utils/manageOSS'
+import { getdictionaty } from '@/api/project_config/plan'
 import PublicPopups from '@/components/Pop-ups/PublicPopups'
 export default {
   components: { PublicPopups },
@@ -52,16 +62,48 @@ export default {
   data() {
     return {
       planFormData: {
+        // contractId : string,
+        // contractName : string,
+        floorPlanId: '',
+        houseTypeId: '',
+        imageUrl: '',
         name: '',
-        type: '',
-        houseType: ''
+        projectId: '',
+        type: 0
       },
-      belongProject: '三水城市花园',
+      planFormrules: {
+        name: [{ required: true, trigger: 'blur', message: '平面图名称不能为空' }],
+        imageUrl: [{ required: true, trigger: 'change', message: '请上传平面图' }],
+        houseTypeId: [{ required: true, trigger: 'change', message: '请选择户型/合同' }]
+      },
+      projectData: {},
       houseTypeSelected: '',
-      planTypeSelected: ''
+      planTypeSelected: '',
+      isUploadPlan: false
     }
   },
   methods: {
+    resetDataProperty(source) {
+      Object.keys(source).forEach(key => {
+        this[key] = source[key]
+      })
+      getdictionaty().then(resp => {
+        console.log('resp', resp)
+      })
+    },
+    // 上传平面图
+    uploadPlan({ file }) {
+      this.isUploadPlan = true
+      upload(file).then(resp => {
+        console.log('uploadPlan resp', resp)
+        this.planFormData.imageUrl = resp.url
+        this.isUploadPlan = false
+      })
+    },
+    // 提交平面图相关数据，添加平面图
+    submitPlanHandle() {
+      console.log('submitPlanHandle')
+    },
     closeBox() {
       this.$emit('update:isAddPlanShow', false)
     }
@@ -75,6 +117,10 @@ export default {
   margin: 20px 0;
   .el-form-item {
     margin-bottom: 15px;
+    &/deep/.el-form-item__label {
+      width: 100px;
+      text-align: left;
+    }
     .el-input {
       width: 350px;
       &.no-border /deep/ .el-input__inner {
@@ -105,14 +151,16 @@ export default {
         cursor: pointer;
         z-index: 10;
         @include flex-layout(center, center, null, nowrap);
+        img {
+          display: none;
+          width: 85%;
+        }
         i {
           font-size: 46px;
           color: #ccc;
         }
       }
       .operat-wrap {
-        // width: 100%;
-        // height: 100%;
         position: absolute;
         top: 0;
         left: 0;
@@ -131,15 +179,22 @@ export default {
           padding: 10px;
         }
       }
-      &.uploaded:hover {
-        .operat-wrap {
-          @include flex-layout(center, center, null, nowrap);
+      &.uploaded {
+        background: #fff;
+        &/deep/.el-upload {
+          i {
+            display: none;
+          }
+          img {
+            display: block;
+          }
+        }
+        &:hover {
+          .operat-wrap {
+            @include flex-layout(center, center, null, nowrap);
+          }
         }
       }
-    }
-    &/deep/.el-form-item__label {
-      width: 90px;
-      text-align: left;
     }
   }
 }
