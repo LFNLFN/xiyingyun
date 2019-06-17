@@ -95,7 +95,22 @@ export const constantRouterMap = [
         path: 'participant',
         name: 'Participant',
         meta: { title: '参建方管理', icon: '' },
-        component: () => import('@/views/project_config/participant/participant')
+        redirect: '/project_config/participant/index',
+        component: () => import('@/views/project_config/participant/index'),
+        children: [
+          {
+            path: 'index',
+            component: () => import('@/views/project_config/participant/participant'),
+            name: 'participant',
+            hidden: true
+          },
+          {
+            path: 'participantDetail',
+            component: () => import('@/views/project_config/participant/participantDetail'),
+            name: 'participantDetail',
+            hidden: true
+          }
+        ]
       }
     ]
   },

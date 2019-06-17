@@ -3,16 +3,22 @@
     <template v-loading="isLoading" slot="main-content">
       <el-form ref="addSuppForm" :model="addSuppForm" :rules="suppFormRules" class="add-supp-from">
         <el-form-item label="机构编码" prop="code">
-          <el-input v-model="addSuppForm.code" placeholder="请输入机构名称" />
+          <el-input v-model="addSuppForm.code" size="small" placeholder="请输入机构名称" />
         </el-form-item>
         <el-form-item label="机构名称" prop="name">
-          <el-input v-model="addSuppForm.name" placeholder="请输入机构名称" />
+          <el-input v-model="addSuppForm.name" size="small" placeholder="请输入机构名称" />
         </el-form-item>
         <el-form-item label="机构全称" prop="fullName">
-          <el-input v-model="addSuppForm.fullName" placeholder="请输入机构全称" />
+          <el-input v-model="addSuppForm.fullName" size="small" placeholder="请输入机构全称" />
+        </el-form-item>
+        <el-form-item label="负责人" prop="official">
+          <el-input v-model="addSuppForm.official" size="small" placeholder="请输入负责人姓名" />
+        </el-form-item>
+        <el-form-item label="负责人电话" prop="phone">
+          <el-input v-model="addSuppForm.phone" size="small" placeholder="请输入负责人手机号码" />
         </el-form-item>
         <el-form-item label="机构类型" prop="orgType">
-          <el-select v-model="addSuppForm.orgType">
+          <el-select v-model="addSuppForm.orgType" size="small">
             <el-option
               v-for="(item, idx) in suppTypeData"
               :key="idx"
@@ -70,6 +76,8 @@ export default {
         code: '',
         name: '',
         fullName: '',
+        official: '',
+        phone: '',
         parentId: '',
         type: 1,
         orgType: ''
@@ -142,9 +150,12 @@ export default {
 
 .add-supp-from {
   .el-form-item {
-    width: 80%;
+    width: 85%;
     margin: 20px auto;
-    .el-input {
+    &/deep/.el-form-item__label {
+      width: 95px;
+    }
+    .el-input, .el-select {
       width: 350px;
     }
   }

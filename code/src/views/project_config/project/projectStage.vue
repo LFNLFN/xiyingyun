@@ -193,7 +193,7 @@
   </el-container>
 </template>
 <script>
-import { upload } from '@/utils/manageOSS'
+import { uploadImg } from '@/utils/manageOSS'
 import { mapGetters, mapActions } from 'vuex'
 import { searchArrByKeyVal } from '@/utils/public'
 import { addProjectStage, editProjectStage } from '@/api/project_config/project'
@@ -508,7 +508,7 @@ export default {
     // 上传鸟瞰图
     uploadAerialview({ file }) {
       this.isUploadAerialview = true
-      upload(file).then(resp => {
+      uploadImg(file, 'aerialview').then(resp => {
         // this.aerialviewSrc = resp.url
         this.stageFormData.estateProjectDetailEntity.aerialView = resp.url
         this.isUploadAerialview = false

@@ -414,7 +414,7 @@ export default {
             }
           }
         })
-        // 获取最多房间的楼层房间数量，未达到该数量用虚拟数据填充，然后根据虚拟数据渲染添加房间按钮
+        // 根据楼层的最大房间数，未达到该数量用虚拟数据填充，然后根据虚拟数据渲染添加房间按钮
         Object.values(_roomsData).forEach(room => {
           const diff = maxRoomLength - room.length
           if (diff > 0) {

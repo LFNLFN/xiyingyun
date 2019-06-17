@@ -1,7 +1,7 @@
 import { getStsToken } from '@/api/public.js'
 const OSS = require('ali-oss')
 
-export function upload(file) {
+export function uploadImg(file, fileName) {
   return new Promise((reslove, reject) => {
     getStsToken().then(resp => {
       const data = resp.result
@@ -12,9 +12,8 @@ export function upload(file) {
         endpoint: 'oss-cn-shenzhen.aliyuncs.com',
         stsToken: data.securityToken
       })
-      const imgName = 'aerialview_'
-      const fileName = `${imgName}${Date.parse(new Date())}`
-      client.put(fileName, file, { 'ContentType': 'image/jpeg' }).then(({ res, url, name }) => {
+      const __fileName = `${fileName}_${Date.parse(new Date())}`
+      client.put(__fileName, file, { 'ContentType': 'image/jpeg' }).then(({ res, url, name }) => {
         reslove({ res, url, name })
       }).catch((e) => {
         reject(e)

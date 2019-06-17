@@ -20,11 +20,12 @@
           v-loading="isTableLoading"
           ref="particiTable"
           :data="particiTableData"
-          border>
+          border
+          @row-click="particiDetailHandle">
           <el-table-column prop="fullName" label="参建方名称" align="center"/>
           <el-table-column :formatter="orgTypeformatter" prop="" width="120" label="类型" align="center"/>
-          <el-table-column prop="" width="120" label="负责人" align="center"/>
-          <el-table-column prop="" width="120" label="操作" align="center">
+          <el-table-column prop="official" width="120" label="负责人" align="center"/>
+          <el-table-column width="120" label="操作" align="center">
             <template slot-scope="scope">
               <el-button size="mini" type="primary" class="post-table-btn" @click="unBindParticipant(scope.row)">删除</el-button>
             </template>
@@ -112,6 +113,14 @@ export default {
       const target = this.suppliersTypeData.find(item => item.id === row.orgType)
       target ? backVal = target.value : backVal = ''
       return backVal
+    },
+    // 通往参建方详情界面
+    particiDetailHandle(row, column, event) {
+      console.log('row', row)
+      const params = {
+        participantId: row.id
+      }
+      this.$router.push({ name: 'participantDetail', query: params })
     },
     // 解绑参建方
     unBindParticipant(row) {

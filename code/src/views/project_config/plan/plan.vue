@@ -15,15 +15,15 @@
             :label="item.name" />
         </el-select>
       </div>
-      <div class="table-wrap">
+      <div v-loading="isPlanTableLoading" class="table-wrap">
         <el-table
           ref="planTable"
           :data="planTableData">
-          <el-table-column porp="contractName" label="名称" align="center"/>
-          <el-table-column porp="" label="类型" align="center"/>
+          <el-table-column prop="name" label="名称" align="center"/>
+          <el-table-column :formatter="planTypeFormatter" prop="type" label="类型" align="center"/>
           <el-table-column width="250" label="操作" align="center">
             <template slot-scope="scope" width="180">
-              <el-button size="mini" type="primary">编辑</el-button>
+              <el-button size="mini" type="primary" @click="editPlanHandle(scope.row)">编辑</el-button>
               <el-button size="mini" type="primary" @click="delPlanHandle(scope.row)">删除</el-button>
             </template>
           </el-table-column>
@@ -46,9 +46,11 @@
 <script>
 import { mapActions } from 'vuex'
 import { getPlans, delPlan } from '@/api/project_config/plan'
+import planTypeMixin from '@/mixins/planTypeData'
 import AddPlan from '@/views/project_config/plan/components/addPlan'
 export default {
   components: { AddPlan },
+  mixins: [planTypeMixin],
   data() {
     return {
       projectSelected: '',
@@ -56,22 +58,24 @@ export default {
       curProjectStage: {},
       planTableData: [],
       isAddPlanShow: false,
+      isPlanTableLoading: false,
       pageTotal: 10
     }
   },
-  watch: {
-    projectSelected: function(newVal) {
-      if (newVal !== '') {
-        this.curProjectStage = this.projectStageList.find(item => {
-          return item.id === newVal
-        })
-        console.log('this.curProjectStage', this.curProjectStage)
-      }
-    }
-  },
+  // watch: {
+  //   projectSelected: function(newVal) {
+  //     if (newVal !== '') {
+  //       this.curProjectStage = this.projectStageList.find(item => {
+  //         return item.id === newVal
+  //       })
+  //       console.log('this.curProjectStage', this.curProjectStage)
+  //     }
+  //   }
+  // },
   created() {
     // 获取项目列表
     this.getProjectDetailsVuex().then(resp => {
+      console.log('resp', resp)
       const projectList = resp
       // 处理项目数据
       projectList.forEach(project => {
@@ -80,19 +84,27 @@ export default {
           stageList.forEach(stage => {
             this.projectStageList.push({
               name: `${project.name}--${stage.name}`,
-              id: stage.id
+              id: stage.id,
+              stageDetail: stage.estateProjectDetailEntity
             })
           })
         }
       })
-      console.log('projectStageList', this.projectStageList)
       this.projectSelected = this.projectStageList[0].id
+      this.getPlansFunc()
     })
   },
   methods: {
     ...mapActions([
       'getProjectDetailsVuex'
     ]),
+    // 平面图表格的平面图类型数据格式化
+    planTypeFormatter(row, column) {
+      const curType = this.planTypeList.find(item => {
+        return item.id === row.type
+      })
+      return curType.name
+    },
     // 加载平面图
     getPlansFunc() {
       const projectId = this.projectSelected
@@ -102,35 +114,52 @@ export default {
         pageIndex: this.pageIndex,
         pageSize: 10
       }
+      this.isPlanTableLoading = true
       getPlans(params).then(resp => {
-        console.log(resp)
-        this.planTableData = resp.resul.data
-        this.pageTotal = resp.result.total
+        const result = resp.result
+        this.pageTotal = result.total
+        this.isPlanTableLoading = false
+        this.$set(this, 'planTableData', result.data)
+      }).then(() => {
+        this.isPlanTableLoading = false
       })
     },
     // 添加平面图操作处理
     addPlanHandle() {
       const _obj = {
-        projectData: this.curProjectStage
+        projectsData: this.projectStageList,
+        projectSelected: this.projectSelected
       }
       this.$refs.addPlanCom.resetDataProperty(_obj)
-      this.isAddPlanShow = !this.isAddPlanShow
+      this.isAddPlanShow = true
+    },
+    // 编辑平面图处理
+    editPlanHandle(data) {
+      const _obj = {
+        editPlanData: data,
+        projectsData: this.projectStageList,
+        isAddOrEdit: 'edit'
+      }
+      this.$refs.addPlanCom.resetDataProperty(_obj)
+      this.isAddPlanShow = true
     },
     // 删除平面图处理
     delPlanHandle(data) {
+      console.log('delete plan data', data)
       this.$confirm(`确定删除平面图：${data.name}`, '警告', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then((action) => {
         if (action) {
+          this.isPlanTableLoading = true
           delPlan(data.id).then(resp => {
             this.$message({
               message: '删除平面图成功',
               type: 'success'
             })
+            this.getPlansFunc()
           })
-          this.getPlansFunc()
         }
       })
     },

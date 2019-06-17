@@ -5,7 +5,7 @@ export function getPlans(params) {
   return request({
     url: '/floorPlan',
     method: 'get',
-    params: JSON.stringify(params)
+    params: params
   })
 }
 
@@ -32,12 +32,5 @@ export function delPlan(id) {
   return request({
     url: `/floorPlan/${id}`,
     method: 'delete'
-  })
-}
-
-export function getdictionaty() {
-  return request({
-    url: '/dictionary-item',
-    method: 'get'
   })
 }
