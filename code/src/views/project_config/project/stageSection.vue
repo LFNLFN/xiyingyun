@@ -1,6 +1,6 @@
 <template>
   <el-container v-loading="sectionLoading" direction="vertical">
-    <el-main class="section-info-watp">
+    <el-main v-loading="sectionInfoLoading" class="section-info-watp">
       <div class="header">
         <span>基础信息</span>
       </div>
@@ -66,19 +66,22 @@
         </el-form-item>
       </el-form>
     </el-main>
-    <el-main class="scope-wrap">
+    <el-main v-loading="buildingLoading" class="scope-wrap">
       <div class="header">
         <span>施工范围</span>
       </div>
       <div class="transfer-wrap">
         <el-transfer
           v-model="buildingSelected"
+          :data="transBuildingData"
+          :filter-method="filterSuppliers"
           :titles="['楼栋列表', '已选']"
-          :button-texts="['添加选项', '删除选项']"
-          filterable />
+          :button-texts="['删除楼栋', '添加楼栋']"
+          filterable
+          filter-placeholder="请输入楼栋名称" />
       </div>
     </el-main>
-    <el-main class="profession-wrap">
+    <el-main v-loading="professionLoading" class="profession-wrap">
       <div class="header">
         <span>专业范围</span>
       </div>
@@ -86,7 +89,7 @@
         <el-transfer
           v-model="buildingSelected"
           :titles="['专业列表', '已选']"
-          :button-texts="['添加选项', '删除选项']"
+          :button-texts="['删除选项', '添加选项']"
           filterable />
       </div>
     </el-main>
@@ -102,6 +105,7 @@
 import { mapGetters, mapActions } from 'vuex'
 import { searchArrByKeyVal } from '@/utils/public'
 import { getDictionaryItem } from '@/api/dictionary'
+import { getBuliding } from '@/api/project_config/building'
 import { addProjectStage, editProjectStage } from '@/api/project_config/project'
 export default {
   data() {
@@ -130,9 +134,14 @@ export default {
         { id: 0, value: '在建' },
         { id: 1, value: '已完工' }
       ], // 保存项目状态
-      buildingSelected: [], // 保存所选择的楼栋
+      allBuildingData: [], // 保存所有楼栋数据
+      transBuildingData: [], // 保存穿梭框展示的楼栋数据
+      buildingSelected: [], // 保存所选择的楼栋Id
       belongProject: '', // 保存标段所属项目
-      sectionLoading: false
+      sectionLoading: false,
+      sectionInfoLoading: false,
+      buildingLoading: false,
+      professionLoading: false
     }
   },
   computed: {
@@ -141,8 +150,21 @@ export default {
       'projectDetails'
     ])
   },
+  watch: {
+    buildingSelected: function(newVal) {
+      console.log('newVal', newVal)
+      const curBuildings = this.allBuildingData.filter(item => {
+        return newVal.includes(item.id)
+      })
+      console.log('curBuildings', curBuildings)
+      this.sectionFormData.estateProjectStageEntity.unitEntityList = curBuildings
+      console.log('this.sectionFormData', this.sectionFormData)
+    }
+  },
   created() {
-    this.sectionLoading = true
+    this.sectionInfoLoading = true
+    this.buildingLoading = true
+    this.professionLoading = true
     const projectId = this.$route.query.projectId
     const eventType = this.$route.query.eventType
     // 其他数据
@@ -155,6 +177,7 @@ export default {
     } else if (eventType === 'edit') {
       // 编辑项目分期，加载表单数据
       const curProject = searchArrByKeyVal(this.projectDetails, 'id', projectId)
+      console.log('curProject', curProject)
       if (curProject) {
         const parentId = curProject.parentId
         const _keys = Object.keys(curProject)
@@ -170,42 +193,75 @@ export default {
       }
     }
     // 加载总包单位以及监理单位数据
-    const dictParams = {
-      'terms[0].column': 'dict_id',
-      'terms[0].value': 'supplier_type'
-    }
-    getDictionaryItem(dictParams).then(dresp => {
-      const supplierType = dresp.result
-      let constructionId, supervisorId
-      supplierType.forEach(item => {
-        if (item.name === 'construction') {
-          constructionId = item.id
-        } else if (item.name === 'supervisor') {
-          supervisorId = item.id
-        }
-      })
-      const type = this.$store.getters.organizationType.suppliers
-      this.getOrganization({ type }).then(oresp => {
-        const organs = oresp
-        organs.forEach(org => {
-          if (org.orgType === constructionId) {
-            this.constructionOrgs.push(org)
-          } else if (org.orgType === supervisorId) {
-            this.supervisionOrgs.push(org)
-          }
-        })
-        this.sectionLoading = false
-      }).catch(() => {
-        this.sectionLoading = false
-      })
-    }).catch(() => {
-      this.sectionLoading = false
-    })
+    this.getContractSupervise()
+    // 加载楼栋数据
+    this.getBuildingData()
   },
   methods: {
     ...mapActions({
       getOrganization: 'getOrganizationData'
     }),
+    // 根据条件搜索穿梭框数据
+    filterSuppliers(query, item) {
+      return item.label.indexOf(query) > -1
+    },
+    // 加载总包单位以及监理单位数据处理
+    getContractSupervise() {
+      const dictParams = {
+        'terms[0].column': 'dict_id',
+        'terms[0].value': 'supplier_type'
+      }
+      getDictionaryItem(dictParams).then(dresp => {
+        const supplierType = dresp.result
+        let constructionId, supervisorId
+        supplierType.forEach(item => {
+          if (item.name === 'construction') {
+            constructionId = item.id
+          } else if (item.name === 'supervisor') {
+            supervisorId = item.id
+          }
+        })
+        const type = this.$store.getters.organizationType.suppliers
+        this.getOrganization({ type }).then(oresp => {
+          const organs = oresp
+          organs.forEach(org => {
+            if (org.orgType === constructionId) {
+              this.constructionOrgs.push(org)
+            } else if (org.orgType === supervisorId) {
+              this.supervisionOrgs.push(org)
+            }
+          })
+          this.sectionInfoLoading = false
+        }).catch(() => {
+          this.sectionInfoLoading = false
+        })
+      }).catch(() => {
+        this.sectionInfoLoading = false
+      })
+    },
+    // 加载楼栋数据处理
+    getBuildingData() {
+      const projectId = this.$route.query.projectId
+      const params = {
+        'terms[0].column': 'projectId',
+        'terms[0].value': `${projectId}`
+      }
+      getBuliding(params).then(resp => {
+        console.log('getBuliding resp', resp)
+        const _data = resp.result
+        this.allBuildingData = _data
+        _data.forEach(v => {
+          this.transBuildingData.push({
+            key: v.id,
+            label: v.name,
+            disabled: false
+          })
+        })
+        this.buildingLoading = false
+      }).catch(() => {
+        this.buildingLoading = false
+      })
+    },
     // 添加标段处理
     submitHandle() {
       this.$refs.sectionForm.validate(valid => {
@@ -222,11 +278,12 @@ export default {
             _msg = '编辑标段完成'
           }
           _method.then(resp => {
+            this.sectionLoading = false
+            this.$router.history.go(-1)
             this.$message({
               message: _msg,
               type: 'success'
             })
-            this.sectionLoading = false
           }).catch(() => {
             this.sectionLoading = false
           })
@@ -279,9 +336,17 @@ export default {
     margin-top: 20px;
     .transfer-wrap {
       padding: 20px;
-      text-align: center;
-      & /deep/ .el-transfer-panel {
-        width: 35%;
+      & /deep/.el-transfer {
+        @include flex-layout(center, center, null, nowrap);
+        .el-transfer-panel {
+          width: 400px;
+          .el-transfer-panel__body {
+          max-height: 400px;
+          .el-checkbox-group  {
+            max-height: 350px;
+          }
+        }
+        }
       }
     }
   }
@@ -294,6 +359,7 @@ export default {
     right:0;
     background: #fff;
     border-top: 2px solid #ccc;
+    z-index: 2019;
     .btn-warp {
       float: right;
       margin-right: 30px;

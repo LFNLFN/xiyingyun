@@ -25,3 +25,37 @@ export function unBindParticipant(projectId, organIds) {
     data: JSON.stringify(organIds)
   })
 }
+
+// 获取参建方所以员工
+export function getParticiMemers(orgId) {
+  return request({
+    url: `/organizational/queryPerson/${orgId}`,
+    method: 'get'
+  })
+}
+
+// 获取已绑定的参建方人员
+export function getBindtMemebers(projectId, orgId) {
+  return request({
+    url: `/project/queryPerson/${projectId}/${orgId}`,
+    method: 'get'
+  })
+}
+
+// 绑定的参建方人员
+export function bindMemebers(projectId, ids) {
+  return request({
+    url: `/project/bindPerson/${projectId}`,
+    method: 'put',
+    data: JSON.stringify(ids)
+  })
+}
+
+// 解绑的参建方人员
+export function unbindMemebers(projectId, ids) {
+  return request({
+    url: `/project/deletePerson/${projectId}`,
+    method: 'delete',
+    data: JSON.stringify(ids)
+  })
+}

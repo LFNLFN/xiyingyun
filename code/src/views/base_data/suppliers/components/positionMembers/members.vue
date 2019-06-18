@@ -1,8 +1,8 @@
 <template>
   <div class="main-wrap">
     <div class="button-wrap">
-      <el-button type="primary" @click="emitEvent('addMember')">新增人员</el-button>
-      <el-button @click="emitEvent('pullMember')">添加人员</el-button>
+      <el-button type="primary" size="mini" @click="emitEvent('addMember')">新增人员</el-button>
+      <el-button size="mini" @click="emitEvent('pullMember')">添加人员</el-button>
     </div>
     <el-table
       v-loading="isLoading"

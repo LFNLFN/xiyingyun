@@ -1,7 +1,7 @@
 <template>
   <publicPopups title-text="新增人员" width="600px" v-on="$listeners" @closePopupsBox="closeHandle" @formConfirm="addAccountSubmit">
-    <template v-loading="addMemberLoading" slot="main-content">
-      <el-form ref="addMemberForm" :model="addMemberForm" :rules="addMemberRules" class="add-member-from">
+    <template slot="main-content">
+      <el-form v-loading="addMemberLoading" ref="addMemberForm" :model="addMemberForm" :rules="addMemberRules" class="add-member-from">
         <el-form-item label="姓名" prop="name">
           <el-input v-model="addMemberForm.name" />
         </el-form-item>
@@ -114,7 +114,6 @@ export default {
           }
           console.log('request params', params)
           addPerson(params).then(respon => {
-            this.addMemberLoading = false
             // 重置表单
             this.closeHandle()
             this.$message({
@@ -123,6 +122,7 @@ export default {
               type: 'success',
               duration: 3 * 1000
             })
+            this.addMemberLoading = false
           }).catch(rej => {
             this.addMemberLoading = false
           })

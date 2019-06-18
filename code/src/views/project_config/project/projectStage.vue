@@ -536,11 +536,12 @@ export default {
             _msg = '编辑项目分期成功'
           }
           _method.then(resp => {
+            this.stageLoading = false
+            this.$router.go(-1)
             this.$message({
               message: _msg,
               type: 'success'
             })
-            this.stageLoading = false
           }).catch(() => {
             this.stageLoading = false
           })

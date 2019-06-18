@@ -1,5 +1,5 @@
 <template>
-  <publicPopups width="650px" title-text="添加参建方" v-on="$listeners" @formConfirm="bingParticiHandle" @closePopupsBox="closeBox">
+  <publicPopups width="750px" title-text="添加参建方" v-on="$listeners" @formConfirm="bingParticiHandle" @closePopupsBox="closeBox">
     <template v-loading="isBoxLoading" slot="main-content">
       <el-container>
         <!-- <el-header height="auto">
@@ -132,9 +132,16 @@ export default {
     }
   }
   .el-main {
-    .el-transfer {
-      &/deep/.el-checkbox-group  {
-        height: 200px;
+    &/deep/.el-transfer {
+      @include flex-layout(center, center, null, null);
+      .el-transfer-panel {
+        width: 250px;
+        .el-transfer-panel__body {
+          height: 350px;
+          .el-checkbox-group  {
+            height: 300px;
+          }
+        }
       }
     }
   }

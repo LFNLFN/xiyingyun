@@ -176,6 +176,7 @@ export default {
     },
     // 获取相关岗位信息
     getPositionFunc(data) {
+      this.postInfoLoading = true
       const params = {
         'terms[0].column': 'departmentId',
         'terms[0].value': data.id

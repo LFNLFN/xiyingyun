@@ -2,7 +2,7 @@
   <el-container>
     <el-header>
       <span>所属项目：</span>
-      <el-select v-model="projectSelected" @change="getProjectParticipant">
+      <el-select v-model="projectSelected" @change="getParticipants">
         <el-option
           v-for="(item, idx) in projectList"
           :key="idx"
@@ -15,19 +15,20 @@
         <span>参建方列表</span>
         <el-button type="primary" size="mini" icon="el-icon-circle-plus-outline" @click="addParticiHandle">添加</el-button>
       </div>
-      <div class="table-wrap">
+      <div v-loading="isTableLoading" class="table-wrap">
         <el-table
-          v-loading="isTableLoading"
           ref="particiTable"
           :data="particiTableData"
+          :header-cell-style="tableCellStypeHandle"
+          :cell-style="tableCellStypeHandle"
           border
           @row-click="particiDetailHandle">
-          <el-table-column prop="fullName" label="参建方名称" align="center"/>
-          <el-table-column :formatter="orgTypeformatter" prop="" width="120" label="类型" align="center"/>
-          <el-table-column prop="official" width="120" label="负责人" align="center"/>
+          <el-table-column prop="fullName" label="参建方名称"/>
+          <el-table-column :formatter="orgTypeformatter" prop="" width="150" label="类型" align="center"/>
+          <el-table-column prop="official" width="150" label="负责人" align="center"/>
           <el-table-column width="120" label="操作" align="center">
             <template slot-scope="scope">
-              <el-button size="mini" type="primary" class="post-table-btn" @click="unBindParticipant(scope.row)">删除</el-button>
+              <el-button size="mini" type="primary" class="post-table-btn" @click.stop="unBindParticipant(scope.row)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -48,7 +49,7 @@
 </template>
 <script>
 import { mapActions } from 'vuex'
-import { getParticipant, unBindParticipant } from '@/api/project_config/participant'
+import { unBindParticipant } from '@/api/project_config/participant'
 import { getDictionaryItem } from '@/api/dictionary'
 import Participant from '@/views/project_config/participant/components/addParticipant'
 export default {
@@ -70,22 +71,34 @@ export default {
     this.getProjectListVuex().then(resp => {
       this.projectList = resp
       this.projectSelected = resp[0].id
-      this.getProjectParticipant(this.projectSelected)
+      this.getParticipants(this.projectSelected)
     })
   },
   methods: {
     ...mapActions([
-      'getProjectListVuex'
+      'getProjectListVuex',
+      'getProjectParticipants'
     ]),
+    // 表格样式控制
+    tableCellStypeHandle({ row, column, rowIndex, columnIndex }) {
+      if (columnIndex === 0) {
+        return { 'padding-left': '20px' }
+      }
+    },
     // 控制添加参建方表格显隐
     addParticiHandle() {
       this.isAddParticiShow = !this.isAddParticiShow
     },
-    // 获取项目供应商
-    getProjectParticipant(val) {
+    // 获取项目参建方
+    getParticipants(val) {
       this.isTableLoading = true
-      getParticipant(val).then(resp => {
-        const data = resp.result
+      const _obj = {
+        projectId: val,
+        isGet: true
+      }
+      this.getProjectParticipants(_obj).then(data => {
+      // getParticipant(val).then(resp => {
+      //   const data = resp.result
         data.forEach(v => {
           this.projectParticipantIds.push(v.id)
         })
@@ -96,7 +109,7 @@ export default {
           }
           getDictionaryItem(params).then((dresp) => {
             this.suppliersTypeData = dresp.result
-            this.particiTableData = resp.result
+            this.particiTableData = data
             this.isTableLoading = false
           })
         } else {
@@ -116,8 +129,9 @@ export default {
     },
     // 通往参建方详情界面
     particiDetailHandle(row, column, event) {
-      console.log('row', row)
+      const curProject = this.projectList.find(item => item.id === this.projectSelected)
       const params = {
+        projectId: curProject.id,
         participantId: row.id
       }
       this.$router.push({ name: 'participantDetail', query: params })
@@ -145,7 +159,7 @@ export default {
     // 重新加载参建方数据
     reloadParticipant(reload) {
       if (reload) {
-        this.getProjectParticipant(this.projectSelected)
+        this.getParticipants(this.projectSelected)
       }
     }
   }
@@ -170,6 +184,15 @@ export default {
     }
     .table-wrap {
       padding: 20px;
+      &/deep/.el-table {
+        border: 1px solid #dddee1;
+        .el-table__header th {
+          background: #f8f8f9;
+        }
+        .el-table__body tr {
+          cursor: pointer;
+        }
+      }
     }
     .el-pagination {
       text-align: center;
