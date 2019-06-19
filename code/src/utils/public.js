@@ -43,3 +43,12 @@ export function searchArrByKeyVal(arr, key, val) {
   }
   return backData
 }
+
+export function isEmpty(target) {
+  if (typeof target === 'object') {
+    const _keys = Object.keys(target)
+    return _keys.length === 0
+  } else if (Array.isArray(target)) {
+    return target.length === 0
+  }
+}

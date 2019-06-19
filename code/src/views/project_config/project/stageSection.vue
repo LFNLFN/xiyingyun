@@ -152,13 +152,10 @@ export default {
   },
   watch: {
     buildingSelected: function(newVal) {
-      console.log('newVal', newVal)
       const curBuildings = this.allBuildingData.filter(item => {
         return newVal.includes(item.id)
       })
-      console.log('curBuildings', curBuildings)
       this.sectionFormData.estateProjectStageEntity.unitEntityList = curBuildings
-      console.log('this.sectionFormData', this.sectionFormData)
     }
   },
   created() {
@@ -166,11 +163,12 @@ export default {
     this.buildingLoading = true
     this.professionLoading = true
     const projectId = this.$route.query.projectId
+    const parentId = this.$route.query.parentId
     const eventType = this.$route.query.eventType
     // 其他数据
     if (eventType === 'add') {
-      const curProject = searchArrByKeyVal(this.projectList, 'id', projectId)
-      this.sectionFormData.parentId = projectId
+      const curProject = searchArrByKeyVal(this.projectList, 'id', parentId)
+      this.sectionFormData.parentId = parentId
       if (curProject) {
         this.belongProject = curProject.name
       }
@@ -179,7 +177,6 @@ export default {
       const curProject = searchArrByKeyVal(this.projectDetails, 'id', projectId)
       console.log('curProject', curProject)
       if (curProject) {
-        const parentId = curProject.parentId
         const _keys = Object.keys(curProject)
         const parentProject = searchArrByKeyVal(this.projectList, 'id', parentId)
         // 加载所属项目
@@ -241,10 +238,10 @@ export default {
     },
     // 加载楼栋数据处理
     getBuildingData() {
-      const projectId = this.$route.query.projectId
+      const parentId = this.$route.query.parentId
       const params = {
         'terms[0].column': 'projectId',
-        'terms[0].value': `${projectId}`
+        'terms[0].value': `${parentId}`
       }
       getBuliding(params).then(resp => {
         console.log('getBuliding resp', resp)

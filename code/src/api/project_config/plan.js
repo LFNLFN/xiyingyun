@@ -9,6 +9,15 @@ export function getPlans(params) {
   })
 }
 
+// 不分页获取项目所有平面图
+export function getPlansNoPage(params) {
+  return request({
+    url: '/floorPlan/no-paging',
+    method: 'get',
+    params: params
+  })
+}
+
 // 添加平面图
 export function addPlan(data) {
   return request({

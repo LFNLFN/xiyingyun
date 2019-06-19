@@ -5,7 +5,9 @@
         <div class="header">
           <span>楼栋列表</span>
         </div>
-        <div v-loading="projectTreeData.length === 0" class="side-content-wrap">
+        <div
+          v-loading="isGetProjectLoading"
+          class="side-content-wrap">
           <el-select
             v-model="projectSelected"
             filterable
@@ -60,7 +62,8 @@
           <span>楼栋列表</span>
         </div>
         <div
-          v-show="floorsRoomsData.length > 0"
+          v-loading="isGetBuildLoading"
+          v-if="floorsRoomsData.length > 0"
           class="building-wrap">
           <div class="building-wrap-header">
             <span class="building-name">{{ curUnitData.name }}</span>
@@ -87,7 +90,11 @@
                 </template>
                 <div class="floor-item-wrap">
                   <template v-if="idx === 0">
-                    <el-button type="primary" size="mini" class="column-set-btn">整列设置</el-button>
+                    <el-button
+                      type="primary"
+                      size="mini"
+                      class="column-set-btn"
+                      @click="setPlanBatchHandle(item, idx)">整列设置</el-button>
                   </template>
                   <div class="floor-item">
                     <div class="left-side">
@@ -108,9 +115,9 @@
                       </template>
                       <template v-else>
                         <div class="footer">
-                          <span class="text-wrap">楼层平面图</span>
+                          <span class="text-wrap">{{ item.floorPlanName || '无平面图' }}</span>
                           <span class="foot-operate-wrap">
-                            <i class="el-icon-picture" />
+                            <i class="el-icon-picture" @click="setPlanHandle(item)" />
                             <i class="el-icon-edit" @click="editRoomsHandle(item, 'edit')" />
                             <i class="el-icon-delete-solid" @click="delRoomsHandle(item)" />
                           </span>
@@ -132,7 +139,11 @@
                   :key="cidx"
                   class="floor-item-wrap">
                   <template v-if="idx === 0">
-                    <el-button type="primary" size="mini" class="column-set-btn">整列设置</el-button>
+                    <el-button
+                      type="primary"
+                      size="mini"
+                      class="column-set-btn"
+                      @click="setPlanBatchHandle(child, cidx)">整列设置</el-button>
                   </template>
                   <!-- 非虚拟数据，渲染房间信息 -->
                   <template v-if="!child.isVirtual">
@@ -155,9 +166,9 @@
                         </template>
                         <template v-else>
                           <div class="footer">
-                            <span class="text-wrap">楼层平面图</span>
+                            <span class="text-wrap">{{ child.floorPlanName || '无平面图' }}</span>
                             <span class="foot-operate-wrap">
-                              <i class="el-icon-picture" />
+                              <i class="el-icon-picture" @click="setPlanHandle(child)" />
                               <i class="el-icon-edit" @click="editRoomsHandle(child, 'edit')"/>
                               <i class="el-icon-delete-solid" @click="delRoomsHandle(child)"/>
                             </span>
@@ -189,6 +200,10 @@
             </div>
           </div>
         </div>
+        <div
+          v-loading="isGetBuildLoading"
+          v-else
+          class="building-wrap" />
       </div>
     </el-main>
     <addBuilding
@@ -211,6 +226,10 @@
       ref="addRoomCom"
       :is-add-room-show.sync="isAddRoomShow"
       @refreshBuilding="refreshBuilding" />
+    <setPlan
+      v-show="isSetPlanShow"
+      ref="setPlanCom"
+      :is-set-plan-show.sync="isSetPlanShow" />
   </el-container>
 </template>
 <script>
@@ -221,8 +240,9 @@ import AddBuilding from '@/views/project_config/building/components/addBuilding'
 import AddFloor from '@/views/project_config/building/components/addFloor'
 import BuildRoom from '@/views/project_config/building/components/buildRoom'
 import AddRoom from '@/views/project_config/building/components/addRoom'
+import SetPlan from '@/views/project_config/building/components/setPlan'
 export default {
-  components: { AddBuilding, AddFloor, BuildRoom, AddRoom },
+  components: { AddBuilding, AddFloor, BuildRoom, AddRoom, SetPlan },
   data() {
     return {
       /* -------------- 项目信息相关 -----------------*/
@@ -244,7 +264,10 @@ export default {
       isAddBuildingShow: false,
       isAddFloorShow: false,
       isBuildRoomShow: false,
-      isAddRoomShow: false
+      isAddRoomShow: false,
+      isSetPlanShow: false,
+      isGetBuildLoading: false,
+      isGetProjectLoading: false
     }
   },
   watch: {
@@ -281,7 +304,9 @@ export default {
       const curProjectIds = []
       const curProName = curProject.name
       const stages = curProject.childrenWithDetail
+      this.isGetProjectLoading = true
       if (stages && stages.length > 0) {
+        this.isGetBuildLoading = true
         const _treeData = []
         stages.forEach(item => {
           curProjectIds.push(item.id)
@@ -295,7 +320,7 @@ export default {
         const projectIdStr = curProjectIds.join()
         const params = {
           'terms[0].column': 'projectId$IN',
-          'terms[0].value': `%${projectIdStr}%`
+          'terms[0].value': `${projectIdStr}`
         }
         getBuliding(params).then(resp => {
           const data = resp.result
@@ -309,11 +334,15 @@ export default {
             item.children = curBuilding
           })
           this.$set(this, 'projectTreeData', _treeData)
+          this.isGetProjectLoading = false
           this.reloadBuildRooms()
         }).catch(() => {
           this.$set(this, 'projectTreeData', [])
+          this.isGetBuildLoading = false
+          this.isGetProjectLoading = false
         })
       } else {
+        this.isGetProjectLoading = false
         this.$set(this, 'projectTreeData', [])
       }
     },
@@ -323,8 +352,10 @@ export default {
     },
     // 刷新楼栋信息后，重新加载刷新前选择的楼栋及房间信息
     reloadBuildRooms() {
+      // 判断是否已选择楼栋
       const unitKeys = Object.keys(this.curUnitData)
       if (unitKeys.length === 0) {
+        this.isGetBuildLoading = false
         return
       }
       const unitId = this.curUnitData.id
@@ -380,6 +411,7 @@ export default {
     // 加载选择楼栋的房间信息
     loadBuildingRooms(data) {
       if (data.level === 0) return
+      this.isGetBuildLoading = true
       this.curUnitData = data
       const unitId = data.unitId
       const params = {
@@ -397,7 +429,6 @@ export default {
           if (item.parentId === '-1') {
             _floorData.push(item)
             if (_roomsData[item.id] === undefined) {
-              console.log()
               _roomsData[item.id] = []
             }
           } else {
@@ -438,11 +469,39 @@ export default {
         })
         this.floorsRoomsData = _floorData
         this.isUnitHasRooms = Boolean(roomCount)
+        this.isGetBuildLoading = false
       })
     },
     // 添加楼层处理
     addFloorHandle(data) {
       this.isAddFloorShow = true
+    },
+    // 设置平面图处理
+    setPlanHandle(data) {
+      console.log('set plan data', data)
+      const _obj = {
+        projectId: this.curUnitData.projectId,
+        setRoomDatas: Array.of(data)
+      }
+      this.$refs.setPlanCom.resetDataProperty(_obj)
+      this.isSetPlanShow = true
+    },
+    // 批量设置平面图处理
+    setPlanBatchHandle(data, index) {
+      let _setPlanDatas = []
+      if (data.parentId === '-1' && index === 0) {
+        _setPlanDatas = this.floorsRoomsData
+      } else {
+        this.floorsRoomsData.forEach(item => {
+          _setPlanDatas.push(item.children[index])
+        })
+      }
+      const _obj = {
+        projectId: this.curUnitData.projectId,
+        setRoomDatas: _setPlanDatas
+      }
+      this.$refs.setPlanCom.resetDataProperty(_obj)
+      this.isSetPlanShow = true
     },
     // 批量添加房间操作
     addRoomBatchHandle() {
@@ -496,7 +555,6 @@ export default {
     },
     // 删除房间操作处理
     delRoomsHandle(data) {
-      console.log('data', data)
       let msgText = ''
       const roomId = data.id
       data.parentId === '-1' ? msgText = `是否删除楼层：${data.name}` : msgText = `是否删除房间：${data.name}`
@@ -587,6 +645,13 @@ export default {
     .main-wrap {
       height: 100%;
       @include boxShadow-container;
+    }
+    .building-empty {
+        text-align: center;
+        color: #d2cfcf;
+        padding: 60px 0;
+        font-size: 22px;
+        letter-spacing: 4px;
     }
     .building-wrap {
       width: 100%;

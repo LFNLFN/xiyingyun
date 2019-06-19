@@ -97,11 +97,11 @@ export default {
         isGet: true
       }
       this.getProjectParticipants(_obj).then(data => {
-      // getParticipant(val).then(resp => {
-      //   const data = resp.result
+        const _participantIds = []
         data.forEach(v => {
-          this.projectParticipantIds.push(v.id)
+          _participantIds.push(v.id)
         })
+        this.projectParticipantIds = _participantIds
         if (this.suppliersTypeData.length === 0) {
           const params = {
             'terms[0].column': 'dict_id',
@@ -145,6 +145,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(action => {
+        this.isTableLoading = true
         unBindParticipant(this.projectSelected, particiIds).then(resp => {
           this.$message({
             message: '删除成功',

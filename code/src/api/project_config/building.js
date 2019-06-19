@@ -14,7 +14,7 @@ export function getBuliding(params) {
   return request({
     url: '/unit/no-paging',
     method: 'get',
-    params: JSON.stringify(params)
+    params: params
   })
 }
 
@@ -75,6 +75,15 @@ export function addRoomsBatch(datas) {
   return request({
     url: '/room/batch',
     method: 'post',
+    data: JSON.stringify(datas)
+  })
+}
+
+// 批量编辑房间
+export function editRoomsBatch(datas) {
+  return request({
+    url: '/room/batch',
+    method: 'put',
     data: JSON.stringify(datas)
   })
 }

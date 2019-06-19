@@ -38,6 +38,7 @@
 </template>
 <script>
 import { gerPersonsByPost, delPostMember, editPersonInfo } from '@/api/base_data/suppliers'
+import EventBus from '@/utils/eventBus'
 export default {
   name: 'Members',
   props: {
@@ -60,6 +61,11 @@ export default {
         this.getMembersFunc(newVal.positionId)
       }
     }
+  },
+  mounted() {
+    EventBus.$on('suppliers.getPositionMembers', (data) => {
+      this.getMembersFunc(this.positionData.positionId)
+    })
   },
   methods: {
     tableFormatter(row) {
@@ -125,10 +131,6 @@ export default {
         console.log('cancel')
       })
     },
-    // // 重置数据
-    // resetData() {
-    //   this.positionData = emptyTarget(this.positionData)
-    // },
     // 新增、添加人员按钮点击处理
     emitEvent(event) {
       this.$emit('postMemberEmitEvent', event, this.positionData)

@@ -32,7 +32,8 @@
 import PublicPopups from '@/components/Pop-ups/PublicPopups'
 import { mapActions } from 'vuex'
 import { isvalidUsername, isvalidPhoneNum } from '@/utils/validate'
-import { addPerson } from '@/api/base_data/organization'
+// import { addPerson } from '@/api/base_data/organization'
+import { addAccount } from '@/api/base_data/accounts'
 
 export default {
   components: { PublicPopups },
@@ -105,13 +106,14 @@ export default {
           }
           this.addMemberLoading = true
           const params = {
+            status: 1,
             name: this.addMemberForm.name,
             phone: this.addMemberForm.phone,
             email: this.addMemberForm.eail || '',
             positionIds: Array.of(this.positionData.id),
             roles: this.addMemberForm.roles
           }
-          addPerson(params).then(respon => {
+          addAccount(params).then(respon => {
             this.addMemberLoading = false
             // 重置表单
             this.closeHandle()

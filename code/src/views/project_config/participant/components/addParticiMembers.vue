@@ -80,7 +80,7 @@ export default {
         return
       } else {
         this.isBoxLoading = true
-        bindMemebers(this.projectId, this.memberSeleted).then(resp => {
+        bindMemebers(this.projectId, this.participantId, this.memberSeleted).then(resp => {
           this.$message({
             message: '添加人员成功',
             type: 'success'

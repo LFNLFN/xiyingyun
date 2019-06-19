@@ -62,6 +62,7 @@ export default {
   watch: {
     isAddParticiShow: function(newVal) {
       if (newVal) {
+        this.particiSelected = this.projectParticipantIds
         this.getOrganizationFunc()
       }
     }
@@ -76,14 +77,11 @@ export default {
       this.getOrganization({ type }).then(resp => {
         this.transferData.splice(0, this.transferData.length)
         resp.forEach(v => {
-          const flag = this.projectParticipantIds.includes(v.id)
-          if (!flag) {
-            this.transferData.push({
-              key: v.id,
-              label: v.name,
-              disabled: false
-            })
-          }
+          this.transferData.push({
+            key: v.id,
+            label: v.name,
+            disabled: false
+          })
         })
         this.suppliersData = resp
       })

@@ -154,13 +154,14 @@ export default {
     // 解绑参建方人员
     unbindMemberHandle(data) {
       const personIds = Array.of(data.id)
+      const participantId = this.$route.query.participantId
       this.$confirm(`确定移除 ${data.name}？`, {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(action => {
         this.isLoading = true
-        unbindMemebers(this.projectId, personIds).then(resp => {
+        unbindMemebers(this.projectId, participantId, personIds).then(resp => {
           this.$message({
             type: 'success',
             message: '移除成功'

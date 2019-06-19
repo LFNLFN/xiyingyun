@@ -236,7 +236,8 @@ export default {
         // 增加分期标段
         case 'addSection':
           this.$router.push({ name: 'stageSection', query: {
-            projectId: data.id,
+            projectId: '',
+            parentId: data.id,
             eventType: 'add'
           }})
           break
@@ -244,6 +245,7 @@ export default {
         case 'editSection':
           this.$router.push({ name: 'stageSection', query: {
             projectId: data.id,
+            parentId: data.parentId,
             eventType: 'edit'
           }})
           break

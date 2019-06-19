@@ -5,21 +5,26 @@
       <div class="header">
         <span class="el-icon-tickets">筛选查询</span>
       </div>
-      <el-form ref="searchForm" :rules="searchRules" :inline="true" :model="searchForm" size="small" class="search-form">
+      <el-form ref="searchForm" :rules="searchRules" :inline="true" :model="searchForm" size="mini" class="search-form">
         <el-form-item prop="name" label="姓名">
           <el-input v-model="searchForm.name" type="text" auto-complete="off" placeholder="请输入用户名称" />
         </el-form-item>
         <el-form-item prop="phone" label="手机号码">
           <el-input v-model="searchForm.phone" type="text" />
         </el-form-item>
-        <el-button type="primary" size="small" class="search-btn" @click="filterAccountInfo">查询</el-button>
+        <el-button type="primary" size="mini" class="search-btn" @click="filterAccountInfo">查询</el-button>
       </el-form>
     </el-header>
     <!-- 中间员工信息部分 -->
     <el-main class="accounts-main">
       <div class="header">
         <span class="el-icon-tickets">数据列表</span>
-        <el-button type="primary" size="small" icon="el-icon-circle-plus-outline" class="account-add-btn" @click.native="addAccountBoxCtrl('add')">新增</el-button>
+        <el-button
+          type="primary"
+          size="mini"
+          icon="el-icon-circle-plus-outline"
+          class="account-add-btn"
+          @click.native="addAccountBoxCtrl('add')">新增</el-button>
       </div>
       <el-table
         v-loading="isLoading"

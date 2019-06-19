@@ -43,18 +43,18 @@ export function getBindtMemebers(projectId, orgId) {
 }
 
 // 绑定的参建方人员
-export function bindMemebers(projectId, ids) {
+export function bindMemebers(projectId, orgId, ids) {
   return request({
-    url: `/project/bindPerson/${projectId}`,
+    url: `/project/bindPerson/${projectId}/${orgId}`,
     method: 'put',
     data: JSON.stringify(ids)
   })
 }
 
 // 解绑的参建方人员
-export function unbindMemebers(projectId, ids) {
+export function unbindMemebers(projectId, orgId, ids) {
   return request({
-    url: `/project/deletePerson/${projectId}`,
+    url: `/project/deletePerson/${projectId}/${orgId}`,
     method: 'delete',
     data: JSON.stringify(ids)
   })
