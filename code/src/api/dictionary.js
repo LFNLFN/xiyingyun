@@ -8,3 +8,11 @@ export function getDictionaryItem(params) {
     params: params
   })
 }
+
+// 根据条件获取数据字典中的值
+export function getDictionary(params) {
+  return request({
+    url: '/dictionary/no-paging',
+    method: 'get'
+  })
+}

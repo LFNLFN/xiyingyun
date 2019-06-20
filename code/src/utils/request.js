@@ -81,7 +81,7 @@ function handleCode(response) {
         break
       case 500:
         Message({
-          message: '服务器出错，请稍后再试!!!',
+          message: message,
           type: 'error',
           duration: 5 * 1000
         })
@@ -89,7 +89,7 @@ function handleCode(response) {
         break
       default :
         Message({
-          message: '请求异常，请重试或检查网络!!!',
+          message: message,
           type: 'error',
           duration: 5 * 1000
         })

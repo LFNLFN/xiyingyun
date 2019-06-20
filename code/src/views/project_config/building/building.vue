@@ -24,7 +24,10 @@
             :props="projectTreeProp"
             :expand-on-click-node="false"
             :default-expanded-keys="treeExpandedIds"
+            :load="LoadProjectBuildsHandle"
+            lazy
             node-key="id"
+            auto-expand-parent
             class="project-tree">
             <span
               slot-scope="{ node, data }"
@@ -251,7 +254,8 @@ export default {
       projectTreeData: [],
       projectTreeProp: {
         label: 'name',
-        children: 'children'
+        children: 'children',
+        isLeaf: 'leaf'
       },
       treeExpandedIds: [], // 保存项目树默认展开的节点ID
       curProject: {}, // 保存已选择项目
@@ -260,12 +264,13 @@ export default {
       curUnitData: {}, // 保存选择楼栋的信息
       floorsRoomsData: [], // 保存选择楼栋的楼层以及房间信息
       isUnitHasRooms: false, // 判断当前单元是否没有房间数据
-      /* -------------- 状态数据 -----------------*/
+      /* -------------- 组件显隠状态数据 -----------------*/
       isAddBuildingShow: false,
       isAddFloorShow: false,
       isBuildRoomShow: false,
       isAddRoomShow: false,
       isSetPlanShow: false,
+      /* -------------- 加载状态数据 -----------------*/
       isGetBuildLoading: false,
       isGetProjectLoading: false
     }
@@ -276,9 +281,11 @@ export default {
       const curProject = this.projectList.find(item => item.id === newVal)
       if (curProject) {
         this.curProject = curProject
-        this.getBulidingFunc()
+        // this.getBulidingFunc()
+        const _treeData = this.buildProjectTree(curProject)
+        this.$set(this, 'projectTreeData', _treeData)
       }
-      // 重置当前楼栋，房间数据
+      // 重置当前楼栋数据，所有房间数据
       this.curUnitData = {}
       this.floorsRoomsData = []
     }
@@ -298,75 +305,128 @@ export default {
     ...mapMutations({
       saveUnitFormData: 'SET_UNITROOM_DATA'
     }),
-    // 加载项目楼栋数据
-    getBulidingFunc() {
-      const curProject = this.curProject
-      const curProjectIds = []
-      const curProName = curProject.name
-      const stages = curProject.childrenWithDetail
-      this.isGetProjectLoading = true
-      if (stages && stages.length > 0) {
-        this.isGetBuildLoading = true
-        const _treeData = []
-        stages.forEach(item => {
-          curProjectIds.push(item.id)
+    // 生成项目树状图
+    buildProjectTree(project, treeLevel = 0) {
+      const { name, childrenWithDetail } = project
+      const _treeData = []
+      if (childrenWithDetail && childrenWithDetail.length > 0) {
+        childrenWithDetail.forEach(item => {
           _treeData.push({
             id: item.id,
-            name: `${curProName}-${item.name}`,
-            level: 0,
+            name: `${name}-${item.name}`,
+            level: treeLevel,
+            projectData: item,
             children: []
           })
         })
-        const projectIdStr = curProjectIds.join()
-        const params = {
-          'terms[0].column': 'projectId$IN',
-          'terms[0].value': `${projectIdStr}`
-        }
-        getBuliding(params).then(resp => {
-          const data = resp.result
-          _treeData.forEach(item => {
-            const curBuilding = data.filter(build => {
-              if (build.projectId === item.id) {
-                build['level'] = 1
-                return true
-              }
-            })
-            item.children = curBuilding
-          })
-          this.$set(this, 'projectTreeData', _treeData)
-          this.isGetProjectLoading = false
-          this.reloadBuildRooms()
-        }).catch(() => {
-          this.$set(this, 'projectTreeData', [])
-          this.isGetBuildLoading = false
-          this.isGetProjectLoading = false
-        })
-      } else {
-        this.isGetProjectLoading = false
-        this.$set(this, 'projectTreeData', [])
       }
+      return _treeData
     },
+    // 加载项目楼栋数据
+    LoadProjectBuildsHandle(node, resolve) {
+      console.log('node', node)
+      const project = node.data.projectData
+      if (!project) {
+        return resolve([])
+      }
+      const _treeData = this.buildProjectTree(project)
+      const params = {
+        'terms[0].column': 'projectId',
+        'terms[0].value': `${project.id}`
+      }
+      getBuliding(params).then(resp => {
+        const unitData = resp.result
+        unitData.forEach(unit => {
+          unit['level'] = 1
+          unit['leaf'] = true
+          _treeData.push(unit)
+        })
+        if (_treeData.length === 0) {
+          this.$message({
+            showClose: true,
+            message: '暂无数据...',
+            duration: 1500
+          })
+        }
+        resolve(_treeData)
+      }).catch(() => {
+        resolve(_treeData)
+      })
+    },
+    // getBulidingFunc() {
+    //   console.log('this.curProject', this.curProject)
+    //   const curProject = this.curProject
+    //   const curProjectIds = []
+    //   const curProName = curProject.name
+    //   const stages = curProject.childrenWithDetail
+    //   this.isGetProjectLoading = true
+    //   if (stages && stages.length > 0) {
+    //     this.isGetBuildLoading = true
+    //     const _treeData = []
+    //     stages.forEach(item => {
+    //       curProjectIds.push(item.id)
+    //       _treeData.push({
+    //         id: item.id,
+    //         name: `${curProName}-${item.name}`,
+    //         level: 0,
+    //         children: []
+    //       })
+    //     })
+    //     const projectIdStr = curProjectIds.join()
+    //     const params = {
+    //       'terms[0].column': 'projectId$IN',
+    //       'terms[0].value': `${projectIdStr}`
+    //     }
+    //     getBuliding(params).then(resp => {
+    //       const data = resp.result
+    //       _treeData.forEach(item => {
+    //         const curBuilding = data.filter(build => {
+    //           if (build.projectId === item.id) {
+    //             build['level'] = 1
+    //             return true
+    //           }
+    //         })
+    //         item.children = curBuilding
+    //       })
+    //       this.$set(this, 'projectTreeData', _treeData)
+    //       this.isGetProjectLoading = false
+    //       this.reloadBuildRooms()
+    //     }).catch(() => {
+    //       this.$set(this, 'projectTreeData', [])
+    //       this.isGetBuildLoading = false
+    //       this.isGetProjectLoading = false
+    //     })
+    //   } else {
+    //     this.isGetProjectLoading = false
+    //     this.$set(this, 'projectTreeData', [])
+    //   }
+    // },
     // 刷新楼栋信息
     refreshBuilding() {
-      this.getBulidingFunc()
+      this.reloadBuildRooms()
     },
     // 刷新楼栋信息后，重新加载刷新前选择的楼栋及房间信息
     reloadBuildRooms() {
       // 判断是否已选择楼栋
-      const unitKeys = Object.keys(this.curUnitData)
-      if (unitKeys.length === 0) {
-        this.isGetBuildLoading = false
-        return
-      }
-      const unitId = this.curUnitData.id
-      const curTreeNode = this.projectTreeData.find(item => {
-        const target = item.children.find(child => {
-          return unitId === child.id
-        })
-        return target !== undefined
-      })
-      this.treeExpandedIds = Array.of(curTreeNode.id)
+      console.log('this.curUnitData', this.curUnitData)
+      console.log('this.projectTreeData', this.projectTreeData)
+      const projectId = this.curUnitData.projectId
+      this.treeExpandedIds = Array.of(projectId)
       this.loadBuildingRooms(this.curUnitData)
+      // const unitKeys = Object.keys(this.curUnitData)
+      // if (unitKeys.length === 0) {
+      //   this.isGetBuildLoading = false
+      //   return
+      // }
+      // const unitId = this.curUnitData.id
+      // const curTreeNode = this.projectTreeData.find(item => {
+      //   const target = item.children.find(child => {
+      //     return unitId === child.id
+      //   })
+      //   return target !== undefined
+      // })
+      // this.treeExpandedIds = Array.of(curTreeNode.id)
+      // this.loadBuildingRooms(this.curUnitData)
     },
     // 添加楼栋处理
     addBuildingHandle(data) {

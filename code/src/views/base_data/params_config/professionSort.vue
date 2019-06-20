@@ -23,6 +23,7 @@
   </el-container>
 </template>
 <script>
+import { getDictionaryItem, getDictionary } from '@/api/dictionary'
 export default {
   name: 'Supplierprofession',
   data() {
@@ -43,6 +44,14 @@ export default {
       ],
       professionCheckedVal: ''
     }
+  },
+  created() {
+    getDictionary().then(resp => {
+      console.log('resp', resp)
+    })
+    getDictionaryItem().then(resp => {
+      console.log('resp', resp)
+    })
   },
   methods: {
     backConigNav() {

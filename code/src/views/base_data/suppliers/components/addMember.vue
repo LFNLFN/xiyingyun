@@ -33,7 +33,6 @@ import PublicPopups from '@/components/Pop-ups/PublicPopups'
 import { mapActions } from 'vuex'
 import { isvalidUsername, isvalidPhoneNum } from '@/utils/validate'
 import { addAccount } from '@/api/base_data/accounts'
-import EventBus from '@/utils/eventBus'
 
 export default {
   components: { PublicPopups },

@@ -87,9 +87,11 @@
       </div>
       <div class="transfer-wrap">
         <el-transfer
-          v-model="buildingSelected"
+          v-model="professionSelected"
+          :data="transProfessionData"
+          :filter-method="filterSuppliers"
           :titles="['专业列表', '已选']"
-          :button-texts="['删除选项', '添加选项']"
+          :button-texts="['删除专业', '添加专业']"
           filterable />
       </div>
     </el-main>
@@ -110,6 +112,7 @@ import { addProjectStage, editProjectStage } from '@/api/project_config/project'
 export default {
   data() {
     return {
+      /* ------------------- 表单数据相关 --------------------*/
       sectionFormData: {
         name: '',
         parentId: '',
@@ -134,10 +137,15 @@ export default {
         { id: 0, value: '在建' },
         { id: 1, value: '已完工' }
       ], // 保存项目状态
+      belongProject: '', // 保存标段所属项目
+      /* ------------------- 楼栋信息相关 --------------------*/
       allBuildingData: [], // 保存所有楼栋数据
       transBuildingData: [], // 保存穿梭框展示的楼栋数据
       buildingSelected: [], // 保存所选择的楼栋Id
-      belongProject: '', // 保存标段所属项目
+      /* ------------------- 专业信息相关 --------------------*/
+      allProfessionData: [], // 保存所有专业数据
+      transProfessionData: [], // 保存穿梭框展示的专业数据
+      professionSelected: [], // 保存所选择的专业Id
       sectionLoading: false,
       sectionInfoLoading: false,
       buildingLoading: false,
@@ -156,6 +164,12 @@ export default {
         return newVal.includes(item.id)
       })
       this.sectionFormData.estateProjectStageEntity.unitEntityList = curBuildings
+    },
+    professionSelected: function(newVal) {
+      const curProfession = this.allProfessionData.filter(item => {
+        return newVal.includes(item.id)
+      })
+      this.sectionFormData.estateProjectStageEntity.professionalList = curProfession
     }
   },
   created() {
@@ -193,6 +207,8 @@ export default {
     this.getContractSupervise()
     // 加载楼栋数据
     this.getBuildingData()
+    // 加载专业分类数据
+    this.getProfessionData()
   },
   methods: {
     ...mapActions({
@@ -238,25 +254,62 @@ export default {
     },
     // 加载楼栋数据处理
     getBuildingData() {
-      const parentId = this.$route.query.parentId
+      const { parentId, projectId } = this.$route.query
+      const idsStr = [parentId, projectId].join()
       const params = {
-        'terms[0].column': 'projectId',
-        'terms[0].value': `${parentId}`
+        'terms[0].column': 'projectId$IN',
+        'terms[0].value': `${idsStr}`
       }
       getBuliding(params).then(resp => {
-        console.log('getBuliding resp', resp)
         const _data = resp.result
         this.allBuildingData = _data
+        const unitEntityList = this.sectionFormData.estateProjectStageEntity.unitEntityList
         _data.forEach(v => {
           this.transBuildingData.push({
             key: v.id,
             label: v.name,
             disabled: false
           })
+          const index = unitEntityList.findIndex(item => {
+            return v.projectId === item.projectId
+          })
+          if (index >= 0) {
+            this.buildingSelected.push(v.id)
+          }
         })
         this.buildingLoading = false
       }).catch(() => {
         this.buildingLoading = false
+      })
+    },
+    // 加载专业分类数据处理
+    getProfessionData() {
+      const dictParams = {
+        'terms[0].column': 'dict_id',
+        'terms[0].value': 'professionType'
+      }
+      getDictionaryItem(dictParams).then(resp => {
+        console.log('resp', resp)
+        const _data = resp.result
+        this.allProfessionData = _data
+        const professionalList = this.sectionFormData.estateProjectStageEntity.professionalList
+        _data.forEach(v => {
+          this.transProfessionData.push({
+            key: v.id,
+            label: v.value,
+            disabled: false
+          })
+          // 加载已选择的专业分类
+          const index = professionalList.findIndex(item => {
+            return item.id === v.id
+          })
+          if (index >= 0) {
+            this.professionSelected.push(v.id)
+          }
+        })
+        this.professionLoading = false
+      }).catch(() => {
+        this.professionLoading = false
       })
     },
     // 添加标段处理

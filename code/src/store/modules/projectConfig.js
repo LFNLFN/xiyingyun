@@ -19,7 +19,7 @@ const projectConfig = {
       roomsData: [],
       status: 'addBuild',
       isNextAddUnit: false,
-      isAddRooms: true
+      isBuildRooms: true
     }, // 保存添加单元以及房间所需的数据
     /* --------- 参建方管理相关数据 ------------ */
     projectParticipants: []

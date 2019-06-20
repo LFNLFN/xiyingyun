@@ -156,7 +156,7 @@ export default {
     },
     // 提交表单数据，新增单元
     submitBuildingHandle() {
-      if (!this.addRoomCompelete) {
+      if (!this.addRoomCompelete && this.isBuildRoom) {
         this.$message({
           message: '请先添加房间信息',
           type: 'warning'
