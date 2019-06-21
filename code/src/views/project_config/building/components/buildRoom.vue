@@ -1,7 +1,7 @@
 <template>
   <publicPopups title-text="生成房间 " width="650px" @closePopupsBox="closeBox">
     <template slot="main-content">
-      <div :class="{'add-rooms-active': isBuildRoom}" class="main-wrap">
+      <div v-loading="isAddRoomsLoading" :class="{'add-rooms-active': isBuildRoom}" class="main-wrap">
         <el-form
           ref="roomsForm"
           :model="roomsFormData"
@@ -71,7 +71,8 @@ export default {
       floorData: [], // 保存楼层数据
       isBuildRoom: false,
       isNextAddUnit: false,
-      addRoomCompelete: false
+      addRoomCompelete: false,
+      isAddRoomsLoading: false
     }
   },
   computed: {
@@ -163,12 +164,15 @@ export default {
         })
         return
       }
+      this.isAddRoomsLoading = true
       const addUnitFormData = this.addUnitAndRoomsData.unitFormData
       // 如果是再新增楼栋时同步生成房间，则先添加楼栋数据
       if (this.addUnitAndRoomsData.isNextAddUnit) {
         addBuilding(addUnitFormData).then(resp => {
           const unitId = resp.result
           this.addFloorRoomsSubmit(unitId)
+        }).catch(() => {
+          this.isAddRoomsLoading = false
         })
       // 否则直接添加房间信息
       } else {
@@ -189,8 +193,11 @@ export default {
           message: '新增成功',
           type: 'success'
         })
+        this.isAddRoomsLoading = false
         this.$emit('refreshBuilding')
         this.closeBox()
+      }).catch(() => {
+        this.isAddRoomsLoading = false
       })
     },
     // 楼层添加房间处理
@@ -204,8 +211,11 @@ export default {
           message: '生成房间成功',
           type: 'success'
         })
-        this.$emit('refreshBuilding')
+        this.isAddRoomsLoading = false
+        this.$emit('refreshBuildRooms')
         this.closeBox()
+      }).catch(() => {
+        this.isAddRoomsLoading = false
       })
     },
     // 返回上一步

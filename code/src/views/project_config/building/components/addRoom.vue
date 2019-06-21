@@ -113,7 +113,7 @@ export default {
           message: '新增房间成功',
           type: 'success'
         })
-        this.$emit('refreshBuilding')
+        this.$emit('refreshBuildRooms')
         this.closeBox()
       })
     },

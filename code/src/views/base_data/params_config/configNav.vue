@@ -4,13 +4,13 @@
       <div class="header">
         <span class="el-icon-tickets"> 业务参数</span>
       </div>
-      <div class="params-item-wrap">
+      <div v-loading="isLoading" class="params-item-wrap">
         <el-row v-for="(item, idx) in paramsItems" :key="idx" type="flex" justify="space-between">
           <el-col>
             <span>{{ item.name }}</span>
           </el-col>
           <el-col :span="2">
-            <el-button :disabled="item.disable" type="primary" size="small" @click="showCurConfigBox(item.component)">设置</el-button>
+            <el-button :disabled="componentDatas[item.id] === undefined" type="primary" size="small" @click="showCurConfigBox(item)">设置</el-button>
           </el-col>
         </el-row>
       </div>
@@ -18,22 +18,36 @@
   </el-container>
 </template>
 <script>
+import { getDictionary } from '@/api/dictionary'
 export default{
-  data() {
-    return {
-      paramsItems: [
-        { name: '问题等级', component: 'problemLevel', disable: false },
-        { name: '专业分类', component: 'professionSort', disable: false },
-        { name: '允许相册上传图片', component: 'allowUploadImg', disable: true },
-        { name: '供应商性质', component: 'SupplierProperty', disable: false }
-      ],
-      showComponent: 'SupplierProperty',
-      componentShow: false
+  props: {
+    componentDatas: {
+      type: Object,
+      default: () => {
+        return {}
+      }
     }
   },
+  data() {
+    return {
+      paramsItems: [],
+      showComponent: {},
+      isLoading: false
+    }
+  },
+  created() {
+    console.log('componentDatas', this.componentDatas)
+    this.isLoading = true
+    getDictionary().then(resp => {
+      this.paramsItems = resp.result
+      this.isLoading = false
+    }).catch(() => {
+      this.isLoading = false
+    })
+  },
   methods: {
-    showCurConfigBox(component) {
-      this.$emit('changeSowCom', component)
+    showCurConfigBox(item) {
+      this.$emit('changeSowCom', item.id, item)
     }
   }
 }

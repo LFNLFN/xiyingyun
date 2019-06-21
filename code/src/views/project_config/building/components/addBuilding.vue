@@ -43,12 +43,12 @@ import { editBuild } from '@/api/project_config/building'
 export default {
   components: { PublicPopups },
   props: {
-    projectData: {
-      type: Object,
-      default: () => {
-        return {}
-      }
-    },
+    // projectData: {
+    //   type: Object,
+    //   default: () => {
+    //     return {}
+    //   }
+    // },
     isAddBuildingShow: {
       type: Boolean,
       default: false
@@ -69,6 +69,7 @@ export default {
         floorCount: [{ required: true, trigger: 'blur', message: '楼栋层数不能为空' }],
         presaleFloorCount: [{ required: true, trigger: 'blur', message: '预售层数不能为空' }]
       },
+      projectData: {},
       addStatus: 'fill', // 当前状态：fill 填写表单，edit 编辑楼栋数据, added 新增完成
       buildRoomsChecked: true, // 选择是否生成房间
       isEditBuild: false, // 是否是编辑模式
@@ -111,6 +112,11 @@ export default {
       saveUnitFormData: 'SET_UNITROOM_DATA',
       resetunitFormData: 'RESET_UNITROOM_DATA'
     }),
+    resetDataProperty(source) {
+      Object.keys(source).forEach(key => {
+        this[key] = source[key]
+      })
+    },
     // 填写完楼栋信息，前往编辑楼栋的楼层信息
     nextStepHandle() {
       this.$refs.buildForm.validate(valid => {
