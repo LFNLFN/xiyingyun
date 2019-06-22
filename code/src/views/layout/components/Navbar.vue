@@ -2,6 +2,7 @@
   <div class="navbar">
     <hamburger :toggle-click="toggleSideBar" :is-active="sidebar.opened" class="hamburger-container"/>
     <breadcrumb />
+    <!-- <systemChange /> -->
     <div class="navbar-right-part">
       <msgDropdown />
       <userDropdown />
@@ -12,6 +13,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
+import SystemChange from '@/components/SystemChange'
 import Hamburger from '@/components/Hamburger'
 import UserDropdown from '@/components/UserDropdown'
 import MsgDropdown from '@/components/MsgDropdown'
@@ -19,6 +21,7 @@ import MsgDropdown from '@/components/MsgDropdown'
 export default {
   components: {
     Breadcrumb,
+    SystemChange,
     Hamburger,
     UserDropdown,
     MsgDropdown

@@ -115,12 +115,6 @@ export default {
     // 获取项目详情列表
     this.getProjectDetailFunc()
   },
-  // computed: {
-  //   // 保存显示到table的项目数据
-  //   projectTableData: function() {
-  //     return this.projectList
-  //   }
-  // },
   methods: {
     ...mapActions([
       'getDictionaryItemFunc',

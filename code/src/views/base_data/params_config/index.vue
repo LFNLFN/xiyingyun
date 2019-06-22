@@ -11,7 +11,7 @@ import ProblemLevel from '@/views/base_data/params_config/item_views/problemLeve
 import ProfessionSort from '@/views/base_data/params_config/item_views/professionSort'
 import AllowUploadImg from '@/views/base_data/params_config/item_views/allowUploadImg'
 import ConfigNav from '@/views/base_data/params_config/configNav'
-import { getMenus } from '@/api/dictionary'
+// import { getMenus } from '@/api/dictionary'
 export default{
   components: { SupplierProperty, ProblemLevel, ProfessionSort, AllowUploadImg, ConfigNav },
   data() {
@@ -25,33 +25,33 @@ export default{
     }
   },
   created() {
-    getMenus().then(resp => {
-      console.log('resp', resp)
-      const menuList = []
-      const subMenuLists = {}
-      resp.result.forEach(item => {
-        if (item.parentId === '-1') {
-          menuList.push(item)
-          if (subMenuLists[item.id] === undefined) {
-            subMenuLists[item.id] = []
-          }
-        } else {
-          const curParentId = item.parentId
-          const index = Object.keys(subMenuLists).indexOf(curParentId)
-          if (index >= 0) {
-            subMenuLists[curParentId].push(item)
-          } else {
-            subMenuLists[curParentId] = Array.of(item)
-          }
-        }
-      })
-      menuList.forEach(menu => {
-        if (subMenuLists[menu.id]) {
-          menu['children'] = subMenuLists[menu.id]
-        }
-      })
-      console.log('menuList', menuList)
-    })
+    // getMenus().then(resp => {
+    //   console.log('resp', resp)
+    //   // const menuList = []
+    //   // const subMenuLists = {}
+    //   // resp.result.forEach(item => {
+    //   //   if (item.parentId === '-1') {
+    //   //     menuList.push(item)
+    //   //     if (subMenuLists[item.id] === undefined) {
+    //   //       subMenuLists[item.id] = []
+    //   //     }
+    //   //   } else {
+    //   //     const curParentId = item.parentId
+    //   //     const index = Object.keys(subMenuLists).indexOf(curParentId)
+    //   //     if (index >= 0) {
+    //   //       subMenuLists[curParentId].push(item)
+    //   //     } else {
+    //   //       subMenuLists[curParentId] = Array.of(item)
+    //   //     }
+    //   //   }
+    //   // })
+    //   // menuList.forEach(menu => {
+    //   //   if (subMenuLists[menu.id]) {
+    //   //     menu['children'] = subMenuLists[menu.id]
+    //   //   }
+    //   // })
+    //   // console.log('menuList', menuList)
+    // })
   },
   methods: {
     showCurConfigBox(itemId, item) {
