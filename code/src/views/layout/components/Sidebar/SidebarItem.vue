@@ -21,7 +21,6 @@
     </el-submenu>
   </div>
 </template>
-
 <script>
 import path from 'path'
 import { isExternal } from '@/utils/validate'

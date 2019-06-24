@@ -42,6 +42,16 @@
   }
 }
 
+// td无边框、头部灰色表格
+.el-table.no-border-gary-head {
+  border: 1px solid #dddee1;
+  border-bottom: none;
+  .el-table__header th {
+    background: #f8f8f9;
+  }
+}
+
+// 设置表单树
 .el-table_tree {
   .el-table__body {
     .el-table__expand-icon {

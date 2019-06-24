@@ -21,6 +21,7 @@ import Layout from '../views/layout/Layout'
     icon: 'svg-name'             the icon show in the sidebar
     breadcrumb: false            if false, the item will hidden in breadcrumb(default is true)
   }
+* menuType:                      types: 'home', 'project', 'public'
 **/
 
 // 无权限公共页面
@@ -39,8 +40,8 @@ export const constantRouterMap = [
   }
 ]
 
-// 公共业务管理
-export const publicServiceRouterMap = [
+// 根据权限加载的异步路由
+export const asyncRouterMap = [
   // 登录后进入首页
   {
     path: '/',
@@ -48,6 +49,7 @@ export const publicServiceRouterMap = [
     redirect: '/home',
     hidden: true
   },
+  /* ------------------- 首页 ------------------ */
   // 首页
   {
     path: '/home',
@@ -55,15 +57,128 @@ export const publicServiceRouterMap = [
     component: Layout,
     redirect: '/home/index',
     meta: { title: '首页', icon: '' },
+    menuType: 'home',
     children: [
       {
         path: 'index',
         name: 'homeIndex',
         meta: { title: '首页', icon: '' },
-        component: () => import('@/views/project_home/index')
+        component: () => import('@/views/home/index')
       }
     ]
   },
+  /* ------------------- 工程管理 ------------------ */
+  // 质量管理
+  {
+    path: '/quality',
+    component: Layout,
+    redirect: '/quality/process_acceptance',
+    name: 'quality',
+    meta: { title: '质量管理', icon: '' },
+    menuType: 'project',
+    children: [
+      {
+        path: 'process_acceptance',
+        name: 'processAcceptance',
+        meta: { title: '工序验收', icon: '' },
+        component: () => import('@/views/quality/process_acceptance/process_acceptance')
+      },
+      {
+        path: 'check_problem',
+        name: 'checkProblem',
+        meta: { title: '检查问题', icon: '' }
+        // component: () => import('@/views/')
+      },
+      {
+        path: 'service_problem',
+        name: 'serviceProblem',
+        meta: { title: '客服问题', icon: '' }
+        // component: () => import('@/views/')
+      },
+      {
+        path: 'measure',
+        name: 'measure',
+        meta: { title: '实测实量', icon: '' },
+        component: () => import('@/views/quality/measure/measure')
+      },
+      {
+        path: 'special_check',
+        name: 'specialCheck',
+        meta: { title: '专项检查', icon: '' }
+        // component: () => import('@/views/')
+      },
+      {
+        path: 'Eealuation',
+        name: 'Eealuation',
+        meta: { title: '评估管理', icon: '' }
+        // component: () => import('@/views/')
+      }
+    ]
+  },
+  // 材料管理
+  {
+    path: '/material',
+    component: Layout,
+    redirect: '/material/material_acceptance',
+    name: 'material',
+    meta: { title: '材料管理', icon: '' },
+    menuType: 'project',
+    children: [
+      {
+        path: 'material_acceptance',
+        name: 'materialAcceptance',
+        meta: { title: '材料验收', icon: '' }
+        // component: () => ('')
+      },
+      {
+        path: 'material_apply',
+        name: 'materialApply',
+        meta: { title: '材料申请', icon: '' }
+        // component: () => ('')
+      }
+    ]
+  },
+  // 企业发文
+  {
+    path: '/publication',
+    component: Layout,
+    redirect: '/publication/project',
+    name: 'publication',
+    meta: { title: '企业发文', icon: '' },
+    menuType: 'project',
+    children: [
+      {
+        path: 'publication_manage',
+        name: 'publicationManage',
+        meta: { title: '公告管理', icon: '' }
+        // component: () => ('')
+      },
+      {
+        path: 'document_manage',
+        name: 'documentManage',
+        meta: { title: '文档管理', icon: '' }
+        // component: () => ('')
+      }
+    ]
+  },
+  // 统计分析
+  {
+    path: '/statistics',
+    component: Layout,
+    redirect: '/statistics/project',
+    name: 'statistics',
+    meta: { title: '统计分析', icon: '' },
+    menuType: 'project',
+    children: [
+      {
+        path: 'statistics_report',
+        name: 'statisticsReport',
+        meta: { title: '统计报表', icon: '' }
+        // component: () => ('')
+      }
+    ]
+  },
+  /* ------------------- 公共业务管理 ------------------ */
   // 项目设置界面
   {
     path: '/project_config',
@@ -71,6 +186,7 @@ export const publicServiceRouterMap = [
     redirect: '/project_config/project',
     name: 'projectConfig',
     meta: { title: '项目设置', icon: '' },
+    menuType: 'public',
     children: [
       {
         path: 'project',
@@ -141,6 +257,7 @@ export const publicServiceRouterMap = [
     name: 'baseData',
     redirect: '/base_data/suppliers',
     meta: { title: '基础资料', icon: '' },
+    menuType: 'public',
     children: [
       {
         path: 'suppliers',
@@ -212,6 +329,7 @@ export const publicServiceRouterMap = [
     name: 'user',
     redirect: '/user/user_set',
     meta: { title: '我的', icon: '' },
+    menuType: 'public',
     children: [
       // {
       //   path: 'security',
@@ -239,122 +357,28 @@ export const publicServiceRouterMap = [
       }
     ]
   },
+  // 网站信息
+  {
+    path: '/website_info',
+    name: 'websiteInfo',
+    component: Layout,
+    redirect: '/website_info/index',
+    meta: { title: '首页', icon: '' },
+    menuType: 'public',
+    children: [
+      {
+        path: 'index',
+        name: 'websiteInfoIndex',
+        meta: { title: '网站信息', icon: '' },
+        component: () => import('@/views/website_info/index')
+      }
+    ]
+  },
   // 无效链接重定向到404页面
   { path: '*', redirect: '/404', hidden: true }
 ]
 
-// 工程管理
-export const projectRouterMap = [
-  // 质量管理
-  {
-    path: '/quality',
-    component: Layout,
-    redirect: '/quality/process_acceptance',
-    name: 'quality',
-    meta: { title: '质量管理', icon: '' },
-    children: [
-      {
-        path: 'process_acceptance',
-        name: 'processAcceptance',
-        meta: { title: '工序验收', icon: '' }
-        // component: () => import('@/view/')
-      },
-      {
-        path: 'check_problem',
-        name: 'checkProblem',
-        meta: { title: '检查问题', icon: '' }
-        // component: () => import('@/view/')
-      },
-      {
-        path: 'service_problem',
-        name: 'serviceProblem',
-        meta: { title: '客服问题', icon: '' }
-        // component: () => import('@/view/')
-      },
-      {
-        path: 'measure',
-        name: 'measure',
-        meta: { title: '实测实量', icon: '' }
-        // component: () => import('@/view/')
-      },
-      {
-        path: 'special_check',
-        name: 'specialCheck',
-        meta: { title: '专项检查', icon: '' }
-        // component: () => import('@/view/')
-      },
-      {
-        path: 'Eealuation',
-        name: 'Eealuation',
-        meta: { title: '评估管理', icon: '' }
-        // component: () => import('@/view/')
-      }
-    ]
-  },
-  // 材料管理
-  {
-    path: '/material',
-    component: Layout,
-    redirect: '/material/material_acceptance',
-    name: 'material',
-    meta: { title: '材料管理', icon: '' },
-    children: [
-      {
-        path: 'material_acceptance',
-        name: 'materialAcceptance',
-        meta: { title: '材料验收', icon: '' }
-        // component: () => ('')
-      },
-      {
-        path: 'material_apply',
-        name: 'materialApply',
-        meta: { title: '材料申请', icon: '' }
-        // component: () => ('')
-      }
-    ]
-  },
-  // 企业发文
-  {
-    path: '/publication',
-    component: Layout,
-    redirect: '/publication/project',
-    name: 'publication',
-    meta: { title: '企业发文', icon: '' },
-    children: [
-      {
-        path: 'publication_manage',
-        name: 'publicationManage',
-        meta: { title: '公告管理', icon: '' }
-        // component: () => ('')
-      },
-      {
-        path: 'document_manage',
-        name: 'documentManage',
-        meta: { title: '文档管理', icon: '' }
-        // component: () => ('')
-      }
-    ]
-  },
-  // 统计分析
-  {
-    path: '/statistics',
-    component: Layout,
-    redirect: '/statistics/project',
-    name: 'statistics',
-    meta: { title: '统计分析', icon: '' },
-    children: [
-      {
-        path: 'statistics_report',
-        name: 'statisticsReport',
-        meta: { title: '统计报表', icon: '' }
-        // component: () => ('')
-      }
-    ]
-  },
-  { path: '*', redirect: '/404', hidden: true }
-]
-
-const allRouter = constantRouterMap.concat(publicServiceRouterMap)
+const allRouter = constantRouterMap.concat(asyncRouterMap)
 
 // 创建路由实例
 const createRouter = () => new Router({

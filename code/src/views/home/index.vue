@@ -43,7 +43,7 @@
       </div>
       <div class="chart-wrap">
         <div class="header">用户活跃度</div>
-        <div class="chart-container"></div>
+        <div class="chart-container" />
       </div>
     </el-main>
     <el-main class="right-wrap">
