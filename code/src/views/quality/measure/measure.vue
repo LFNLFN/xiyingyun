@@ -85,10 +85,15 @@
         @current-change="pageChangeHandle"
         @size-change="pageSizeChangeHandle"/>
     </el-main>
+    <measureDetail
+      v-show="isMeasureDetailShow"
+      :is-measure-detail-show.sync="isMeasureDetailShow" />
   </el-container>
 </template>
 <script>
+import MeasureDetail from '@/views/quality/measure/components/measureDetail'
 export default {
+  components: { MeasureDetail },
   data() {
     return {
       filterFormData: {
@@ -98,7 +103,8 @@ export default {
       fullFilterForm: false,
       measureTableData: [],
       pageIndex: 0,
-      pageTotal: 10
+      pageTotal: 10,
+      isMeasureDetailShow: false
     }
   },
   methods: {

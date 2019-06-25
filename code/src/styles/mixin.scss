@@ -43,28 +43,15 @@
   }
 }
 
-// @mixin flex-center {
-//   display: flex;
-//   justify-content: center;
-//   align-items: center;
-// }
-
-// @mixin flex-center-column {
-//   display: flex;
-//   justify-content: center;
-//   align-items: center;
-//   flex-flow: column;
-// }
-
-// @mixin flex-space-between-center {
-//   display: flex;
-//   justify-content: space-between;
-//   align-items: center;
-// }
-
-// @mixin flex-wrap {
-//   flex-wrap: wrap;
-// }
+@mixin ellipsis-textarea($clamp){
+  word-break: break-all;
+  word-wrap: break-word;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: $clamp;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 @mixin gray-header {
   height: 40px;

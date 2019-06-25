@@ -86,14 +86,14 @@ export const asyncRouterMap = [
       {
         path: 'check_problem',
         name: 'checkProblem',
-        meta: { title: '检查问题', icon: '' }
-        // component: () => import('@/views/')
+        meta: { title: '检查问题', icon: '' },
+        component: () => import('@/views/quality/check_problem/check_problem')
       },
       {
         path: 'service_problem',
         name: 'serviceProblem',
-        meta: { title: '客服问题', icon: '' }
-        // component: () => import('@/views/')
+        meta: { title: '客服问题', icon: '' },
+        component: () => import('@/views/quality/service_problem/service_problem')
       },
       {
         path: 'measure',
@@ -104,14 +104,23 @@ export const asyncRouterMap = [
       {
         path: 'special_check',
         name: 'specialCheck',
-        meta: { title: '专项检查', icon: '' }
-        // component: () => import('@/views/')
+        meta: { title: '专项检查', icon: '' },
+        component: () => import('@/views/quality/special_check/special_check')
       },
       {
-        path: 'Eealuation',
-        name: 'Eealuation',
-        meta: { title: '评估管理', icon: '' }
-        // component: () => import('@/views/')
+        path: 'evaluation',
+        name: 'evaluation',
+        redirect: 'evaluation/index',
+        meta: { title: '评估管理', icon: '' },
+        component: () => import('@/views/quality/evaluation/index'),
+        children: [
+          {
+            path: 'index',
+            name: 'evaluationIndex',
+            hidden: true,
+            component: () => import('@/views/quality/evaluation/evaluation')
+          }
+        ]
       }
     ]
   },
