@@ -100,11 +100,10 @@ export default {
 
 .divide-wrap {
   width: 100%;
-  height: 15px;
+  height: 45px;
   text-align: center;
   padding:0 10px;
   background: $menuBg;
-  margin: 10px 0;
   position: relative;
   .divide-text, .divide-line {
     position: absolute;

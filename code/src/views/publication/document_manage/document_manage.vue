@@ -2,31 +2,33 @@
   <el-container>
     <el-main>
       <el-tabs v-model="showTabName" @tab-click="changTabShow">
-        <el-tab-pane label="集团检查" name="first">
-          <TapCheckDatas />
+        <el-tab-pane label="企业文档" name="company">
+          <tabDocuments ref="company"/>
         </el-tab-pane>
-        <el-tab-pane label="区域检查" name="second">
-          <TapCheckDatas />
-        </el-tab-pane>
-        <el-tab-pane label="项目检查" name="third">
-          <TapCheckDatas />
+        <el-tab-pane label="项目文档" name="project">
+          <tabDocuments ref="project"/>
         </el-tab-pane>
       </el-tabs>
     </el-main>
   </el-container>
 </template>
 <script>
-import TapCheckDatas from '@/views/quality/special_check/components/tapCheckDatas'
+import TabDocuments from '@/views/publication/document_manage/components/tabDocuments'
 export default {
-  components: { TapCheckDatas },
+  components: { TabDocuments },
   data() {
     return {
-      showTabName: 'first'
+      showTabName: 'company'
     }
   },
   methods: {
     changTabShow(tab, event) {
-      console.log('tab', tab)
+      const tabLabel = tab.label
+      const tabName = tab.name
+      const _obj = {
+        curTabName: tabLabel
+      }
+      this.$refs[tabName].resetDataProperty(_obj)
     }
   }
 }

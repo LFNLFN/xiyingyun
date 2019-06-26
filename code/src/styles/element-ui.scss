@@ -3,6 +3,7 @@
 // 无边框按钮
 .el-button.no-border {
   border: none;
+  padding: 9px;
   background-color: transparent;
   &:hover {
     border-color: transparent;

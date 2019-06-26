@@ -106,22 +106,22 @@ export const asyncRouterMap = [
         name: 'specialCheck',
         meta: { title: '专项检查', icon: '' },
         component: () => import('@/views/quality/special_check/special_check')
-      },
-      {
-        path: 'evaluation',
-        name: 'evaluation',
-        redirect: 'evaluation/index',
-        meta: { title: '评估管理', icon: '' },
-        component: () => import('@/views/quality/evaluation/index'),
-        children: [
-          {
-            path: 'index',
-            name: 'evaluationIndex',
-            hidden: true,
-            component: () => import('@/views/quality/evaluation/evaluation')
-          }
-        ]
       }
+      // {
+      //   path: 'evaluation',
+      //   name: 'evaluation',
+      //   redirect: 'evaluation/index',
+      //   meta: { title: '评估管理', icon: '' },
+      //   component: () => import('@/views/quality/evaluation/index'),
+      //   children: [
+      //     {
+      //       path: 'index',
+      //       name: 'evaluationIndex',
+      //       hidden: true,
+      //       component: () => import('@/views/quality/evaluation/evaluation')
+      //     }
+      //   ]
+      // }
     ]
   },
   // 材料管理
@@ -130,28 +130,29 @@ export const asyncRouterMap = [
     component: Layout,
     redirect: '/material/material_acceptance',
     name: 'material',
+    alwaysShow: true,
     meta: { title: '材料管理', icon: '' },
     menuType: 'project',
     children: [
       {
         path: 'material_acceptance',
         name: 'materialAcceptance',
-        meta: { title: '材料验收', icon: '' }
-        // component: () => ('')
-      },
-      {
-        path: 'material_apply',
-        name: 'materialApply',
-        meta: { title: '材料申请', icon: '' }
-        // component: () => ('')
+        meta: { title: '材料验收', icon: '' },
+        component: () => import('@/views/material/material_acceptance/material_acceptance')
       }
+      // {
+      //   path: 'material_apply',
+      //   name: 'materialApply',
+      //   meta: { title: '材料申请', icon: '' }
+      //   // component: () => import('@/views/material/material_acceptance/material_acceptance')
+      // }
     ]
   },
   // 企业发文
   {
     path: '/publication',
     component: Layout,
-    redirect: '/publication/project',
+    redirect: '/publication/publication_manage',
     name: 'publication',
     meta: { title: '企业发文', icon: '' },
     menuType: 'project',
@@ -159,14 +160,14 @@ export const asyncRouterMap = [
       {
         path: 'publication_manage',
         name: 'publicationManage',
-        meta: { title: '公告管理', icon: '' }
-        // component: () => ('')
+        meta: { title: '公告管理', icon: '' },
+        component: () => import('@/views/publication/publication_manage/publication_manage')
       },
       {
         path: 'document_manage',
         name: 'documentManage',
-        meta: { title: '文档管理', icon: '' }
-        // component: () => ('')
+        meta: { title: '文档管理', icon: '' },
+        component: () => import('@/views/publication/document_manage/document_manage')
       }
     ]
   },
@@ -174,16 +175,17 @@ export const asyncRouterMap = [
   {
     path: '/statistics',
     component: Layout,
-    redirect: '/statistics/project',
+    redirect: '/statistics/statistics_report',
     name: 'statistics',
     meta: { title: '统计分析', icon: '' },
     menuType: 'project',
+    alwaysShow: true,
     children: [
       {
         path: 'statistics_report',
         name: 'statisticsReport',
-        meta: { title: '统计报表', icon: '' }
-        // component: () => ('')
+        meta: { title: '统计报表', icon: '' },
+        component: () => import('@/views/statistics/statistics_report/statistics_report')
       }
     ]
   },

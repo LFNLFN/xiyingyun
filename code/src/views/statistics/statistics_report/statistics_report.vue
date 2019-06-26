@@ -1,0 +1,84 @@
+<template>
+  <el-container>
+    <el-main>
+      <el-table
+        :data="materialTableData"
+        :cell-class-name="setTableCellStyle"
+        :header-cell-class-name="setTableCellStyle"
+        size="small"
+        class="no-border-gary-head" >
+        <el-table-column label="报表名称" />/>
+        <el-table-column width="250px" label="操作" align="center">
+          <el-button class="no-border" size="mini">预览</el-button>
+        </el-table-column>
+      </el-table>
+      <el-pagination
+        :total="pageTotal"
+        :page-size="10"
+        :page-sizes="[10, 20, 30, 40]"
+        :current-page="pageIndex"
+        background
+        layout="total, prev, pager, next, sizes, jumper"
+        class="pager-wrap"
+        @current-change="pageChangeHandle"
+        @size-change="pageSizeChangeHandle"/>
+    </el-main>
+    <measureDetail
+      v-show="isMeasureDetailShow"
+      :is-measure-detail-show.sync="isMeasureDetailShow" />
+  </el-container>
+</template>
+<script>
+import MeasureDetail from '@/views/quality/measure/components/measureDetail'
+export default {
+  components: { MeasureDetail },
+  data() {
+    return {
+      filterFormData: {
+        date: '',
+        selected: ''
+      },
+      fullFilterForm: false,
+      materialTableData: [],
+      pageIndex: 0,
+      pageTotal: 10,
+      isMeasureDetailShow: false
+    }
+  },
+  methods: {
+    setTableCellStyle() {
+      return 'nowrap-row'
+    },
+    pageChangeHandle(page) {
+      this.pageIndex = page
+    },
+    pageSizeChangeHandle(val) {
+      console.log('val', val)
+    }
+  }
+}
+</script>
+<style ref="styleshheet/scss" lang="scss" scoped>
+@import "src/styles/mixin.scss";
+
+.el-container {
+  min-height: calc(100vh - 50px);
+  background: #f0f1f5;
+  padding: 20px;
+  .el-main {
+    background: #fff;
+    .el-table {
+      margin-top: 5px;
+      & /deep/.nowrap-row {
+        .cell {
+          white-space: nowrap;
+        }
+      }
+    }
+    .pager-wrap {
+      text-align: center;
+      margin-top: 20px;
+    }
+  }
+}
+</style>

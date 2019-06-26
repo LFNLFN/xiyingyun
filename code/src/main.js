@@ -15,6 +15,8 @@ import router from './router'
 import '@/icons' // icon
 import '@/permission' // permission control
 
+import VueAMap from 'vue-amap' // map
+
 /**
  * This project originally used easy-mock to simulate data,
  * but its official service is very unstable,
@@ -29,6 +31,12 @@ import '../mock' // simulation data
 Vue.use(ElementUI)
 
 Vue.config.productionTip = false
+
+// map 配置
+Vue.use(VueAMap)
+VueAMap.initAMapApiLoader({
+  key: '2e7af8d95ccba78004513880b151acc8'
+})
 
 new Vue({
   el: '#app',
