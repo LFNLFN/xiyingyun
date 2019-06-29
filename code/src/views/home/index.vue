@@ -28,7 +28,9 @@
         <ul class="project-list">
           <li>
             <p class="project-city">佛山</p>
-            <div class="project-wrap">
+            <div
+              class="project-wrap"
+              @click="goProjectPortal">
               <div class="project-avatar" />
               <div class="project-info">
                 <p class="project-name">模拟体验项目</p>
@@ -97,6 +99,9 @@ export default {
   methods: {
     projectListToggle() {
       this.projectListShow = !this.projectListShow
+    },
+    goProjectPortal() {
+      this.$router.push({ name: 'projectPortal' })
     }
   }
 }
@@ -119,10 +124,10 @@ export default {
     position: absolute;
     top: 0;
     right: -380px;
-    transition: right 0.2s;
+    transition: right 0.3s;
     &.is-active {
       right: 0px;
-      transition: right 0.2s;
+      transition: right 0.3s;
     }
     .position-wrap {
       width: 100%;
@@ -158,6 +163,7 @@ export default {
             margin: 0 0 10px 5px;
           }
           .project-wrap {
+            cursor: pointer;
             @include flex-layout(flex-start, center, null, null);
             .project-avatar {
               width: 60px;

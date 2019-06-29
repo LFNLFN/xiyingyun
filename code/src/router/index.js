@@ -161,7 +161,22 @@ export const asyncRouterMap = [
         path: 'publication_manage',
         name: 'publicationManage',
         meta: { title: '公告管理', icon: '' },
-        component: () => import('@/views/publication/publication_manage/publication_manage')
+        redirect: '/publication/publication_manage/index',
+        component: () => import('@/views/publication/publication_manage/index'),
+        children: [
+          {
+            path: 'index',
+            name: 'publicationManageIndex',
+            hidden: true,
+            component: () => import('@/views/publication/publication_manage/publication_manage')
+          },
+          {
+            path: 'addPublication',
+            name: 'addPublication',
+            hidden: true,
+            component: () => import('@/views/publication/publication_manage/addPublication')
+          }
+        ]
       },
       {
         path: 'document_manage',
@@ -188,6 +203,31 @@ export const asyncRouterMap = [
         component: () => import('@/views/statistics/statistics_report/statistics_report')
       }
     ]
+  },
+  {
+    path: '/project_portal',
+    component: Layout,
+    redirect: '/project_portal/index',
+    name: 'projectPortal',
+    meta: { title: '项目门户', icon: '' },
+    hidden: true,
+    children: [
+      {
+        path: 'index',
+        name: 'index',
+        hidden: true,
+        meta: { title: '项目门户首页', icon: '' },
+        component: () => import('@/views/project_portal/index')
+      },
+      {
+        path: 'buildingProcessDetail',
+        name: 'buildingProcessDetail',
+        hidden: true,
+        meta: { title: '进度详情', icon: '' },
+        component: () => import('@/views/project_portal/buildingProcessDetail')
+      }
+    ]
+
   },
   /* ------------------- 公共业务管理 ------------------ */
   // 项目设置界面

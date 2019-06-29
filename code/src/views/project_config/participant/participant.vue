@@ -69,6 +69,7 @@ export default {
   created() {
     // 获取项目列表
     this.getProjectListVuex().then(resp => {
+      console.log('resp', resp)
       this.projectList = resp
       this.projectSelected = resp[0].id
       this.getParticipants(this.projectSelected)

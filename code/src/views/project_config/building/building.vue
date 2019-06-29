@@ -345,7 +345,6 @@ export default {
       if (node.childNodes.length === 0) return
       const nodeId = data.id
       const index = this.treeExpandedIds.indexOf(nodeId)
-      console.log('index', index)
       if (index >= 0) {
         this.treeExpandedIds.splice(index, 1)
       } else {
@@ -371,7 +370,6 @@ export default {
     },
     // 加载项目树的子节点
     loadTreeNodeHandle(node, resolve) {
-      console.log('node', node)
       const project = node.data.projectData
       if (!project) {
         return resolve([])

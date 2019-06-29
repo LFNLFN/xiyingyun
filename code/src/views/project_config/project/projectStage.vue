@@ -221,6 +221,7 @@ export default {
         name: '',
         code: '',
         address: '',
+        orgId: '',
         estateProjectDetailEntity: {
           typeId: '',
           cityId: '',
@@ -339,6 +340,7 @@ export default {
       // 添加分期，获取父级项目ID以及所属公司
       const curProject = searchArrByKeyVal(this.projectList, 'id', projectId)
       this.stageFormData.parentId = projectId
+      this.stageFormData.orgId = curProject.orgId
       if (curProject) {
         this.belongCompany = curProject.name
       }
@@ -346,7 +348,6 @@ export default {
       // 编辑项目分期，加载表单数据
       const curProject = searchArrByKeyVal(this.projectDetails, 'id', projectId)
       if (curProject) {
-        console.log('curProject', curProject)
         this.stageLoading = true
         const parentId = curProject.parentId
         const _keys = Object.keys(curProject)

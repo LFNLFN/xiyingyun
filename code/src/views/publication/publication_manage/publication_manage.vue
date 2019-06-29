@@ -2,7 +2,7 @@
   <el-container>
     <el-main>
       <div class="operate-wrap">
-        <el-button type="primary" size="small">新增</el-button>
+        <el-button type="primary" size="small" @click="addPublicationHandle">新增</el-button>
       </div>
       <el-table
         :data="materialTableData"
@@ -62,6 +62,9 @@ export default {
   methods: {
     setTableCellStyle() {
       return 'nowrap-row'
+    },
+    addPublicationHandle() {
+      this.$router.push({ name: 'addPublication' })
     },
     pageChangeHandle(page) {
       this.pageIndex = page
