@@ -6,46 +6,63 @@
         :inline="true"
         class="filter-form">
         <el-form-item label="项目名称">
-          <el-select v-model="filterFormData.selected" size="small">
+          <el-select v-model="filterFormData.projectId" size="small">
             <el-option
-              value="模拟项目一" />
+              v-for="(item, idx) in projectDetailDatas"
+              :key="idx"
+              :label="item.name"
+              :value="item.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="楼栋">
-          <el-select v-model="filterFormData.selected" size="small">
+          <el-select
+            v-model="filterFormData.unitId"
+            size="small"
+            @visible-change="(visiable) => getBuildingDataFunc(visiable)">
             <el-option
-              value="移动" />
+              v-for="(item, idx) in buildingDatas"
+              :key="idx"
+              :label="item.name"
+              :value="item.id" />
           </el-select>
         </el-form-item>
         <template v-if="fullFilterForm">
           <el-form-item label="验收状态">
-            <el-select v-model="filterFormData.selected" size="small">
+            <el-select v-model="filterFormData.status" size="small">
               <el-option
-                value="待验收" />
-              <el-option
-                value="验收通过" />
+                v-for="(item, idx) in acceptanceStatus"
+                :key="idx"
+                :label="item.name"
+                :value="item.type" />
             </el-select>
           </el-form-item>
           <el-form-item label="工序验收项">
-            <el-select v-model="filterFormData.selected" size="small">
+            <el-select
+              v-model="filterFormData.acceptItemId"
+              :loading="processItemDatas.length === 0"
+              size="small"
+              @visible-change="(visiable) => getProcessItemFunc(visiable)">
               <el-option
-                value="待验收" />
-              <el-option
-                value="验收通过" />
+                v-for="(item, idx) in processItemDatas"
+                :key="idx"
+                :label="item.name"
+                :value="item.id" />
             </el-select>
           </el-form-item>
           <el-form-item prop="date" label="报检日期">
             <el-date-picker
-              v-model="filterFormData.date"
+              v-model="filterFormData.applyDate"
               type="daterange"
               size="small"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
+              format="yyyy-MM-dd"
+              value-format="yyyy-MM-dd HH:mm:ss"
               class="date-select" />
           </el-form-item>
         </template>
         <el-form-item>
-          <el-button type="primary" size="mini">查询</el-button>
+          <el-button type="primary" size="mini" @click="getProcessAcceptFunc">查询</el-button>
           <el-button size="mini">重置</el-button>
           <el-button
             size="mini"
@@ -60,13 +77,18 @@
       </el-form>
       <el-table
         :data="acceptTableData"
-        size="small"
-        class="no-border-gary-head" >
-        <el-table-column label="状态" />
-        <el-table-column label="项目名称" />
-        <el-table-column label="部位" />
-        <el-table-column label="工序验收项" />
-        <el-table-column label="报检日期" />
+        class="no-border-gary-head"
+        @row-click="showProcessAccepDetail" >
+        <el-table-column prop="statusName" label="状态">
+          <template slot-scope="scope">
+            <span :style="{ 'background': acceptStatusColors[Number(scope.row.status)] }" class="status-icon" />
+            <span class="">{{ scope.row.statusName }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="projectName" label="项目名称" />
+        <el-table-column prop="partName" label="部位" />
+        <el-table-column prop="acceptItemName" label="工序验收项" />
+        <el-table-column prop="applyDate" label="报检日期" />
       </el-table>
       <el-pagination
         :total="pageTotal"
@@ -81,32 +103,186 @@
     </el-main>
     <acceptDetail
       v-show="isAcceptDetailShow"
-      :is-accept-detail-show.sync="isAcceptDetailShow" />
+      ref="acceptDetailCom"
+      :is-accept-detail-show.sync="isAcceptDetailShow"
+      @toPhotosZoom="toPhotosZoomHandle" />
+    <photosZoom
+      v-show="isPhotosZoomShow"
+      ref="photosZoomCom"
+      :is-photos-zoom-show.sync="isPhotosZoomShow" />
   </el-container>
 </template>
 <script>
+import { mapActions } from 'vuex'
+import { getBuliding } from '@/api/project_config/building'
+import { getProcessAccept, getProcessItems } from '@/api/quality/processAcceptance'
+import PhotosZoom from '@/components/PhotosZoom'
 import AcceptDetail from '@/views/quality/process_acceptance/components/AcceptDetail'
+import { acceptFailed, acceptSuccess, waitingAccept, unAccepted, acceptInvalid } from '@/styles/variables.scss'
 export default {
-  components: { AcceptDetail },
+  components: { AcceptDetail, PhotosZoom },
   data() {
     return {
       filterFormData: {
-        date: '',
-        selected: ''
+        projectId: '',
+        unitId: '',
+        status: null,
+        acceptItemId: '',
+        applyDate: ''
       },
       fullFilterForm: false,
-      acceptTableData: [],
-      isAcceptDetailShow: false,
+      projectDetailDatas: [], // 保存项目数据
+      buildingDatas: [], // 保存楼栋数据
+      processItemDatas: [], // 保存工序项数据
+      acceptanceStatus: [
+        { type: 0, name: '验收通过' },
+        { type: 1, name: '未验收' },
+        { type: 2, name: '待验收' },
+        { type: 3, name: '验收不通过' },
+        { type: 4, name: '已作废' }
+      ], // 保存验收状态数据
+      acceptStatusColors: [acceptSuccess, unAccepted, waitingAccept, acceptFailed, acceptInvalid],
+      acceptTableData: [], // 保存工序验收数据
+      pageSize: 10,
       pageIndex: 0,
-      pageTotal: 10
+      pageTotal: 0,
+      isAcceptDetailShow: false,
+      isPhotosZoomShow: false,
+      isTableLoading: false
     }
   },
+  watch: {
+    'filterFormData.projectId': function(newVal, oldVal) {
+      this.$set(this, 'buildingDatas', [])
+    }
+  },
+  created() {
+    this.pageInit()
+  },
   methods: {
+    ...mapActions([
+      'getProjectDetailsVuex'
+    ]),
+    // 出数据化页面，加载相关数据
+    pageInit() {
+      // 加载项目数据
+      this.getProjectDetailsVuex().then(resp => {
+        resp.forEach((project, idx) => {
+          const stages = project.childrenWithDetail
+          if (stages && stages.length > 0) {
+            stages.forEach(stage => {
+              this.projectDetailDatas.push({
+                id: stage.id,
+                parentId: stage.parentId,
+                name: `${project.name}--${stage.name}`,
+                section: stage.childrenWithDetail || []
+              })
+            })
+          }
+        })
+        const _projectId = this.projectDetailDatas[0].id
+        this.filterFormData.projectId = _projectId
+        this.getProcessAcceptFunc()
+      })
+    },
+    // 获取工序验收数据
+    getProcessAcceptFunc() {
+      const params = {}
+      const _keys = Object.keys(this.filterFormData)
+      let paramIndex = 0
+      _keys.forEach((key) => {
+        const _data = this.filterFormData[key]
+        if (_data !== null && _data !== '') {
+          if (key === 'applyDate' && Array.isArray(_data)) {
+            const termType = ['gte', 'lte']
+            _data.forEach((item, idx) => {
+              params[`terms[${paramIndex}].column`] = key
+              params[`terms[${paramIndex}].value`] = item
+              params[`terms[${paramIndex}].termType`] = termType[idx]
+              paramIndex += idx
+            })
+          } else {
+            params[`terms[${paramIndex}].column`] = key
+            params[`terms[${paramIndex}].value`] = _data
+            paramIndex++
+          }
+        }
+      })
+      params[`sorts[0].name`] = 'applyDate'
+      params[`sorts[0].order`] = 'desc'
+      params['pageIndex'] = this.pageIndex
+      params['pageIndex'] = this.pageIndex
+      params['pageSize'] = this.pageSize
+      getProcessAccept(params).then(resp => {
+        const data = resp.result
+        this.pageTotal = data.total
+        this.pageIndex = data.pageIndex
+        this.acceptTableData = data.data
+      })
+    },
+    // 获取楼栋数据
+    getBuildingDataFunc(visible) {
+      if (visible && this.buildingDatas.length === 0) {
+        const projectId = this.filterFormData.projectId
+        const curProject = this.projectDetailDatas.find(item => item.id === projectId)
+        const projectIdList = Array.of(projectId)
+        if (curProject.section.length > 0) {
+          curProject.section.forEach(item => {
+            projectIdList.push(item.id)
+          })
+        }
+        console.log('projectIdList', projectIdList)
+        const params = {
+          'terms[0].column': 'projectId$IN',
+          'terms[0].value': projectIdList.join()
+        }
+        console.log('getBuilding params', params)
+        getBuliding(params).then(resp => {
+          console.log('getBuliding data', resp)
+          const buildingList = resp.result
+          this.$set(this, 'buildingDatas', buildingList)
+        })
+      }
+    },
+    // 获取工序验收项
+    getProcessItemFunc(visible) {
+      if (visible && this.processItemDatas.length === 0) {
+        getProcessItems().then(resp => {
+          const processList = resp.result
+          const _processItems = []
+          processList.forEach(process => {
+            const itemList = process.acceptItemList
+            if (itemList && itemList.length > 0) {
+              _processItems.push(...itemList)
+            }
+          })
+          this.$set(this, 'processItemDatas', _processItems)
+          console.log('processItemDatas', this.processItemDatas)
+        })
+      }
+    },
+    // 展示工序验收详情
+    showProcessAccepDetail(row) {
+      const _obj = {
+        acceptData: row,
+        acceptStatusColors: this.acceptStatusColors
+      }
+      this.$refs.acceptDetailCom.resetDataProperty(_obj)
+      this.isAcceptDetailShow = true
+    },
+    // 展示图片查看组件
+    toPhotosZoomHandle(imgDatas) {
+      const _obj = {
+        photoList: imgDatas
+      }
+      this.$refs.photosZoomCom.resetDataProperty(_obj)
+      this.isPhotosZoomShow = true
+    },
     pageChangeHandle(page) {
       this.pageIndex = page
     },
     pageSizeChangeHandle(val) {
-      console.log('val', val)
+      this.pageSize = val
     }
   }
 }
@@ -134,6 +310,21 @@ export default {
     }
     .el-table {
       margin-top: 25px;
+      &/deep/ .status-icon {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        vertical-align: text-top;
+        border-radius: 15px;
+        margin-right: 3px;
+      }
+      &/deep/ .cell {
+        font-size: 12px;
+        padding-left: 20px
+      }
+      &/deep/ .el-table__body .el-table__row {
+        cursor: pointer;
+      }
     }
     .pager-wrap {
       text-align: center;

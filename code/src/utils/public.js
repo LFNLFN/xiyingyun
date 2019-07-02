@@ -52,3 +52,15 @@ export function isEmpty(target) {
     return target.length === 0
   }
 }
+
+export function getRandomString(len) {
+  let _backStr = ''
+  const soruce = 'abcdefghijklmnopqrstuvwxyz0123456789'
+  const rdmIndex = (str) => {
+    return Math.random() * str.length
+  }
+  while (_backStr.length < len) {
+    _backStr += soruce.charAt(rdmIndex(soruce))
+  }
+  return _backStr
+}

@@ -25,6 +25,7 @@ const projectConfig = {
     projectParticipants: []
   },
   mutations: {
+    // 保存项目数据
     SET_PROJECT_LIST: (state, list) => {
       Vue.set(state, 'projectList', list)
       try {
@@ -33,6 +34,7 @@ const projectConfig = {
         console.log('set localStorage error: ', e)
       }
     },
+    // 保存项目详情数据
     SET_PROJECT_DETAILS: (state, list) => {
       Vue.set(state, 'projectDetails', list)
       try {
@@ -41,15 +43,18 @@ const projectConfig = {
         console.log('set localStorage error: ', e)
       }
     },
+    // 保存数据字典的数据
     SET_DICTIONARY_ITEM: (state, _obj) => {
       Vue.set(state, _obj.key, _obj.data)
     },
+    // 设置楼栋数据
     SET_UNITROOM_DATA: (state, _obj) => {
       const keys = Object.keys(_obj)
       keys.forEach(key => {
         Vue.set(state.addUnitAndRoomsData, key, _obj[key])
       })
     },
+    // 重置楼栋房间信息
     RESET_UNITROOM_DATA: (state) => {
       const _obj = {
         unitFormData: {},
@@ -60,6 +65,7 @@ const projectConfig = {
       }
       Vue.set(state, 'addUnitAndRoomsData', _obj)
     },
+    // 保存参建房数据
     SET_PROJECT_PARTICIPANTS: (state, _list) => {
       Vue.set(state, 'projectParticipants', _list)
     }

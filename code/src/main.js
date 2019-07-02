@@ -21,6 +21,14 @@ VueAMap.initAMapApiLoader({
   key: '2e7af8d95ccba78004513880b151acc8'
 })
 
+// 获取上传到阿里云OSS的图片的完整链接
+Vue.prototype.GetOssImgFullPath = function(imgName) {
+  if (imgName === '') return ''
+  const bucket = process.env.OSS_BUCKET
+  const endpoint = process.env.OSS_ENDPOINT
+  return `http://${bucket}.${endpoint}/${imgName}`
+}
+
 new Vue({
   el: '#app',
   router,

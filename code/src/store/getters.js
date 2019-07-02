@@ -1,11 +1,4 @@
-const getLocalStroageData = function(key, BackData) {
-  try {
-    BackData = JSON.parse(localStorage.getItem(key))
-  } catch (e) {
-    console.log('set localStorage error: ', e)
-  }
-  return BackData
-}
+import { getFromlocalStorage } from '@/store/utils/utils.js'
 
 const getters = {
   sidebar: state => state.app.sidebar,
@@ -20,24 +13,8 @@ const getters = {
   permissionRoles: state => state.baseData.permissionRoles,
   organizationType: state => state.baseData.organizationType,
   // 项目配置相关数据
-  projectList: state => {
-    let _list = []
-    if (state.projectConfig.projectList.length > 0) {
-      _list = state.projectConfig.projectList
-    } else {
-      _list = getLocalStroageData('projectList', _list)
-    }
-    return _list
-  },
-  projectDetails: state => {
-    let _list
-    if (state.projectConfig.projectDetails.length > 0) {
-      _list = JSON.parse(localStorage.projectDetails)
-    } else {
-      _list = getLocalStroageData('projectDetails', _list)
-    }
-    return _list
-  },
+  projectList: state => getFromlocalStorage(state, 'projectConfig', 'projectList'),
+  projectDetails: state => getFromlocalStorage(state, 'projectConfig', 'projectDetails'),
   addUnitAndRoomsData: state => state.projectConfig.addUnitAndRoomsData
 }
 export default getters

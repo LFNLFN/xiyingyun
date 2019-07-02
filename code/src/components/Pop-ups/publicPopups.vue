@@ -59,11 +59,9 @@ export default {
   background: rgba(0, 0, 0,.5);
   @include flex-layout(center, center, null, null);
   .container {
-    max-height: 670px;
     border-radius: 10px;
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.2);
     background: #fff;
-    // width: 500px !important;
     overflow: hidden;
     .header {
       padding: 10px 5px 10px 20px;
@@ -78,7 +76,9 @@ export default {
       }
     }
     .main {
-      padding: 0 20px;
+      padding: 1px 20px;
+      max-height: calc(100vh - 140px);
+      overflow: auto;
     }
     .footer {
       min-height: 70px;

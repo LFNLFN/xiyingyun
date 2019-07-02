@@ -9,7 +9,7 @@
           :key="idx"
           class="plan-item">
           <div class="plan-info-wrap">
-            <img :src="item.imageUrl" >
+            <img :src="GetOssImgFullPath(item.imageUrl)" >
             <span
               :class="{ 'is-checked': planCheckedData.floorPlanId === item.id }"
               class="plan-checkbox"
@@ -91,6 +91,7 @@ export default {
         this.isGetPlanLoading = false
       })
     },
+    // 添加平面图
     setPlanSubmit() {
       let planId = ''
       let planName = ''

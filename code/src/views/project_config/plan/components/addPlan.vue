@@ -55,7 +55,7 @@
               :http-request="uploadPlan"
               :show-file-list="false"
               action="">
-              <img :src="planFormData.imageUrl">
+              <img :src="GetOssImgFullPath(planFormData.imageUrl)">
               <i class="el-icon-plus" />
             </el-upload>
             <div class="operat-wrap">
