@@ -2,78 +2,94 @@
   <el-container>
     <el-main>
       <el-form
+        ref="filterForm"
         :model="filterFormData"
         :inline="true"
+        label-position="right"
         class="filter-form">
-        <el-form-item label="项目名称">
-          <el-select v-model="filterFormData.projectId" size="small">
-            <el-option
-              v-for="(item, idx) in projectDetailDatas"
-              :key="idx"
-              :label="item.name"
-              :value="item.id" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="楼栋">
-          <el-select
-            v-model="filterFormData.unitId"
-            size="small"
-            @visible-change="(visiable) => getBuildingDataFunc(visiable)">
-            <el-option
-              v-for="(item, idx) in buildingDatas"
-              :key="idx"
-              :label="item.name"
-              :value="item.id" />
-          </el-select>
-        </el-form-item>
-        <template v-if="fullFilterForm">
-          <el-form-item label="验收状态">
-            <el-select v-model="filterFormData.status" size="small">
-              <el-option
-                v-for="(item, idx) in acceptanceStatus"
-                :key="idx"
-                :label="item.name"
-                :value="item.type" />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="工序验收项">
-            <el-select
-              v-model="filterFormData.acceptItemId"
-              :loading="processItemDatas.length === 0"
-              size="small"
-              @visible-change="(visiable) => getProcessItemFunc(visiable)">
-              <el-option
-                v-for="(item, idx) in processItemDatas"
-                :key="idx"
-                :label="item.name"
-                :value="item.id" />
-            </el-select>
-          </el-form-item>
-          <el-form-item prop="date" label="报检日期">
-            <el-date-picker
-              v-model="filterFormData.applyDate"
-              type="daterange"
-              size="small"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-              format="yyyy-MM-dd"
-              value-format="yyyy-MM-dd HH:mm:ss"
-              class="date-select" />
-          </el-form-item>
-        </template>
-        <el-form-item>
-          <el-button type="primary" size="mini" @click="getProcessAcceptFunc">查询</el-button>
-          <el-button size="mini">重置</el-button>
-          <el-button
-            size="mini"
-            class="no-border form-ctrl-btn"
-            @click="fullFilterForm = !fullFilterForm">
-            {{ fullFilterForm ? '收缩' : '展开' }}
-            <span
-              :class="{'el-icon-arrow-up': fullFilterForm, 'el-icon-arrow-down': !fullFilterForm}"
-              class="btn-icon" />
-          </el-button>
-        </el-form-item>
+        <el-row :gutter="20">
+          <el-col :span="8">
+            <el-form-item label="项目名称">
+              <el-select v-model="filterFormData.projectId" size="small">
+                <el-option
+                  v-for="(item, idx) in projectDetailDatas"
+                  :key="idx"
+                  :label="item.name"
+                  :value="item.id" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item prop="unitId" label="楼栋">
+              <el-select
+                v-model="filterFormData.unitId"
+                size="small"
+                @visible-change="(visiable) => getBuildingDataFunc(visiable)">
+                <el-option
+                  v-for="(item, idx) in buildingDatas"
+                  :key="idx"
+                  :label="item.name"
+                  :value="item.id" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <template v-if="fullFilterForm">
+            <el-col :span="8">
+              <el-form-item prop="status" label="验收状态">
+                <el-select v-model="filterFormData.status" size="small">
+                  <el-option
+                    v-for="(item, idx) in acceptanceStatus"
+                    :key="idx"
+                    :label="item.name"
+                    :value="item.type" />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item prop="acceptItemId" label="工序验收项">
+                <el-select
+                  v-model="filterFormData.acceptItemId"
+                  :loading="processItemDatas.length === 0"
+                  size="small"
+                  @visible-change="(visiable) => getProcessItemFunc(visiable)">
+                  <el-option
+                    v-for="(item, idx) in processItemDatas"
+                    :key="idx"
+                    :label="item.name"
+                    :value="item.id" />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item prop="applyDate" label="报检日期">
+                <el-date-picker
+                  v-model="filterFormData.applyDate"
+                  type="daterange"
+                  size="small"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期"
+                  format="yyyy-MM-dd"
+                  value-format="yyyy-MM-dd HH:mm:ss"
+                  class="date-select" />
+              </el-form-item>
+            </el-col>
+          </template>
+          <el-col :span="8">
+            <el-form-item class="operate-wrap">
+              <el-button type="primary" size="mini" @click="getProcessAcceptFunc">查询</el-button>
+              <el-button size="mini" @click="resetFilterForm">重置</el-button>
+              <el-button
+                size="mini"
+                class="no-border form-ctrl-btn"
+                @click="fullFilterForm = !fullFilterForm">
+                {{ fullFilterForm ? '收缩' : '展开' }}
+                <span
+                  :class="{'el-icon-arrow-up': fullFilterForm, 'el-icon-arrow-down': !fullFilterForm}"
+                  class="btn-icon" />
+              </el-button>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
       <el-table
         :data="acceptTableData"
@@ -105,7 +121,8 @@
       v-show="isAcceptDetailShow"
       ref="acceptDetailCom"
       :is-accept-detail-show.sync="isAcceptDetailShow"
-      @toPhotosZoom="toPhotosZoomHandle" />
+      @toPhotosZoom="toPhotosZoomHandle"
+      @refreshProcessData="getProcessAcceptFunc" />
     <photosZoom
       v-show="isPhotosZoomShow"
       ref="photosZoomCom"
@@ -163,7 +180,7 @@ export default {
     ...mapActions([
       'getProjectDetailsVuex'
     ]),
-    // 出数据化页面，加载相关数据
+    // 初始化页面，加载相关数据
     pageInit() {
       // 加载项目数据
       this.getProjectDetailsVuex().then(resp => {
@@ -199,7 +216,7 @@ export default {
               params[`terms[${paramIndex}].column`] = key
               params[`terms[${paramIndex}].value`] = item
               params[`terms[${paramIndex}].termType`] = termType[idx]
-              paramIndex += idx
+              paramIndex++
             })
           } else {
             params[`terms[${paramIndex}].column`] = key
@@ -231,14 +248,11 @@ export default {
             projectIdList.push(item.id)
           })
         }
-        console.log('projectIdList', projectIdList)
         const params = {
           'terms[0].column': 'projectId$IN',
           'terms[0].value': projectIdList.join()
         }
-        console.log('getBuilding params', params)
         getBuliding(params).then(resp => {
-          console.log('getBuliding data', resp)
           const buildingList = resp.result
           this.$set(this, 'buildingDatas', buildingList)
         })
@@ -278,11 +292,18 @@ export default {
       this.$refs.photosZoomCom.resetDataProperty(_obj)
       this.isPhotosZoomShow = true
     },
+    // 重置搜索条件表单
+    resetFilterForm() {
+      this.$refs.filterForm.resetFields()
+    },
+    // 分页切换处理
     pageChangeHandle(page) {
       this.pageIndex = page
     },
+    // 每页显示条数切换处理
     pageSizeChangeHandle(val) {
       this.pageSize = val
+      this.getProcessAcceptFunc()
     }
   }
 }
@@ -297,14 +318,24 @@ export default {
   .el-main {
     background: #fff;
     .filter-form {
-      @include flex-layout(flex-start, center, null, wrap);
-      .el-form-item {
-        margin: 10px 15px;
-        .el-select, .date-select {
-          width: 200px;
+      &/deep/ .el-form-item {
+        width: 100%;
+        white-space: nowrap;
+        margin: 20px 0 0 0;
+        .el-form-item__content {
+          width: 100%;
         }
-        .form-ctrl-btn {
-          font-size: 14px;
+        label {
+          width: 100px;
+        }
+        .el-select, .date-select {
+          width: calc(100% - 112px);
+        }
+        &.operate-wrap {
+          padding-left: 50px;
+          .form-ctrl-btn {
+            font-size: 14px;
+          }
         }
       }
     }

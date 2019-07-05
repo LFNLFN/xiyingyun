@@ -18,10 +18,12 @@ export default {
 }
 </script>
 
-<style scoped>
+<style rel="stylesheet/scss" lang="scss" scoped>
+@import "src/styles/variables.scss";
+
 .app-main {
   /*50 = navbar  */
-  min-height: calc(100vh - 50px);
+  min-height: calc(100vh - #{$navbarHeight});
   position: relative;
   overflow: hidden;
 }

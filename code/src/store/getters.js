@@ -16,5 +16,6 @@ const getters = {
   projectList: state => getFromlocalStorage(state, 'projectConfig', 'projectList'),
   projectDetails: state => getFromlocalStorage(state, 'projectConfig', 'projectDetails'),
   addUnitAndRoomsData: state => state.projectConfig.addUnitAndRoomsData
+  // 质量管理相关数据
 }
 export default getters

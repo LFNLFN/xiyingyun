@@ -4,6 +4,7 @@ import app from './modules/app'
 import user from './modules/user'
 import baseData from './modules/baseData'
 import projectConfig from './modules/projectConfig'
+import quality from './modules/quality'
 import getters from './getters'
 
 Vue.use(Vuex)
@@ -13,7 +14,8 @@ const store = new Vuex.Store({
     app,
     user,
     baseData,
-    projectConfig
+    projectConfig,
+    quality
   },
   getters
 })

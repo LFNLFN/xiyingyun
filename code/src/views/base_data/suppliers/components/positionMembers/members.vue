@@ -80,7 +80,6 @@ export default {
       })
     },
     managerChangeHandle(row) {
-      console.log('row before', row)
       let text = ''
       if (row.isManager) {
         text = `确定升级 ${row.name} 为项目经理？`

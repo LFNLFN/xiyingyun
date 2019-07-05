@@ -1,25 +1,24 @@
 <template>
-  <div class="container-shadow">
-    <transition name="slide-fade" @after-leave="leaveHandle">
-      <el-container v-show="boxShow" class="container">
-        <el-header height="50px" class="header-wrap">
-          <div class="item-warp">
-            <span :class="{'is-active': currentComponent === 'Members'}" class="item-tag">人员</span>
-            <!-- <span :class="{'is-active': currentComponent === 'Warrant'}" class="item-tag">项目授权</span> -->
-          </div>
-          <span><i class="el-icon-close" @click="closeBox" /></span>
-        </el-header>
-        <el-main>
-          <component v-bind="$attrs" :is="currentComponent" v-on="$listeners" />
-        </el-main>
-      </el-container>
-    </transition>
-  </div>
+  <LeftSlidePopup :show="boxShow" width="680px" @leaveOver="leaveHandle">
+    <el-container slot="main-content" class="container">
+      <el-header height="50px" class="header-wrap">
+        <div class="item-warp">
+          <span :class="{'is-active': currentComponent === 'Members'}" class="item-tag">人员</span>
+          <!-- <span :class="{'is-active': currentComponent === 'Warrant'}" class="item-tag">项目授权</span> -->
+        </div>
+        <span><i class="el-icon-close" @click="closeBox" /></span>
+      </el-header>
+      <el-main>
+        <component v-bind="$attrs" :is="currentComponent" v-on="$listeners" />
+      </el-main>
+    </el-container>
+  </LeftSlidePopup>
 </template>
 <script>
+import LeftSlidePopup from '@/components/Pop-ups/LeftSlidePopup'
 import Members from '@/views/base_data/suppliers/components/PositionMembers/members'
 export default {
-  components: { Members },
+  components: { LeftSlidePopup, Members },
   props: {
     isBoxShow: {
       type: Boolean,
@@ -40,7 +39,6 @@ export default {
   methods: {
     closeBox() {
       this.boxShow = false
-      // this.$emit('closeBox')
     },
     leaveHandle(el) {
       this.$emit('closeBox')
@@ -51,23 +49,7 @@ export default {
 <style ref="styleshheet/scss" lang="scss" scoped>
 @import "src/styles/mixin.scss";
 
-.container-shadow {
-  width: 100vw;
-  height: 100vh;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 999;
-  background: rgba(255, 255, 255,.4);
-}
 .container {
-  float: right;
-  width: 680px;
-  height: calc(100% - 52px);
-  margin-top: 52px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-  background: #fff;
-  overflow: hidden;
   .header-wrap {
     background: #fff;
     padding: 0 10px 0 0;
@@ -95,15 +77,5 @@ export default {
       font-weight: bold;
     }
   }
-}
-
-.slide-fade-enter-active {
-  transition: all .3s ease;
-}
-.slide-fade-leave-active {
-  transition: all .3s cubic-bezier(1.0, 0.5, 0.8, 1.0);
-}
-.slide-fade-enter, .slide-fade-leave-to {
-  transform: translateX(680px);
 }
 </style>

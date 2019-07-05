@@ -39,11 +39,11 @@ export default {
   }
 }
 </script>
-
 <style rel="stylesheet/scss" lang="scss" scoped>
+@import 'src/styles/variables.scss';
+
 .navbar {
-  height: 50px;
-  line-height: 50px;
+  background: #fff;
   box-shadow: 0 1px 3px 0 rgba(0,0,0,.1), 0 0 3px 0 rgba(0,0,0,.08);
   .hamburger-container {
     line-height: 58px;

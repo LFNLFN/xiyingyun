@@ -1,0 +1,31 @@
+// 重置 zindex
+#app {
+  .app-wrapper {
+    .sidebar-container {
+      z-index: 1;
+    }
+    .main-container {
+      z-index: 2;
+      .el-loading-mask {
+        z-index: 3;
+      }
+      .left-slide-container {
+        z-index: 4;
+      }
+      .navbar {
+        z-index: 5;
+      }
+      .container-shadow {
+        z-index: 6;
+      }
+    }
+  }
+  .mobile.app-wrapper {
+    .drawer-bg  {
+      z-index: 98;
+    }
+    .sidebar-container {
+      z-index: 99;
+    }
+  }
+}

@@ -29,6 +29,6 @@ export function getProcessAcceptDetail(id) {
 export function invalidProcessAccept(id) {
   return request({
     url: `/processAccept/invalid/${id}`,
-    method: 'deletet'
+    method: 'delete'
   })
 }

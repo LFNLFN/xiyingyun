@@ -13,15 +13,20 @@
         </el-tab-pane>
       </el-tabs>
     </el-main>
+    <specialItemDetail
+      v-show="isItemDetailShow"
+      :is-item-detail-show.sync="isItemDetailShow" />
   </el-container>
 </template>
 <script>
-import TapCheckDatas from '@/views/quality/special_check/components/tapCheckDatas'
+import SpecialItemDetail from '@/views/quality/special_item_check/components/specialItemDetail'
+import TapCheckDatas from '@/views/quality/special_item_check/tabPanes/tapCheckDatas'
 export default {
-  components: { TapCheckDatas },
+  components: { TapCheckDatas, SpecialItemDetail },
   data() {
     return {
-      showTabName: 'first'
+      showTabName: 'first',
+      isItemDetailShow: false
     }
   },
   methods: {

@@ -46,7 +46,7 @@ export default {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 2001;
+  // z-index: 2001;
   background: rgba(0, 0, 0,.7);
   @include flex-layout(center, center, null, null);
   .el-carousel {

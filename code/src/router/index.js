@@ -84,10 +84,10 @@ export const asyncRouterMap = [
         component: () => import('@/views/quality/process_acceptance/process_acceptance')
       },
       {
-        path: 'check_problem',
+        path: 'check_problems',
         name: 'checkProblem',
         meta: { title: '检查问题', icon: '' },
-        component: () => import('@/views/quality/check_problem/check_problem')
+        component: () => import('@/views/quality/check_problems/check_problems')
       },
       {
         path: 'service_problem',
@@ -102,10 +102,10 @@ export const asyncRouterMap = [
         component: () => import('@/views/quality/measure/measure')
       },
       {
-        path: 'special_check',
+        path: 'special_item_check',
         name: 'specialCheck',
         meta: { title: '专项检查', icon: '' },
-        component: () => import('@/views/quality/special_check/special_check')
+        component: () => import('@/views/quality/special_item_check/special_item_check')
       }
       // {
       //   path: 'evaluation',

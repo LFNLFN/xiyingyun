@@ -38,17 +38,21 @@
           </div>
           <div class="process-info-item">
             <label>验收人: </label>
-            <div
-              v-for="(item, idx) in acceptDetailData.acceptPersonList"
-              :key="idx"
-              class="process-info">{{ item.name }}</div>
+            <div class="process-info">
+              <span
+                v-for="(item, idx) in acceptDetailData.acceptPersonList"
+                :key="idx"
+                class="text-span" >{{ item.name }}</span>
+            </div>
           </div>
           <div class="process-info-item">
             <label>抄送人: </label>
-            <div
-              v-for="(item, idx) in acceptDetailData.ccPersonList"
-              :key="idx"
-              class="process-info">{{ item.name }}</div>
+            <div class="process-info">
+              <span
+                v-for="(item, idx) in acceptDetailData.ccPersonList"
+                :key="idx"
+                class="text-span" >{{ item.name }}</span>
+            </div>
           </div>
         </div>
         <div
@@ -62,6 +66,7 @@
           <div
             v-for="(child, cidx) in item.processAcceptDetailEntityList"
             :key="cidx"
+            :class="{'no-border-bottom': item.processAcceptDetailEntityList.length === cidx + 1}"
             class="accept-info-wrap">
             <div class="accept-info">
               <span
@@ -70,24 +75,27 @@
               <span class="user-date-info">{{ child.personDate }} {{ child.personName }}</span>
             </div>
             <div
-              v-if="child.acceptItemImage !== undefined && child.acceptItemImage !== ''"
-              class="photo-wrap">
-              <ul class="photo-list">
-                <li
-                  v-for="(imgItem, imgIdx) in child.acceptItemImage.split(',')"
-                  :key="imgIdx">
-                  <img
-                    :src="GetOssImgFullPath(imgItem)"
-                    @click="showPhotoZoom(child.acceptItemImage)" >
-                </li>
-              </ul>
+              v-if="child.content && content !== ''"
+              class="reject-content">
+              {{ child.conten }}
             </div>
+            <ul
+              v-if="child.acceptItemImage !== undefined && child.acceptItemImage !== ''"
+              class="photo-list">
+              <li
+                v-for="(imgItem, imgIdx) in child.acceptItemImage.split(',')"
+                :key="imgIdx">
+                <img
+                  :src="GetOssImgFullPath(imgItem)"
+                  @click="showPhotoZoom(child.acceptItemImage)" >
+              </li>
+            </ul>
           </div>
         </div>
       </div>
     </template>
     <template slot="footer-content">
-      <el-button type="primary" size="small" class="close-box-btn">关闭</el-button>
+      <el-button type="primary" size="small" class="close-box-btn" @click="closeBox">关闭</el-button>
     </template>
   </publicPopups>
 </template>
@@ -156,6 +164,7 @@ export default {
           invalidProcessAccept(processId).then(resp => {
             this.getDetail()
             this.isLoading = false
+            this.$emit('refreshProcessData')
           }).catch(() => {
             this.isLoading = false
           })
@@ -215,6 +224,9 @@ export default {
         display: inline-block;
         font-size: 12px;
         line-height: 15px;
+        .text-span {
+          margin-right: 8px;
+        }
       }
     }
   }
@@ -225,16 +237,22 @@ export default {
     border-radius: 10px;
     font-size: 14px;
     .info-wrap {
-      padding-bottom: 10px;
+      padding-bottom: 15px;
       border-bottom: 1px solid #dddee1;
       p {
-        margin: 5px 0 0 0
+        margin: 5px 0 0 0;
+        &.content {
+          text-indent: 2em;
+        }
       }
     }
     .accept-info-wrap {
       margin-top: 15px;
       padding-bottom: 15px;
       border-bottom: 1px solid #ccc;
+      &.no-border-bottom {
+        border-bottom: none;
+      }
       .accept-info {
         @include flex-layout(space-between, center, null, null);
         .accept-tag {
@@ -253,24 +271,26 @@ export default {
           font-size: 10px;
         }
       }
-      .photo-wrap {
-        .photo-list {
-          margin: 10px 0 0 0;
-          padding: 1px;
-          list-style: none;
-          @include flex-layout(flex-start, center, null, wrap);
-          li {
-            width: 100px;
-            height: 100px;
-            margin: 10px 10px 0 10px;
-            border: 1px solid #dddee1;
-            border-radius: 10px;
-            @include flex-layout(center, center, null, wrap);
-            img {
-              max-width: 98%;
-              max-height: 98%;
-              cursor: pointer;
-            }
+      .reject-content {
+        margin-top: 15px;
+        text-indent: 2em;
+      }
+      .photo-list {
+        margin: 10px 0 0 0;
+        padding: 1px;
+        list-style: none;
+        @include flex-layout(flex-start, center, null, wrap);
+        li {
+          width: 100px;
+          height: 100px;
+          margin: 10px 10px 0 10px;
+          border: 1px solid #dddee1;
+          border-radius: 10px;
+          @include flex-layout(center, center, null, wrap);
+          img {
+            max-width: 98%;
+            max-height: 98%;
+            cursor: pointer;
           }
         }
       }
