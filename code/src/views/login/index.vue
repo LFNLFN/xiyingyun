@@ -1,13 +1,25 @@
 <template>
   <div class="login-container">
-    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
+    <el-form
+      ref="loginForm"
+      :model="loginForm"
+      :rules="loginRules"
+      class="login-form"
+      auto-complete="on"
+      label-position="left"
+      size="small">
       <h3 class="title">企业数据服务解决方案系统</h3>
       <h5 class="title-second">Enterprise Data Service Solutions</h5>
       <el-form-item prop="username">
         <span class="svg-container">
           <svg-icon icon-class="user" />
         </span>
-        <el-input v-model="loginForm.username" name="username" type="text" auto-complete="off" placeholder="请输入用户名称" />
+        <el-input
+          v-model="loginForm.username"
+          name="username"
+          type="text"
+          auto-complete="off"
+          placeholder="请输入用户名称" />
       </el-form-item>
       <el-form-item prop="password">
         <span class="svg-container">
@@ -110,14 +122,13 @@ $font-while: #fff;
   .el-input {
     display: inline-block;
     height: 47px;
-    width: 85%;
+    width: calc(100% - 54px);
     input {
       background: transparent;
       border: 0px;
       -webkit-appearance: none;
       border-radius: 0px;
       padding: 12px 5px 12px 5px;
-      color: $font-while;
       height: 47px;
 
       &:-webkit-autofill {
@@ -138,13 +149,14 @@ $font-while: #fff;
 <style rel="stylesheet/scss" lang="scss" scoped>
 $bg:#2d3a4b;
 $dark_gray:#889aa4;
-$light_gray:#eee;
+$light_gray:#2b85e4;
 $light_while:#fff;
 .login-container {
   position: fixed;
   height: 100%;
   width: 100%;
-  background: url(../../assets/login_images/login_bg.jpg) no-repeat;
+  // background: url(../../assets/login_images/login_bg.jpg) no-repeat;
+  background: #f1f2f6;
   background-size: 100% 100%;
   .login-form {
     position: absolute;
@@ -154,6 +166,11 @@ $light_while:#fff;
     max-width: 100%;
     padding: 35px 35px 15px 35px;
     margin: 120px auto;
+    .el-form-item {
+      background: #e8f0fe;
+      color: #495060;
+      border: 1px solid #dddee1;
+    }
   }
   .tips {
     font-size: 14px;
@@ -167,11 +184,11 @@ $light_while:#fff;
   }
   .svg-container {
     padding: 6px 15px 6px 15px;
-    color: $light_while;
-    vertical-align: middle;
+    color: #495060;
     width: 50px;
+    text-align: center;
     display: inline-block;
-    border-right: 1px solid #fff;
+    border-right: 1px solid #dddee1;
   }
   .title {
     font-size: 26px;

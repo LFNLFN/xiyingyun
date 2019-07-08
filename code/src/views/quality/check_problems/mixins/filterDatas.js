@@ -52,7 +52,6 @@ export default {
     },
     // 选择问题分类后马上加载检查项
     problemTypeCheckedHandle(val) {
-      console.log('val', val)
       this.loadingcheckItems = true
       getCheckItems(val).then(resp => {
         const _data = resp.result[0].children
