@@ -5,12 +5,18 @@
         :inline="true"
         class="filter-form">
         <el-form-item label="快捷筛选:" class="block-item">
-          <el-checkbox-group v-model="checkedBoxValList" size="small">
-            <el-checkbox-button label="已逾期" />
-            <el-checkbox-button label="我创建的" />
-            <el-checkbox-button label="我整改的" />
-            <el-checkbox-button label="逾期整改" />
-          </el-checkbox-group>
+          <el-button
+            :class="{'is-active': otherFilterCond['deadline'] !== null}"
+            size="small"
+            @click="addQuickFilterData('deadline')">已逾期</el-button>
+          <el-button
+            :class="{'is-active': otherFilterCond['creatorId'] !== null}"
+            size="small"
+            @click="addQuickFilterData('creatorId')">我创建的</el-button>
+          <el-button
+            :class="{'is-active': otherFilterCond['dutyPersonId'] !== null}"
+            size="small"
+            @click="addQuickFilterData('dutyPersonId')">我整改的</el-button>
         </el-form-item>
         <el-row :gutter="10">
           <el-col :span="8">
@@ -26,10 +32,11 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <template v-="fullFilterForm">
+          <template v-if="fullFilterForm">
             <el-col :span="8">
               <el-form-item prop="problemType" label="分类:">
                 <el-select
+                  :loading="problemTypeList.length === 0"
                   v-model="filterFormData.problemType"
                   size="small"
                   @visible-change="(visiable) => getProblemTypeFunc(visiable)"
@@ -70,6 +77,7 @@
             <el-col :span="8">
               <el-form-item prop="unitId" label="楼栋:">
                 <el-select
+                  :loading="buildingDatas.length === 0"
                   v-model="filterFormData.unitId"
                   size="small"
                   @visible-change="(visiable) => getBuildingDataFunc(visiable)">
@@ -84,6 +92,7 @@
             <el-col :span="8">
               <el-form-item prop="dutyOrgId" label="整改单位:">
                 <el-select
+                  :loading="amendOrganizations.length === 0"
                   v-model="filterFormData.dutyOrgId"
                   size="small"
                   @visible-change="(visiable) => getParticipantFunc(visiable)">
@@ -111,6 +120,7 @@
             <el-col :span="8">
               <el-form-item prop="creatorId" label="创建人:">
                 <el-select
+                  :loading="createdMembers.length === 0"
                   v-model="filterFormData.creatorId"
                   size="small"
                   @visible-change="(visiable) => getCreatedMembersFunc(visiable)">
@@ -125,6 +135,7 @@
             <el-col :span="8">
               <el-form-item prop="creatorOrgId" label="创建单位:">
                 <el-select
+                  :loading="createdOrganizations.length === 0"
                   v-model="filterFormData.creatorOrgId"
                   size="small"
                   @visible-change="(visiable) => getCreatedOrganFunc(visiable)">
@@ -140,7 +151,18 @@
           <el-col :span="8">
             <el-form-item class="btn-wrap">
               <el-button type="primary" size="mini" @click="getCheckProblemsFunc">查询</el-button>
-              <el-button size="mini">重置</el-button>
+              <el-button size="mini" @clock="resetFrom">重置</el-button>
+              <el-dropdown
+                trigger="click"
+                size="small">
+                <el-button size="mini">
+                  导出 <i class="el-icon-caret-bottom" />
+                </el-button>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item>整改通知单</el-dropdown-item>
+                  <el-dropdown-item>整改回复单</el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
               <el-button
                 size="mini"
                 class="no-border form-ctrl-btn"
@@ -156,26 +178,37 @@
       </el-form>
     </div>
     <div class="problem-list-wrap">
-      <el-card class="problem-list-item">
-        <div class="img-wrap">
-          <el-image src="" class="problem-img" />
+      <el-card
+        v-for="(item, idx) in checkProblemDatas"
+        :key="idx"
+        class="problem-list-item">
+        <div
+          :style="{'background-image': `url(${GetOssImgFullPath(item.image.split(',')[0])})`}"
+          class="img-wrap"
+          @click="toProblemDetailHandle(item)">
+          <span
+            :class="{'active': checkProblemIdSelected.includes(item.id)}"
+            class="check-box"
+            @click.stop="problemIdSelectedHandle(item.id)">
+            <i class="el-icon-check" />
+          </span>
         </div>
         <div class="detail-wrap">
           <div class="header">
-            <span>待销项</span>
-            <span>2019-05-07</span>
+            <span>{{ item.statusName }}</span>
+            <span class="time-text">{{ item.deadline.split(' ')[0] }}</span>
           </div>
-          <p class="content-text">卷材与基底粘结不牢、空鼓、搭接宽度不够、收口错误、铺设范围等</p>
+          <p class="content-text">{{ item.problemContent }}</p>
           <div class="footer">
-            <span>1栋1单元1层101</span>
-            <span>一般</span>
+            <span>{{ item.partName }}</span>
+            <span>{{ item.levelName }}</span>
           </div>
         </div>
       </el-card>
     </div>
     <el-pagination
       :total="pageTotal"
-      :page-size="10"
+      :page-size="pageSize"
       :page-sizes="[10, 20, 30, 40]"
       :current-page="pageIndex"
       background
@@ -191,16 +224,9 @@ import filterDatas from '@/views/quality/check_problems/mixins/filterDatas'
 import { getCheckProblems } from '@/api/quality/checkProblems'
 export default {
   mixins: [filterDatas],
-  // props: {
-  //   projectDetailDatas: {
-  //     type: Array,
-  //     default: () => {
-  //       return []
-  //     }
-  //   }
-  // },
   data() {
     return {
+      /* -------------- 筛选表单相关数据 -----------------*/
       filterFormData: {
         projectId: '',
         problemType: null,
@@ -211,9 +237,9 @@ export default {
         creatorId: '',
         creatorOrgId: ''
       },
+      /* -------------- 筛选表单选项相关数据 -----------------*/
       projectDetailDatas: [], // 保存所有项目数据
       curTabStatus: null, // 保存当前tab代表的问题检查数据状态
-      checkedBoxValList: [],
       problemTypeList: [], // 保存问题分类
       checkItems: [], // 保存检查项
       checkBatchs: [], // 保存检查批次
@@ -221,8 +247,19 @@ export default {
       amendOrganizations: [], // 保存整改单位
       createdOrganizations: [], // 保存创建单位
       createdMembers: [], // 保存创建人员
+      otherFilterCond: {
+        'deadline': null,
+        'creatorId': null,
+        'dutyPersonId': null,
+        'problemContent': null
+      }, // 保存快速筛选的添加
+      searchProblemsKey: '',
+      /* -------------- 问题检查相关数据 -----------------*/
+      checkProblemDatas: [], // 保存问题检查数据
+      checkProblemIdSelected: [], // 保存已选择的问题数据的id
       pageIndex: 0,
-      pageTotal: 10,
+      pageSize: 20,
+      pageTotal: 0,
       fullFilterForm: false
     }
   },
@@ -231,6 +268,14 @@ export default {
       if (!isEmpty(newVal)) {
         this.filterFormData.projectId = newVal[0].id
         this.getCheckProblemsFunc()
+      }
+    },
+    searchProblemsKey: function(newVal) {
+      if (newVal === '') {
+        this.otherFilterCond['problemContent'] = null
+        this.getCheckProblemsFunc()
+      } else {
+        this.addQuickFilterData('problemContent')
       }
     }
   },
@@ -241,9 +286,38 @@ export default {
         this[key] = obj[key]
       })
     },
-    // 获取问题数据
+    // 添加快速筛选添加
+    addQuickFilterData(cond) {
+      if (this.otherFilterCond[cond] !== null) {
+        this.otherFilterCond[cond] = null
+      } else {
+        if (cond === 'deadline') {
+          const [curYear, curMon, curDay] = [new Date().getFullYear(), new Date().getMonth() + 1, new Date().getDate()]
+          const curTime = `${curYear}-${curMon > 9 ? curMon : '0' + curMon}-${curDay > 9 ? curDay : '0' + curMon}`
+          this.otherFilterCond[cond] = {
+            'column': 'deadline',
+            'termType': 'lte',
+            'value': curTime
+          }
+        } else if (cond === 'creatorId' || cond === 'dutyPersonId') {
+          const userInfo = this.$store.getters.userAllInfo
+          this.otherFilterCond[cond] = {
+            'column': cond,
+            'value': userInfo.id
+          }
+        } else if (cond === 'problemContent') {
+          this.otherFilterCond[cond] = {
+            'column': cond,
+            'termType': 'like',
+            'value': this.searchProblemsKey
+          }
+        }
+      }
+      this.getCheckProblemsFunc()
+    },
+    // 获取加载问题数据的筛选条件
     getParams() {
-      console.log('filterFormData', this.filterFormData)
+      // console.log('filterFormData', this.filterFormData)
       const params = {
         'sorts[0].name': 'createTime',
         'sorts[0].order': 'desc',
@@ -270,20 +344,73 @@ export default {
           }
         }
       })
+      const _otherKeys = Object.keys(this.otherFilterCond)
+      _otherKeys.forEach(key => {
+        const _data = this.otherFilterCond[key]
+        if (_data !== null) {
+          const _condKeys = Object.keys(_data)
+          _condKeys.forEach(ckey => {
+            params[`terms[${paramIndex}].${ckey}`] = _data[ckey]
+          })
+          paramIndex++
+        }
+      })
+      params['pageSize'] = this.pageSize
+      params['pageIndex'] = this.pageIndex
       console.log('params', params)
       return params
     },
+    // 加载问题数据
     getCheckProblemsFunc() {
       const params = this.getParams()
+      const message = this.$message({
+        message: '正在加载问题数据...',
+        duration: 0
+      })
       getCheckProblems(params).then(resp => {
         console.log('resp', resp)
+        const _data = resp.result
+        this.checkProblemDatas = _data.data
+        this.pageTotal = _data.total
+        this.pageIndex = _data.pageIndex
+        message.close()
+        if (this.checkProblemDatas.length === 0) {
+          this.$message({
+            message: '暂无数据...',
+            duration: 2000,
+            showClose: true
+          })
+        }
+      }).catch(() => {
+        message.close()
       })
     },
+    // 问题选择操作处理
+    problemIdSelectedHandle(id) {
+      const index = this.checkProblemIdSelected.indexOf(id)
+      if (index < 0) {
+        this.checkProblemIdSelected.push(id)
+      } else {
+        this.checkProblemIdSelected.splice(index, 1)
+      }
+    },
+    // 展示问题详情
+    toProblemDetailHandle(data) {
+      this.$emit('showProblemDetail', data)
+    },
+    // 重置表单
+    resetFrom() {
+      this.$refs.filterForm.resetFields()
+    },
+    // 换页处理
     pageChangeHandle(page) {
       this.pageIndex = page
+      this.getCheckProblemsFunc()
     },
+    // 切换每页条数
     pageSizeChangeHandle(val) {
-      console.log('val', val)
+      this.pageSize = val
+      this.getCheckProblemsFunc()
     }
   }
 }
@@ -309,6 +436,14 @@ export default {
         }
         &.block-item {
           display: block;
+          .el-button+.el-button {
+            margin-left: 0px;
+          }
+          .is-active {
+            color: #fff;
+            border-color: #3a8ee6;
+            background: #3a8ee6;
+          }
         }
         .el-cascader, .el-select, .date-select {
           width: calc(100% - 102px);
@@ -318,6 +453,12 @@ export default {
         }
         &.btn-wrap {
           padding-left: 50px;
+          .el-dropdown {
+            margin-left: 13px;
+            .el-button--mini {
+              padding: 7px 8px;
+            }
+          }
           .form-ctrl-btn {
             font-size: 14px;
           }
@@ -326,24 +467,49 @@ export default {
     }
   }
   .problem-list-wrap {
+    @include flex-layout(flex-start, center, row, wrap);
     .problem-list-item {
-      width: 200px;
-      height: 250px;
+      width: 15%;
+      // height: 250px;
       font-size: 14px;
-      margin: 15px 15px 0 0;
+      margin: 2% 2% 0 0;
+      border: 1px solid #c1c1c1;
       &/deep/.el-card__body {
         padding: 0;
       }
       .img-wrap {
-        width: 200px;
-        height: 132px;
-        @include flex-layout(center, center, null, null);
-        problem-img {
-          width: 100%;
+        width: 100%;
+        padding-top: 65%;
+        overflow: hidden;
+        background-size: 100%;
+        background-position: center;
+        background-repeat: no-repeat;
+        cursor: pointer;
+        background: #ccc;
+        position: relative;
+        .check-box {
+          display: block;
+          position: absolute;
+          top: 5px;
+          right: 5px;
+          width: 22px;
+          height: 22px;
+          color: #fff;
+          background: #fff;
+          border-radius: 3px;
+          text-align: center;
+          line-height: 20px;
+          border: 1px solid #ccc;
+          font-size: 20px;
+          cursor: pointer;
+          &.active {
+            border-color: #2d8cf0;
+            background-color: #2d8cf0;
+          }
         }
       }
       .detail-wrap {
-        padding: 10px 20px;
+        padding: 10px 12px;
         .header, .footer {
           @include flex-layout(space-between, center, null, null);
         }
@@ -357,6 +523,21 @@ export default {
         .footer {
           color: #80848f;
         }
+      }
+    }
+    @media screen and (max-width: 1514px) and (min-width: 1301px) {
+      .problem-list-item {
+        width: 18.4%;
+      }
+    }
+    @media screen and (max-width: 1300px) and (min-width: 1025px) {
+      .problem-list-item {
+        width: 23.5%;
+      }
+    }
+    @media screen and (max-width: 1024px) {
+      .problem-list-item {
+        width: 32%;
       }
     }
   }

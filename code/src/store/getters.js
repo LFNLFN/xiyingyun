@@ -8,6 +8,7 @@ const getters = {
   avatar: state => state.user.avatar,
   name: state => state.user.name,
   roles: state => state.user.roles,
+  userAllInfo: state => state.user.userAllInfo,
   // 基础资料相关数据
   checkItems: state => state.baseData.checkItems,
   permissionRoles: state => state.baseData.permissionRoles,

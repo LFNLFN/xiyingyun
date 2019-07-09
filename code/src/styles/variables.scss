@@ -14,12 +14,12 @@ $sideBarWidth: 210px;
 
 $navbarHeight: 50px;
 
-// 工序验收状态
-$acceptFailed:#ed3f14;
-$acceptSuccess:#59bba4;
-$waitingAccept:#ff9900;
-$unAccepted:#FFEB3B;
-$acceptInvalid:#D9D9D9;
+// 状态颜色
+$redStatus:#ed3f14;
+$greenStatus:#59bba4;
+$orangeStatus:#ff9900;
+$yellowStatus:#FFEB3B;
+$grayStatus:#D9D9D9;
 
 // the :export directive is the magic sauce for webpack
 // https://www.bluematador.com/blog/how-to-share-variables-between-js-and-sass
@@ -33,9 +33,9 @@ $acceptInvalid:#D9D9D9;
   subMenuBg: $subMenuBg;
   subMenuHover: $subMenuHover;
   sideBarWidth: $sideBarWidth;
-  acceptFailed: $acceptFailed;
-  acceptSuccess: $acceptSuccess;
-  waitingAccept: $waitingAccept;
-  unAccepted: unAccepted;
-  acceptInvalid: $acceptInvalid;
+  redStatus: $redStatus;
+  greenStatus: $greenStatus;
+  orangeStatus: $orangeStatus;
+  yellowStatus: yellowStatus;
+  grayStatus: $grayStatus;
 }

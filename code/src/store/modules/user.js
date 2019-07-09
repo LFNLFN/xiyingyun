@@ -1,3 +1,4 @@
+import { Message } from 'element-ui'
 import { login, logout, getUserInfo } from '@/api/login'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 
@@ -6,7 +7,8 @@ const user = {
     token: getToken(),
     name: '',
     avatar: require('@/assets/user_images/avatar.png'),
-    roles: []
+    roles: [],
+    userAllInfo: {}
   },
 
   mutations: {
@@ -23,6 +25,9 @@ const user = {
     },
     SET_ROLES: (state, roles) => {
       state.roles = roles
+    },
+    SET_USERALLINFO: (state, info) => {
+      state.userAllInfo = info
     }
   },
 
@@ -54,6 +59,7 @@ const user = {
           }
           commit('SET_NAME', data.name)
           commit('SET_AVATAR', data.avatar)
+          commit('SET_USERALLINFO', data)
           resolve(response)
         }).catch(error => {
           reject(error)
@@ -63,7 +69,11 @@ const user = {
 
     // 登出
     LogOut({ commit, state }) {
-      console.log('log out')
+      Message({
+        message: '正在退出登录...',
+        type: 'warning',
+        duration: 0
+      })
       return new Promise((resolve, reject) => {
         logout(state.token).then(() => {
           commit('SET_TOKEN', '')

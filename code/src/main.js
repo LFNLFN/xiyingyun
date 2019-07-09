@@ -28,7 +28,38 @@ Vue.prototype.GetOssImgFullPath = function(imgName) {
   if (imgName === '') return ''
   const bucket = process.env.OSS_BUCKET
   const endpoint = process.env.OSS_ENDPOINT
-  return `http://${bucket}.${endpoint}/${imgName}`
+  if (imgName.match(`${bucket}.${endpoint}`)) {
+    return imgName
+  } else {
+    return `http://${bucket}.${endpoint}/${imgName}`
+  }
+}
+
+// localStorage 统一处理异常
+Vue.prototype.$SetLocalStorage = function(key, val) {
+  try {
+    localStorage.setItem(key, JSON.stringify(val))
+  } catch (e) {
+    console.log('set localStorage error: ', e)
+  }
+}
+
+Vue.prototype.$GetLocalStorage = function(key) {
+  let backVal
+  try {
+    backVal = JSON.parse(localStorage.getItem(key))
+  } catch (e) {
+    backVal = null
+  }
+  return backVal
+}
+
+Vue.prototype.$RemoveLocalStorage = function(key) {
+  try {
+    localStorage.removeItem('loginSave')
+  } catch (e) {
+    console.log('remove localStorage error: ', e)
+  }
 }
 
 new Vue({

@@ -5,63 +5,77 @@
         :model="filterFormData"
         :inline="true"
         class="filter-form">
-        <el-form-item label="项目名称">
-          <el-select v-model="filterFormData.selected" size="small">
-            <el-option
-              value="模拟项目一" />
-          </el-select>
-        </el-form-item>
-        <template v-if="fullFilterForm">
-          <el-form-item label="楼栋">
-            <el-select v-model="filterFormData.selected" size="small">
-              <el-option
-                value="移动" />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="类型">
-            <el-select v-model="filterFormData.selected" size="small">
-              <el-option
-                value="甲方" />
-              <el-option
-                value="监理" />
-              <el-option
-                value="施工" />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="实测实量项">
-            <el-select v-model="filterFormData.selected" size="small">
-              <el-option
-                value="待验收" />
-              <el-option
-                value="验收通过" />
-            </el-select>
-          </el-form-item>
-          <el-form-item prop="date" label="创建日期">
-            <el-date-picker
-              v-model="filterFormData.date"
-              type="daterange"
-              size="small"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-              class="date-select" />
-          </el-form-item>
-        </template>
-        <el-form-item>
-          <el-button type="primary" size="mini">查询</el-button>
-          <el-button size="mini">重置</el-button>
-          <el-button
-            size="mini"
-            class="no-border form-ctrl-btn"
-            @click="fullFilterForm = !fullFilterForm">
-            {{ fullFilterForm ? '收缩' : '展开' }}
-            <span
-              :class="{'el-icon-arrow-up': fullFilterForm, 'el-icon-arrow-down': !fullFilterForm}"
-              class="btn-icon" />
-          </el-button>
-        </el-form-item>
+        <el-row :gutter="10">
+          <el-col :span="8">
+            <el-form-item label="项目名称">
+              <el-select v-model="filterFormData.selected" size="small">
+                <el-option
+                  value="模拟项目一" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <template v-if="fullFilterForm">
+            <el-col :span="8">
+              <el-form-item label="楼栋">
+                <el-select v-model="filterFormData.selected" size="small">
+                  <el-option
+                    value="移动" />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="类型">
+                <el-select v-model="filterFormData.selected" size="small">
+                  <el-option
+                    value="甲方" />
+                  <el-option
+                    value="监理" />
+                  <el-option
+                    value="施工" />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="实测实量项">
+                <el-select v-model="filterFormData.selected" size="small">
+                  <el-option
+                    value="待验收" />
+                  <el-option
+                    value="验收通过" />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item prop="date" label="创建日期">
+                <el-date-picker
+                  v-model="filterFormData.date"
+                  type="daterange"
+                  size="small"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期"
+                  class="date-select" />
+              </el-form-item>
+            </el-col>
+          </template>
+          <el-col :span="8">
+            <el-form-item class="operate-wrap">
+              <el-button type="primary" size="mini">查询</el-button>
+              <el-button size="mini">重置</el-button>
+              <el-button
+                size="mini"
+                class="no-border form-ctrl-btn"
+                @click="fullFilterForm = !fullFilterForm">
+                {{ fullFilterForm ? '收缩' : '展开' }}
+                <span
+                  :class="{'el-icon-arrow-up': fullFilterForm, 'el-icon-arrow-down': !fullFilterForm}"
+                  class="btn-icon" />
+              </el-button>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
-      <div class="operate-wrap">
-        <el-button type="primary" size="small">新增</el-button>
+      <div class="add-btn-wrap">
+        <el-button type="primary" size="small" @click="addMeasureHandle">新增</el-button>
       </div>
       <el-table
         :data="measureTableData"
@@ -88,12 +102,16 @@
     <measureDetail
       v-show="isMeasureDetailShow"
       :is-measure-detail-show.sync="isMeasureDetailShow" />
+    <addMeasure
+      v-show="isAddMeasureShow"
+      :is-add-measure-show.sync="isAddMeasureShow" />
   </el-container>
 </template>
 <script>
 import MeasureDetail from '@/views/quality/measure/components/measureDetail'
+import AddMeasure from '@/views/quality/measure/components/addMeasure'
 export default {
-  components: { MeasureDetail },
+  components: { MeasureDetail, AddMeasure },
   data() {
     return {
       filterFormData: {
@@ -104,10 +122,14 @@ export default {
       measureTableData: [],
       pageIndex: 0,
       pageTotal: 10,
-      isMeasureDetailShow: false
+      isMeasureDetailShow: false,
+      isAddMeasureShow: false
     }
   },
   methods: {
+    addMeasureHandle() {
+      this.isAddMeasureShow = true
+    },
     pageChangeHandle(page) {
       this.pageIndex = page
     },
@@ -127,18 +149,29 @@ export default {
   .el-main {
     background: #fff;
     .filter-form {
-      @include flex-layout(flex-start, center, null, wrap);
-      .el-form-item {
-        margin: 10px 15px 15px 0;
-        .el-select, .date-select {
-          width: 200px;
+      &/deep/ .el-form-item {
+        width: 100%;
+        white-space: nowrap;
+        margin: 20px 0 0 0;
+        .el-form-item__label {
+          width: 110px;
+          text-align: right;
         }
-        .form-ctrl-btn {
-          font-size: 14px;
+        .el-form-item__content {
+          width: calc(100% - 110px);
+        }
+        .el-select, .date-select {
+          width: 100%;
+        }
+        &.operate-wrap {
+          padding-left: 50px;
+          .form-ctrl-btn {
+            font-size: 14px;
+          }
         }
       }
     }
-    .operate-wrap {
+    .add-btn-wrap {
       padding: 20px 10px;
     }
     .el-table {

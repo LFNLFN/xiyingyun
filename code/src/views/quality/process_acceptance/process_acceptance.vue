@@ -135,7 +135,7 @@ import { getBuliding } from '@/api/project_config/building'
 import { getProcessAccept, getProcessItems } from '@/api/quality/processAcceptance'
 import PhotosZoom from '@/components/PhotosZoom'
 import AcceptDetail from '@/views/quality/process_acceptance/components/AcceptDetail'
-import { acceptFailed, acceptSuccess, waitingAccept, unAccepted, acceptInvalid } from '@/styles/variables.scss'
+import { redStatus, greenStatus, orangeStatus, yellowStatus, grayStatus } from '@/styles/variables.scss'
 export default {
   components: { AcceptDetail, PhotosZoom },
   data() {
@@ -158,7 +158,7 @@ export default {
         { type: 3, name: '验收不通过' },
         { type: 4, name: '已作废' }
       ], // 保存验收状态数据
-      acceptStatusColors: [acceptSuccess, unAccepted, waitingAccept, acceptFailed, acceptInvalid],
+      acceptStatusColors: [greenStatus, yellowStatus, orangeStatus, redStatus, grayStatus],
       acceptTableData: [], // 保存工序验收数据
       pageSize: 10,
       pageIndex: 0,

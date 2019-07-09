@@ -4,9 +4,13 @@
       <div class="search-wrap">
         <el-form>
           <el-form-item>
-            <el-input v-model="searchFormData.key" size="small">
+            <el-input v-model="searchFormData.searchKey" size="small">
               <template slot="append">
-                <el-button type="primary" size="small" class="search-btn">搜索</el-button>
+                <el-button
+                  type="primary"
+                  size="small"
+                  class="search-btn"
+                  @click="searchProblemsByKey">搜索</el-button>
               </template>
             </el-input>
           </el-form-item>
@@ -17,42 +21,60 @@
       <el-tabs v-model="showTabName" @tab-click="changTabShow">
         <el-tab-pane label="全部" name="allProblems">
           <tabProblems
-            ref="allProblems" />
+            ref="allProblems"
+            @showProblemDetail="toProblemDetailHandle" />
         </el-tab-pane>
         <el-tab-pane label="待指派" name="waitAssign">
           <tabProblems
-            ref="waitAssign" />
+            ref="waitAssign"
+            @showProblemDetail="toProblemDetailHandle" />
         </el-tab-pane>
         <el-tab-pane label="待整改" name="waitAmend">
           <tabProblems
-            ref="waitAmend" />
+            ref="waitAmend"
+            @showProblemDetail="toProblemDetailHandle" />
         </el-tab-pane>
         <el-tab-pane label="待销项" name="waitCancel">
           <tabProblems
-            ref="waitCancel" />
+            ref="waitCancel"
+            @showProblemDetail="toProblemDetailHandle" />
         </el-tab-pane>
         <el-tab-pane label="已销项" name="canceled">
           <tabProblems
-            ref="canceled" />
+            ref="canceled"
+            @showProblemDetail="toProblemDetailHandle" />
         </el-tab-pane>
         <el-tab-pane label="已作废" name="invalid">
           <tabProblems
             ref="invalid"
-            :project-detail-datas="projectDetailDatas" />
+            @showProblemDetail="toProblemDetailHandle" />
         </el-tab-pane>
       </el-tabs>
     </el-main>
     <problemDetail
       v-show="isProblemDetailShow"
-      :is-problem-detail-show.sync="isProblemDetailShow" />
+      ref="problemDetailCom"
+      :is-problem-detail-show.sync="isProblemDetailShow"
+      @toPhotosZoom="toPhotosZoomHandle"
+      @toShowPlanMark="toShowPlanMarkHandle" />
+    <photosZoom
+      v-show="isPhotosZoomShow"
+      ref="photosZoomCom"
+      :is-photos-zoom-show.sync="isPhotosZoomShow" />
+    <showPlanMark
+      v-show="isShowPlanMarkShow"
+      ref="showPlanMarkCom"
+      :is-show-plan-mark-show.sync="isShowPlanMarkShow" />
   </el-container>
 </template>
 <script>
 import { mapActions } from 'vuex'
+import PhotosZoom from '@/components/PhotosZoom'
 import TabProblems from '@/views/quality/check_problems/tabPanes/tabProblems'
+import ShowPlanMark from '@/views/quality/check_problems/components/showPlanMark'
 import ProblemDetail from '@/views/quality/check_problems/components/problemDetail'
 export default {
-  components: { TabProblems, ProblemDetail },
+  components: { TabProblems, ProblemDetail, PhotosZoom, ShowPlanMark },
   data() {
     return {
       searchFormData: {
@@ -68,7 +90,9 @@ export default {
         'invalid': 4
       },
       projectDetailDatas: [], // 保存项目数据
-      isProblemDetailShow: false
+      isProblemDetailShow: false,
+      isPhotosZoomShow: false,
+      isShowPlanMarkShow: false
     }
   },
   created() {
@@ -78,6 +102,7 @@ export default {
     ...mapActions([
       'getProjectDetailsVuex'
     ]),
+    // 初始化页面数据
     pageInit() {
       // 加载项目数据
       this.getProjectDetailsVuex().then(resp => {
@@ -102,6 +127,16 @@ export default {
         this.$refs[tabName].resetDataProperty(_obj)
       })
     },
+    // 根据关键字搜索问题
+    searchProblemsByKey() {
+      const key = this.searchFormData.searchKey
+      const tabName = this.showTabName
+      const _obj = {
+        searchProblemsKey: key
+      }
+      this.$refs[tabName].resetDataProperty(_obj)
+    },
+    // 更改要显示的tab
     changTabShow(tab, event) {
       const tabName = tab.name
       const _obj = {
@@ -109,6 +144,31 @@ export default {
         projectDetailDatas: this.projectDetailDatas
       }
       this.$refs[tabName].resetDataProperty(_obj)
+    },
+    // 展示问题详情
+    toProblemDetailHandle(data) {
+      const _obj = {
+        curProblemData: data
+      }
+      this.$refs['problemDetailCom'].resetDataProperty(_obj)
+      this.isProblemDetailShow = true
+    },
+    // 展示查看图片组件
+    toPhotosZoomHandle(imgDatas) {
+      const _obj = {
+        photoList: imgDatas
+      }
+      this.$refs.photosZoomCom.resetDataProperty(_obj)
+      this.isPhotosZoomShow = true
+    },
+    // 展示标记详情
+    toShowPlanMarkHandle(pdata, mdata) {
+      const _obj = {
+        curProblemData: pdata,
+        markList: mdata
+      }
+      this.$refs.showPlanMarkCom.resetDataProperty(_obj)
+      this.isShowPlanMarkShow = true
     }
   }
 }

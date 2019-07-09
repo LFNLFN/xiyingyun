@@ -6,11 +6,10 @@
       :rules="loginRules"
       class="login-form"
       auto-complete="on"
-      label-position="left"
-      size="small">
+      label-position="left">
       <h3 class="title">企业数据服务解决方案系统</h3>
       <h5 class="title-second">Enterprise Data Service Solutions</h5>
-      <el-form-item prop="username">
+      <el-form-item prop="username" class="login-item">
         <span class="svg-container">
           <svg-icon icon-class="user" />
         </span>
@@ -21,7 +20,7 @@
           auto-complete="off"
           placeholder="请输入用户名称" />
       </el-form-item>
-      <el-form-item prop="password">
+      <el-form-item prop="password" class="login-item">
         <span class="svg-container">
           <svg-icon icon-class="password" />
         </span>
@@ -36,20 +35,21 @@
           <svg-icon :icon-class="pwdType === 'password' ? 'eye' : 'eye-open'" />
         </span>
       </el-form-item>
+      <el-form-item class="no-lineheight">
+        <el-checkbox v-model="isRememberPwd">记住密码</el-checkbox>
+        <!-- <el-button class="no-border forget-pwd-btn">忘记密码</el-button> -->
+      </el-form-item>
       <el-form-item>
         <el-button :loading="loading" type="primary" style="width:100%;" @click.native.prevent="handleLogin">
           登录
         </el-button>
       </el-form-item>
-      <!-- <div class="tips">
-      </div> -->
     </el-form>
   </div>
 </template>
-
 <script>
 import { isvalidUsername } from '@/utils/validate'
-
+import { Encrypt, Decrypt } from '@/utils/secret'
 export default {
   name: 'Login',
   data() {
@@ -71,6 +71,7 @@ export default {
         username: [{ required: true, trigger: 'blur', validator: isvalidUsername }],
         password: [{ required: true, trigger: 'blur', validator: validatePass }]
       },
+      isRememberPwd: false,
       loading: false,
       pwdType: 'password',
       redirect: undefined
@@ -84,6 +85,17 @@ export default {
       immediate: true
     }
   },
+  created() {
+    // 检查localStorage是否保存有用户名密码
+    const __info = this.$GetLocalStorage('loginSave')
+    if (__info && __info !== '') {
+      const loginTime = __info.loginTime
+      const __infoObj = JSON.parse(Decrypt(__info.loginInfo, Date.parse(loginTime)))
+      this.loginForm.username = __infoObj.username
+      this.loginForm.password = __infoObj.password
+      this.isRememberPwd = true
+    }
+  },
   methods: {
     showPwd() {
       if (this.pwdType === 'password') {
@@ -95,6 +107,19 @@ export default {
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
+          if (this.isRememberPwd) {
+            // 记住密码处理
+            const now = new Date()
+            const EncryptStr = Encrypt(JSON.stringify(this.loginForm), now.getTime())
+            const _saveObj = {
+              loginInfo: EncryptStr,
+              loginTime: now
+            }
+            this.$SetLocalStorage('loginSave', _saveObj)
+          } else {
+            // 取消记住密码处理
+            this.$RemoveLocalStorage('loginSave')
+          }
           this.loading = true
           this.$store.dispatch('Login', this.loginForm).then(() => {
             this.loading = false
@@ -112,44 +137,10 @@ export default {
 }
 </script>
 
-<style rel="stylesheet/scss" lang="scss">
-$bg:#2d3a4b;
-$light_gray:#eee;
-$font-while: #fff;
-
-/* reset element-ui css */
-.login-container {
-  .el-input {
-    display: inline-block;
-    height: 47px;
-    width: calc(100% - 54px);
-    input {
-      background: transparent;
-      border: 0px;
-      -webkit-appearance: none;
-      border-radius: 0px;
-      padding: 12px 5px 12px 5px;
-      height: 47px;
-
-      &:-webkit-autofill {
-        -webkit-box-shadow: 0 0 0px 1000px $bg inset !important;
-        -webkit-text-fill-color: #fff !important;
-      }
-    }
-  }
-  .el-form-item {
-    background: rgba(255, 255, 255, .5);
-    border-radius: 5px;
-    color: #454545;
-  }
-}
-
-</style>
-
 <style rel="stylesheet/scss" lang="scss" scoped>
 $bg:#2d3a4b;
 $dark_gray:#889aa4;
-$light_gray:#2b85e4;
+$font_blue:#2b85e4;
 $light_while:#fff;
 .login-container {
   position: fixed;
@@ -166,10 +157,38 @@ $light_while:#fff;
     max-width: 100%;
     padding: 35px 35px 15px 35px;
     margin: 120px auto;
-    .el-form-item {
+    &/deep/.el-input {
+      display: inline-block;
+      height: 47px;
+      width: calc(100% - 54px);
+      input {
+        background: transparent;
+        border: 0px;
+        -webkit-appearance: none;
+        border-radius: 0px;
+        padding: 12px 5px 12px 5px;
+        height: 47px;
+        &:-webkit-autofill {
+          -webkit-box-shadow: 0 0 0px 1000px $bg inset !important;
+          -webkit-text-fill-color: #fff !important;
+        }
+      }
+    }
+    &/deep/.el-form-item.login-item {
       background: #e8f0fe;
+      border-radius: 5px;
       color: #495060;
       border: 1px solid #dddee1;
+    }
+    &/deep/.el-form-item.no-lineheight {
+      .el-form-item__content {
+        line-height: 0;
+      }
+      .forget-pwd-btn {
+        padding: 2px 9px;
+        float: right;
+        color: $font_blue;
+      }
     }
   }
   .tips {
@@ -193,7 +212,7 @@ $light_while:#fff;
   .title {
     font-size: 26px;
     font-weight: 400;
-    color: $light_gray;
+    color: $font_blue;
     margin: 0px auto 10px auto;
     text-align: center;
     font-weight: bold;
@@ -201,7 +220,7 @@ $light_while:#fff;
   .title-second {
     font-size: 20px;
     font-weight: 400;
-    color: $light_gray;
+    color: $font_blue;
     margin: 0px auto 30px auto;
     text-align: center;
     font-weight: bold;

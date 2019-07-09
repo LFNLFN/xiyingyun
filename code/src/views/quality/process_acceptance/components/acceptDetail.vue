@@ -261,10 +261,10 @@ export default {
           padding: 5px 15px;
           border-radius: 15px;
           &.success {
-            background: $acceptSuccess;
+            background: $greenStatus;
           }
           &.failed {
-            background: $acceptFailed;
+            background: $redStatus;
           }
         }
         .user-date-info {

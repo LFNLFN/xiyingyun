@@ -49,13 +49,13 @@ export default {
   min-height: calc(100vh - 50px);
   background: #f0f1f5;
   .accept-failed {
-    background: $acceptFailed;
+    background: $redStatus;
   }
   .accepted {
-    background: $acceptSuccess;
+    background: $greenStatus;
   }
   .accept-wait {
-    background: $waitingAccept;
+    background: $orangeStatus;
   }
   .el-header {
     background: #fff;
