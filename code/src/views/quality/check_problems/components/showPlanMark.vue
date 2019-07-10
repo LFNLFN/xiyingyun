@@ -44,11 +44,13 @@ export default {
     markList: function(newVal) {
       this.getPlanFunc()
     },
-    'planData.imageUrl': function(newVal) {
-      this.messageEntity = this.$message({
-        message: '图片拼命加载中...',
-        duration: 0
-      })
+    planData: function(newVal, oldVal) {
+      if (!oldVal.imageUrl || newVal.imageUrl !== oldVal.imageUrl) {
+        this.messageEntity = this.$message({
+          message: '图片拼命加载中...',
+          duration: 0
+        })
+      }
     }
   },
   methods: {
@@ -61,7 +63,7 @@ export default {
     getPlanFunc() {
       const { partId } = this.curProblemData
       getCheckProblemPlan(partId).then(resp => {
-        this.planData = resp.result
+        this.$set(this, 'planData', resp.result)
       })
     },
     imgLoadedHandle(evt) {
@@ -72,7 +74,6 @@ export default {
         height: target.offsetHeight
       }
       this.$set(this, 'markWrapInfo', _obj)
-      console.log('markWrapInfo', this.markWrapInfo)
     },
     closeBox() {
       this.$emit('update:isShowPlanMarkShow', false)

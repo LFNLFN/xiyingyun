@@ -1,5 +1,11 @@
 //to reset element-ui default css
 
+// 重置消息提示框样式
+.el-message {
+  top: 60px !important;
+  padding: 12px 12px 12px 20px;
+}
+
 // 无边框按钮
 .el-button.no-border {
   border: none;

@@ -4,8 +4,10 @@
       ref="map"
       :zoom="amapCionfig.zoom"
       :center="amapCionfig.center"
+      :events="amapCionfig.events"
       vid="amapDemo"
-      class="amap-entity" />
+      class="amap-entity"
+      @complete="mapCompleteHandle" />
     <div
       :class="{'is-active': projectListShow}"
       class="project-list-wrap">
@@ -60,6 +62,7 @@
   </el-container>
 </template>
 <script>
+import { Message } from 'element-ui'
 import AmapManager from 'vue-amap'
 export default {
   data() {
@@ -67,7 +70,10 @@ export default {
       amapCionfig: {
         amapManager: AmapManager,
         zoom: 4,
-        center: [116.441953, 39.84279]
+        center: [116.441953, 39.84279],
+        events: {
+          'complete': this.mapCompleteHandle
+        }
       },
       searchProjetName: '',
       citySelectedList: [
@@ -96,7 +102,16 @@ export default {
       projectListShow: false
     }
   },
+  created() {
+    Message({
+      message: '地图正在加载中...',
+      duration: 0
+    })
+  },
   methods: {
+    mapCompleteHandle() {
+      Message.closeAll()
+    },
     projectListToggle() {
       this.projectListShow = !this.projectListShow
     },

@@ -67,6 +67,24 @@ export const asyncRouterMap = [
       }
     ]
   },
+  /* ------------------- 统计数据大屏 ------------------ */
+  // 首页
+  {
+    path: '/data_screen',
+    name: 'dataScreen',
+    component: Layout,
+    redirect: '/data_screen/index',
+    meta: { title: '统计数据大屏', icon: '' },
+    menuType: 'home',
+    children: [
+      {
+        path: 'index',
+        name: 'dataScreenIndex',
+        meta: { title: '统计数据大屏', icon: '' },
+        component: () => import('@/views/data_screen/index')
+      }
+    ]
+  },
   /* ------------------- 工程管理 ------------------ */
   // 质量管理
   {

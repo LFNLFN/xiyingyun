@@ -7,8 +7,8 @@
       class="login-form"
       auto-complete="on"
       label-position="left">
-      <h3 class="title">企业数据服务解决方案系统</h3>
-      <h5 class="title-second">Enterprise Data Service Solutions</h5>
+      <h3 class="title">房地产数据企业服务系统</h3>
+      <h5 class="title-second">Estate Enterprise Data Service System</h5>
       <el-form-item prop="username" class="login-item">
         <span class="svg-container">
           <svg-icon icon-class="user" />
@@ -138,6 +138,8 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
+@import 'src/styles/mixin.scss';
+
 $bg:#2d3a4b;
 $dark_gray:#889aa4;
 $font_blue:#2b85e4;
@@ -149,14 +151,10 @@ $light_while:#fff;
   // background: url(../../assets/login_images/login_bg.jpg) no-repeat;
   background: #f1f2f6;
   background-size: 100% 100%;
+  @include flex-layout(center, center, null, null);
   .login-form {
-    position: absolute;
-    left: 0;
-    right: 0;
     width: 520px;
-    max-width: 100%;
     padding: 35px 35px 15px 35px;
-    margin: 120px auto;
     &/deep/.el-input {
       display: inline-block;
       height: 47px;
@@ -216,6 +214,7 @@ $light_while:#fff;
     margin: 0px auto 10px auto;
     text-align: center;
     font-weight: bold;
+    letter-spacing: 3px;
   }
   .title-second {
     font-size: 20px;
