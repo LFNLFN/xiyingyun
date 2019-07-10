@@ -74,10 +74,11 @@ export default {
 </script>
 <style ref="styleshheet/scss" lang="scss" scoped>
 @import "src/styles/mixin.scss";
+@import "src/styles/variables.scss";
 
 .el-container {
   padding: 10px;
-  min-height: calc(100vh - 50px);
+  min-height: calc(100vh - #{$navbarHeight});;
   background: #f0f1f5;
   .header {
     font-size: 18px;

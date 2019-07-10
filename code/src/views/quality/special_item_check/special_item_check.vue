@@ -16,17 +16,22 @@
     <specialItemDetail
       v-show="isItemDetailShow"
       :is-item-detail-show.sync="isItemDetailShow" />
+    <addSpecialItem
+      v-show="isAddSpecialItemShow"
+      :is-add-special-item-show.sync="isAddSpecialItemShow" />
   </el-container>
 </template>
 <script>
+import AddSpecialItem from '@/views/quality/special_item_check/components/addSpecialItem'
 import SpecialItemDetail from '@/views/quality/special_item_check/components/specialItemDetail'
 import TapCheckDatas from '@/views/quality/special_item_check/tabPanes/tapCheckDatas'
 export default {
-  components: { TapCheckDatas, SpecialItemDetail },
+  components: { TapCheckDatas, SpecialItemDetail, AddSpecialItem },
   data() {
     return {
       showTabName: 'first',
-      isItemDetailShow: false
+      isItemDetailShow: false,
+      isAddSpecialItemShow: true
     }
   },
   methods: {
@@ -38,9 +43,10 @@ export default {
 </script>
 <style ref="styleshheet/scss" lang="scss" scoped>
 @import 'src/styles/mixin.scss';
+@import "src/styles/variables.scss";
 
 .el-container {
-  min-height: calc(100vh - 50px);
+  min-height: calc(100vh - #{$navbarHeight});;
   background: #f0f1f5;
   .el-main {
     padding: 0;

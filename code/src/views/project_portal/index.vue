@@ -81,9 +81,10 @@ export default {
 </script>
 <style ref="styleshheet/scss" lang="scss" scoped>
 @import 'src/styles/mixin.scss';
+@import "src/styles/variables.scss";
 
 .container {
-  min-height: calc(100vh - 50px);
+  min-height: calc(100vh - #{$navbarHeight});
   background: #f0f1f5;
   .el-header {
     padding: 20px 20px 0 65px;

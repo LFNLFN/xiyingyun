@@ -23,7 +23,7 @@
       </el-form-item>
     </el-form>
     <div class="operate-wrap">
-      <el-button type="primary" size="small">新增</el-button>
+      <el-button type="primary" size="small" @click="addSpecialItemHandle">新增</el-button>
     </div>
     <el-table
       :data="tableData"
@@ -65,6 +65,10 @@ export default {
     }
   },
   methods: {
+    // 新增专项处理
+    addSpecialItemHandle() {
+      this.$router.push({ name: 'addSpecialItem' })
+    },
     pageChangeHandle(page) {
       this.pageIndex = page
     },

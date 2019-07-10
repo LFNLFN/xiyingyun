@@ -48,10 +48,11 @@ export default {
 </script>
 <style ref="styleshheet/scss" lang="scss" scoped>
 @import 'src/styles/mixin.scss';
+@import "src/styles/variables.scss";
 
 .iframe-container {
   width: 100%;
-  height: calc(100vh - 50px);
+  height: calc(100vh - #{$navbarHeight});
   @include flex-layout(center, center, null, null);
   background: #0f2a42;
   .frame {

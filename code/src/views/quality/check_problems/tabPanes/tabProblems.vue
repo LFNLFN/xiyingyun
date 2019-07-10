@@ -474,6 +474,9 @@ export default {
       font-size: 14px;
       margin: 2% 2% 0 0;
       border: 1px solid #c1c1c1;
+      &:nth-of-type(6n) {
+        margin-right: 0;
+      }
       &/deep/.el-card__body {
         padding: 0;
       }
@@ -528,16 +531,25 @@ export default {
     @media screen and (max-width: 1514px) and (min-width: 1301px) {
       .problem-list-item {
         width: 18.4%;
+        &:nth-of-type(5n) {
+          margin-right: 0;
+        }
       }
     }
     @media screen and (max-width: 1300px) and (min-width: 1025px) {
       .problem-list-item {
         width: 23.5%;
+        &:nth-of-type(4n) {
+          margin-right: 0;
+        }
       }
     }
     @media screen and (max-width: 1024px) {
       .problem-list-item {
         width: 32%;
+        &:nth-of-type(3n) {
+          margin-right: 0;
+        }
       }
     }
   }

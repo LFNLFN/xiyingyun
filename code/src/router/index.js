@@ -122,8 +122,23 @@ export const asyncRouterMap = [
       {
         path: 'special_item_check',
         name: 'specialCheck',
+        redirect: 'special_item_check/index',
         meta: { title: '专项检查', icon: '' },
-        component: () => import('@/views/quality/special_item_check/special_item_check')
+        component: () => import('@/views/quality/special_item_check/index'),
+        children: [
+          {
+            path: 'index',
+            name: 'specialItemCheckIndex',
+            hidden: true,
+            component: () => import('@/views/quality/special_item_check/special_item_check')
+          },
+          {
+            path: 'addSpecialItem',
+            name: 'addSpecialItem',
+            hidden: true,
+            component: () => import('@/views/quality/special_item_check/addSpecialItem')
+          }
+        ]
       }
       // {
       //   path: 'evaluation',

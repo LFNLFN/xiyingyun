@@ -123,9 +123,10 @@ export default {
 </script>
 <style ref="styleshheet/scss" lang="scss" scoped>
 @import "src/styles/mixin.scss";
+@import "src/styles/variables.scss";
 
 .el-container {
-  height: calc(100vh - 50px);
+  height: calc(100vh - #{$navbarHeight});
   background: #f0f1f5;
   position: relative;
   .amap-entity {

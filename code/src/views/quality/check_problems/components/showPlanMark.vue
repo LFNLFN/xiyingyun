@@ -1,6 +1,6 @@
 <template>
   <div class="container-shadow" @click="closeBox">
-    <div class="img-wrap">
+    <div class="img-wrap" @click.stop>
       <template v-if="planData.imageUrl">
         <el-image
           :src="GetOssImgFullPath(planData.imageUrl)"
@@ -43,14 +43,10 @@ export default {
   watch: {
     markList: function(newVal) {
       this.getPlanFunc()
-    },
-    planData: function(newVal, oldVal) {
-      if (!oldVal.imageUrl || newVal.imageUrl !== oldVal.imageUrl) {
-        this.messageEntity = this.$message({
-          message: '图片拼命加载中...',
-          duration: 0
-        })
-      }
+      this.messageEntity = this.$message({
+        message: '图片拼命加载中...',
+        duration: 0
+      })
     }
   },
   methods: {
@@ -63,11 +59,13 @@ export default {
     getPlanFunc() {
       const { partId } = this.curProblemData
       getCheckProblemPlan(partId).then(resp => {
+        this.messageEntity.close()
         this.$set(this, 'planData', resp.result)
+      }).catch(() => {
+        this.messageEntity.close()
       })
     },
     imgLoadedHandle(evt) {
-      this.messageEntity.close()
       const target = evt.path[0]
       const _obj = {
         width: target.offsetWidth,

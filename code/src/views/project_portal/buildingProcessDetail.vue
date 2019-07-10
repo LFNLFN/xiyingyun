@@ -46,7 +46,7 @@ export default {
 @import 'src/styles/variables.scss';
 
 .el-container {
-  min-height: calc(100vh - 50px);
+  min-height: calc(100vh - #{$navbarHeight});
   background: #f0f1f5;
   .accept-failed {
     background: $redStatus;

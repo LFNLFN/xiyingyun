@@ -107,9 +107,9 @@
                 </div>
                 <p class="problem-status">#{{ reply.typeName }}</p>
                 <p class="problem-content">{{ reply.content }}</p>
-                <div class="photo-list">
+                <div v-if="reply.image && reply.image !== ''" class="photo-list">
                   <div
-                    v-for="(img, imgidx) in reply.image.split(',')"
+                    v-for="(img, imgidx) in String(reply.image).split(',')"
                     :key="imgidx"
                     class="photo-item">
                     <img
