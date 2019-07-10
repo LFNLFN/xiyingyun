@@ -1,11 +1,11 @@
 <template>
   <div class="iframe-container">
     <iframe
-    :style="{'width': iframeWidth, 'height': iframeHeight}"
-    src="https://datav.aliyuncs.com/share/04d53a8317b1838f9b6726f91bf58bbc"
-    scrolling="auto"
-    frameborder="0"
-    class="frame" />
+      :style="{'width': iframeWidth, 'height': iframeHeight}"
+      src="https://datav.aliyuncs.com/share/04d53a8317b1838f9b6726f91bf58bbc"
+      scrolling="auto"
+      frameborder="0"
+      class="frame" />
   </div>
 </template>
 <script>
@@ -19,7 +19,9 @@ export default {
   },
   watch: {
     'sidebar.opened': function(newVal) {
-      this.handleHeight()
+      setTimeout(() => {
+        this.handleHeight()
+      }, 1000)
     }
   },
   mounted() {
