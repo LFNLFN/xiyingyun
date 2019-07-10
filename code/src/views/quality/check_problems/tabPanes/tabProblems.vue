@@ -421,12 +421,12 @@ export default {
 .main-content {
   .filter-wrap {
     .filter-form {
-      padding: 20px;
+      padding: 15px 20px;
       background: #fff;
       &/deep/ .el-form-item {
         width: 100%;
         white-space: nowrap;
-        margin: 20px 0 0 0;
+        margin: 15px 0 0 0;
         .el-form-item__content {
           width: 100%;
         }
