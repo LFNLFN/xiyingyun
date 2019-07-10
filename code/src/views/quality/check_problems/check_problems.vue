@@ -68,13 +68,14 @@
   </el-container>
 </template>
 <script>
-import { mapActions } from 'vuex'
+import getProjectMixin from '@/mixins/getProjectStage'
 import PhotosZoom from '@/components/PhotosZoom'
 import TabProblems from '@/views/quality/check_problems/tabPanes/tabProblems'
 import ShowPlanMark from '@/views/quality/check_problems/components/showPlanMark'
 import ProblemDetail from '@/views/quality/check_problems/components/problemDetail'
 export default {
   components: { TabProblems, ProblemDetail, PhotosZoom, ShowPlanMark },
+  mixins: [getProjectMixin],
   data() {
     return {
       searchFormData: {
@@ -96,37 +97,16 @@ export default {
     }
   },
   created() {
-    this.pageInit()
+    this.getProjectFunc((data) => {
+      const tabName = this.showTabName
+      const _obj = {
+        curTabStatus: this.tabStatusData[tabName],
+        projectDetailDatas: this.projectDetailDatas
+      }
+      this.$refs[tabName].resetDataProperty(_obj)
+    })
   },
   methods: {
-    ...mapActions([
-      'getProjectDetailsVuex'
-    ]),
-    // 初始化页面数据
-    pageInit() {
-      // 加载项目数据
-      this.getProjectDetailsVuex().then(resp => {
-        resp.forEach((project, idx) => {
-          const stages = project.childrenWithDetail
-          if (stages && stages.length > 0) {
-            stages.forEach(stage => {
-              this.projectDetailDatas.push({
-                id: stage.id,
-                parentId: stage.parentId,
-                name: `${project.name}--${stage.name}`,
-                section: stage.childrenWithDetail || []
-              })
-            })
-          }
-        })
-        const tabName = this.showTabName
-        const _obj = {
-          curTabStatus: this.tabStatusData[tabName],
-          projectDetailDatas: this.projectDetailDatas
-        }
-        this.$refs[tabName].resetDataProperty(_obj)
-      })
-    },
     // 根据关键字搜索问题
     searchProblemsByKey() {
       const key = this.searchFormData.searchKey

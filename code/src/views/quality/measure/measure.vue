@@ -8,9 +8,12 @@
         <el-row :gutter="10">
           <el-col :span="8">
             <el-form-item label="项目名称">
-              <el-select v-model="filterFormData.selected" size="small">
+              <el-select v-model="filterFormData.projectId" size="small">
                 <el-option
-                  value="模拟项目一" />
+                  v-for="(item, idx) in projectDetailDatas"
+                  :key="idx"
+                  :label="item.name"
+                  :value="item.id" />
               </el-select>
             </el-form-item>
           </el-col>
@@ -108,13 +111,16 @@
   </el-container>
 </template>
 <script>
+import getProjectMixin from '@/mixins/getProjectStage'
 import MeasureDetail from '@/views/quality/measure/components/measureDetail'
 import AddMeasure from '@/views/quality/measure/components/addMeasure'
 export default {
   components: { MeasureDetail, AddMeasure },
+  mixins: [getProjectMixin],
   data() {
     return {
       filterFormData: {
+        projectId: '',
         date: '',
         selected: ''
       },
@@ -125,6 +131,12 @@ export default {
       isMeasureDetailShow: false,
       isAddMeasureShow: false
     }
+  },
+  created() {
+    this.getProjectFunc((data) => {
+      console.log('data', data)
+      this.filterFormData.projectId = data[0].id
+    })
   },
   methods: {
     addMeasureHandle() {

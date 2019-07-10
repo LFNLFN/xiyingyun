@@ -4,7 +4,7 @@
       <span>所属项目：</span>
       <el-select v-model="projectSelected" @change="getParticipants">
         <el-option
-          v-for="(item, idx) in projectList"
+          v-for="(item, idx) in projectDetailDatas"
           :key="idx"
           :label="item.name"
           :value="item.id" />
@@ -51,12 +51,14 @@
 import { mapActions } from 'vuex'
 import { unBindParticipant } from '@/api/project_config/participant'
 import { getDictionaryItem } from '@/api/dictionary'
+import getProjectMixin from '@/mixins/getProjectStage'
 import Participant from '@/views/project_config/participant/components/addParticipant'
 export default {
   components: { Participant },
+  mixins: [getProjectMixin],
   data() {
     return {
-      projectList: [], // 项目列表
+      projectDetailDatas: [], // 保存项目数据
       projectSelected: '', // 保存已选择的项目的ID
       particiTableData: [], // 保存参建方数据
       suppliersTypeData: [], // 保存参建方类型
@@ -68,16 +70,13 @@ export default {
   },
   created() {
     // 获取项目列表
-    this.getProjectListVuex().then(resp => {
-      console.log('resp', resp)
-      this.projectList = resp
-      this.projectSelected = resp[0].id
+    this.getProjectFunc((data) => {
+      this.projectSelected = data[0].id
       this.getParticipants(this.projectSelected)
     })
   },
   methods: {
     ...mapActions([
-      'getProjectListVuex',
       'getProjectParticipants'
     ]),
     // 表格样式控制

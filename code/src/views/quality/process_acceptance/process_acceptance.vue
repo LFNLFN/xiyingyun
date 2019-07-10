@@ -130,14 +130,15 @@
   </el-container>
 </template>
 <script>
-import { mapActions } from 'vuex'
 import { getBuliding } from '@/api/project_config/building'
 import { getProcessAccept, getProcessItems } from '@/api/quality/processAcceptance'
 import PhotosZoom from '@/components/PhotosZoom'
+import getProjectMixin from '@/mixins/getProjectStage'
 import AcceptDetail from '@/views/quality/process_acceptance/components/AcceptDetail'
 import { redStatus, greenStatus, orangeStatus, yellowStatus, grayStatus } from '@/styles/variables.scss'
 export default {
   components: { AcceptDetail, PhotosZoom },
+  mixins: [getProjectMixin],
   data() {
     return {
       filterFormData: {
@@ -174,34 +175,13 @@ export default {
     }
   },
   created() {
-    this.pageInit()
+    this.getProjectFunc((data) => {
+      const _projectId = data[0].id
+      this.filterFormData.projectId = _projectId
+      this.getProcessAcceptFunc()
+    })
   },
   methods: {
-    ...mapActions([
-      'getProjectDetailsVuex'
-    ]),
-    // 初始化页面，加载相关数据
-    pageInit() {
-      // 加载项目数据
-      this.getProjectDetailsVuex().then(resp => {
-        resp.forEach((project, idx) => {
-          const stages = project.childrenWithDetail
-          if (stages && stages.length > 0) {
-            stages.forEach(stage => {
-              this.projectDetailDatas.push({
-                id: stage.id,
-                parentId: stage.parentId,
-                name: `${project.name}--${stage.name}`,
-                section: stage.childrenWithDetail || []
-              })
-            })
-          }
-        })
-        const _projectId = this.projectDetailDatas[0].id
-        this.filterFormData.projectId = _projectId
-        this.getProcessAcceptFunc()
-      })
-    },
     // 获取工序验收数据
     getProcessAcceptFunc() {
       const params = {}

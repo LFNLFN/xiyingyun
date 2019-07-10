@@ -31,7 +31,7 @@ export default {
     return {
       showTabName: 'first',
       isItemDetailShow: false,
-      isAddSpecialItemShow: true
+      isAddSpecialItemShow: false
     }
   },
   methods: {
