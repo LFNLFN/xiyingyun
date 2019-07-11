@@ -30,11 +30,10 @@
               <el-form-item label="类型">
                 <el-select v-model="filterFormData.selected" size="small">
                   <el-option
-                    value="甲方" />
-                  <el-option
-                    value="监理" />
-                  <el-option
-                    value="施工" />
+                    v-for="(item, idx) in measureType"
+                    :key="idx"
+                    :label="item.name"
+                    :value="item.id" />
                 </el-select>
               </el-form-item>
             </el-col>
@@ -125,6 +124,11 @@ export default {
         selected: ''
       },
       fullFilterForm: false,
+      measureType: [
+        { id: 1, name: '施工' },
+        { id: 2, name: '监理' },
+        { id: 3, name: '甲方' }
+      ],
       measureTableData: [],
       pageIndex: 0,
       pageTotal: 10,
@@ -134,7 +138,6 @@ export default {
   },
   created() {
     this.getProjectFunc((data) => {
-      console.log('data', data)
       this.filterFormData.projectId = data[0].id
     })
   },

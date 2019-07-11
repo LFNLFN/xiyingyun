@@ -4,6 +4,9 @@
     <breadcrumb />
     <!-- <systemChange /> -->
     <div class="navbar-right-part">
+      <fullScreenCtrl
+        v-show="showFullScreenBtn"
+        :toggle-click="toggleFullScreen" />
       <msgDropdown />
       <userDropdown />
     </div>
@@ -17,6 +20,7 @@ import SystemChange from '@/components/SystemChange'
 import Hamburger from '@/components/Hamburger'
 import UserDropdown from '@/components/UserDropdown'
 import MsgDropdown from '@/components/MsgDropdown'
+import FullScreenCtrl from '@/components/FullScreenCtrl'
 
 export default {
   components: {
@@ -24,17 +28,36 @@ export default {
     SystemChange,
     Hamburger,
     UserDropdown,
-    MsgDropdown
+    MsgDropdown,
+    FullScreenCtrl
+  },
+  data() {
+    return {
+      // showFullScreenBtn: false
+    }
   },
   computed: {
     ...mapGetters([
       'sidebar',
-      'avatar'
+      'avatar',
+      'showFullScreenBtn'
     ])
   },
+  // watch: {
+  //   '$route.path': function(newVal) {
+  //     if (newVal.match('data_screen')) {
+  //       this.showFullScreenBtn = true
+  //     } else {
+  //       this.showFullScreenBtn = false
+  //     }
+  //   }
+  // },
   methods: {
     toggleSideBar() {
       this.$store.dispatch('ToggleSideBar')
+    },
+    toggleFullScreen() {
+      this.$store.dispatch('ToggleFullScreen')
     }
   }
 }
@@ -56,39 +79,6 @@ export default {
     right: 90px;
     top: 16px;
     color: red;
-  }
-  .avatar-container {
-    height: 50px;
-    display: inline-block;
-    position: absolute;
-    right: 35px;
-    .avatar-wrapper {
-      cursor: pointer;
-      margin-top: 5px;
-      position: relative;
-      line-height: initial;
-      .user-avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 10px;
-      }
-      .el-icon-caret-bottom {
-        position: absolute;
-        right: -20px;
-        top: 25px;
-        font-size: 12px;
-      }
-    }
-  }
-  .navbar-right-part {
-    height: 50px;
-    padding-right: 10px;
-    position: absolute;
-    right: 0;
-    top: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
   }
 }
 </style>

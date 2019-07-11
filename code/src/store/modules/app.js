@@ -6,7 +6,10 @@ const app = {
       opened: !+Cookies.get('sidebarStatus'),
       withoutAnimation: false
     },
-    device: 'desktop'
+    device: 'desktop',
+    fullScreen: false, // 控制是否全屏
+    fullScreenBtnPath: ['/data_screen/index'], // 显示全屏按钮的路径
+    showFullScreenBtn: false // 是否显示全屏按钮
   },
   mutations: {
     TOGGLE_SIDEBAR: state => {
@@ -17,6 +20,12 @@ const app = {
       }
       state.sidebar.opened = !state.sidebar.opened
       state.sidebar.withoutAnimation = false
+    },
+    TOGGLE_FULLSCREEN: state => {
+      state.fullScreen = !state.fullScreen
+    },
+    TOGGLE_FULLSCREEN_BTN: (state, bool) => {
+      state.showFullScreenBtn = bool
     },
     CLOSE_SIDEBAR: (state, withoutAnimation) => {
       Cookies.set('sidebarStatus', 1)
@@ -30,6 +39,12 @@ const app = {
   actions: {
     ToggleSideBar: ({ commit }) => {
       commit('TOGGLE_SIDEBAR')
+    },
+    ToggleFullScreen: ({ commit }) => {
+      commit('TOGGLE_FULLSCREEN')
+    },
+    ToggleFullScreenBtn: ({ commit }, bool) => {
+      commit('TOGGLE_FULLSCREEN_BTN', bool)
     },
     CloseSideBar({ commit }, { withoutAnimation }) {
       commit('CLOSE_SIDEBAR', withoutAnimation)

@@ -1,7 +1,8 @@
 <template>
-  <div class="iframe-container">
+  <div
+    :class="{'is-full-screen': fullScreen}"
+    class="iframe-container">
     <iframe
-      :style="{'width': iframeWidth, 'height': iframeHeight}"
       src="https://datav.aliyuncs.com/share/04d53a8317b1838f9b6726f91bf58bbc"
       scrolling="auto"
       frameborder="0"
@@ -9,6 +10,7 @@
   </div>
 </template>
 <script>
+import { mapGetters } from 'vuex'
 export default {
   data() {
     return {
@@ -17,20 +19,52 @@ export default {
       sidebar: this.$store.getters.sidebar
     }
   },
+
+  computed: {
+    ...mapGetters([
+      'fullScreen'
+    ])
+  },
   watch: {
-    'sidebar.opened': function(newVal) {
-      setTimeout(() => {
-        this.handleHeight()
-      }, 1000)
+    fullScreen: function(newVal) {
+      if (newVal) {
+        this.$message({
+          message: '按 esc 可以退出全屏',
+          type: 'success',
+          duration: 3500,
+          showClose: true
+        })
+      }
     }
   },
+  // watch: {
+  //   'sidebar.opened': function(newVal) {
+  //     setTimeout(() => {
+  //       this.handleHeight()
+  //     }, 1000)
+  //   }
+  // },
   mounted() {
-    this.handleHeight()
-    window.addEventListener('resize', () => {
-      this.handleHeight()
+    // this.handleHeight()
+    // window.addEventListener('resize', () => {
+    //   this.handleHeight()
+    // })
+    window.addEventListener('keydown', (evt) => {
+      const code = evt.keyCode
+      if (code === 27) {
+        this.fullScreenHandle()
+      }
     })
   },
+  beforeDestroy() {
+    window.removeEventListener('keydown')
+  },
   methods: {
+    fullScreenHandle() {
+      if (this.fullScreen) {
+        this.$store.dispatch('ToggleFullScreen')
+      }
+    },
     handleHeight() {
       const containerWidth = document.querySelector('.iframe-container').offsetWidth
       const containerHeight = document.querySelector('.iframe-container').offsetHeight
@@ -53,11 +87,26 @@ export default {
 .iframe-container {
   width: 100%;
   height: calc(100vh - #{$navbarHeight});
+  // width: 100vw;
+  // height: 100vh;
+  // position: fixed;
+  // top: 0;
+  // left: 0;
   @include flex-layout(center, center, null, null);
   background: #0f2a42;
   .frame {
     width: 100%;
     height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+  }
+  &.is-full-screen {
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999;
   }
 }
 </style>

@@ -9,6 +9,26 @@
     left: $sideBarWidth;
     right: 0;
     transition: left 0.28s;
+    .navbar-right-part {
+      height: $navbarHeight;
+      padding-right: 10px;
+      position: absolute;
+      right: 0;
+      top: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      .icon-container {
+        cursor: pointer;
+        height: $navbarHeight;
+        margin-right: 15px;
+        .btn-icon {
+          height: 33px;
+          width: 33px;
+          margin-top: 10px;
+        }
+      }
+    }
   }
 
   // 主体区域 Main container

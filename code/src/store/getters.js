@@ -3,6 +3,9 @@ import { getFromlocalStorage } from '@/store/utils/utils.js'
 const getters = {
   sidebar: state => state.app.sidebar,
   device: state => state.app.device,
+  fullScreen: state => state.app.fullScreen,
+  fullScreenBtnPath: state => state.app.fullScreenBtnPath,
+  showFullScreenBtn: state => state.app.showFullScreenBtn,
   // 用户数据
   token: state => state.user.token,
   avatar: state => state.user.avatar,

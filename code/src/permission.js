@@ -17,6 +17,13 @@ router.beforeEach((to, from, next) => {
       next({ path: '/' })
       NProgress.done()
     } else {
+      // 是否显示全屏按钮
+      if (store.getters.fullScreenBtnPath.includes(to.path)) {
+        store.dispatch('ToggleFullScreenBtn', true)
+      } else {
+        store.dispatch('ToggleFullScreenBtn', false)
+      }
+      // 权限判断相关
       if (store.getters.roles.length === 0) {
         // 拉取用户信息
         store.dispatch('GetInfo').then(res => {
