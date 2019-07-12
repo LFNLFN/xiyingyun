@@ -2,6 +2,7 @@
   <div class="main-content">
     <div class="filter-wrap">
       <el-form
+        ref="filterForm"
         :inline="true"
         class="filter-form">
         <el-form-item label="快捷筛选:" class="block-item">
@@ -151,7 +152,7 @@
           <el-col :span="8">
             <el-form-item class="btn-wrap">
               <el-button type="primary" size="mini" @click="getCheckProblemsFunc">查询</el-button>
-              <el-button size="mini" @clock="resetFrom">重置</el-button>
+              <el-button size="mini" @clock="resetForm">重置</el-button>
               <el-dropdown
                 trigger="click"
                 size="small">
@@ -257,7 +258,7 @@ export default {
       /* -------------- 问题检查相关数据 -----------------*/
       checkProblemDatas: [], // 保存问题检查数据
       checkProblemIdSelected: [], // 保存已选择的问题数据的id
-      pageIndex: 0,
+      pageIndex: 1,
       pageSize: 20,
       pageTotal: 0,
       fullFilterForm: false
@@ -283,7 +284,7 @@ export default {
     resetDataProperty(obj) {
       const _keys = Object.keys(obj)
       _keys.forEach(key => {
-        this[key] = obj[key]
+        this.$set(this, key, obj[key])
       })
     },
     // 添加快速筛选添加
@@ -356,7 +357,7 @@ export default {
         }
       })
       params['pageSize'] = this.pageSize
-      params['pageIndex'] = this.pageIndex
+      params['pageIndex'] = this.pageIndex - 1
       console.log('params', params)
       return params
     },
@@ -372,7 +373,7 @@ export default {
         const _data = resp.result
         this.checkProblemDatas = _data.data
         this.pageTotal = _data.total
-        this.pageIndex = _data.pageIndex
+        this.pageIndex = _data.pageIndex + 1
         message.close()
         if (this.checkProblemDatas.length === 0) {
           this.$message({
@@ -399,7 +400,7 @@ export default {
       this.$emit('showProblemDetail', data)
     },
     // 重置表单
-    resetFrom() {
+    resetForm() {
       this.$refs.filterForm.resetFields()
     },
     // 换页处理

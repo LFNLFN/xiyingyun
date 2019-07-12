@@ -56,27 +56,24 @@ export default {
       }
     })
   },
-  beforeDestroy() {
-    window.removeEventListener('keydown')
-  },
   methods: {
     fullScreenHandle() {
       if (this.fullScreen) {
         this.$store.dispatch('ToggleFullScreen')
       }
-    },
-    handleHeight() {
-      const containerWidth = document.querySelector('.iframe-container').offsetWidth
-      const containerHeight = document.querySelector('.iframe-container').offsetHeight
-      const height = containerWidth * 0.56
-      if (containerHeight < height) {
-        this.iframeHeight = `${containerHeight}px`
-        this.iframeWidth = `${containerHeight / 0.56}px`
-      } else {
-        this.iframeHeight = `${height}px`
-        this.iframeWidth = '100%'
-      }
     }
+    // handleHeight() {
+    //   const containerWidth = document.querySelector('.iframe-container').offsetWidth
+    //   const containerHeight = document.querySelector('.iframe-container').offsetHeight
+    //   const height = containerWidth * 0.56
+    //   if (containerHeight < height) {
+    //     this.iframeHeight = `${containerHeight}px`
+    //     this.iframeWidth = `${containerHeight / 0.56}px`
+    //   } else {
+    //     this.iframeHeight = `${height}px`
+    //     this.iframeWidth = '100%'
+    //   }
+    // }
   }
 }
 </script>
@@ -87,11 +84,6 @@ export default {
 .iframe-container {
   width: 100%;
   height: calc(100vh - #{$navbarHeight});
-  // width: 100vw;
-  // height: 100vh;
-  // position: fixed;
-  // top: 0;
-  // left: 0;
   @include flex-layout(center, center, null, null);
   background: #0f2a42;
   .frame {

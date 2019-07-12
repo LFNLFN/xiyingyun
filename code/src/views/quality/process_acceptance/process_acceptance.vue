@@ -162,7 +162,7 @@ export default {
       acceptStatusColors: [greenStatus, yellowStatus, orangeStatus, redStatus, grayStatus],
       acceptTableData: [], // 保存工序验收数据
       pageSize: 10,
-      pageIndex: 0,
+      pageIndex: 1,
       pageTotal: 0,
       isAcceptDetailShow: false,
       isPhotosZoomShow: false,
@@ -207,13 +207,12 @@ export default {
       })
       params[`sorts[0].name`] = 'applyDate'
       params[`sorts[0].order`] = 'desc'
-      params['pageIndex'] = this.pageIndex
-      params['pageIndex'] = this.pageIndex
+      params['pageIndex'] = this.pageIndex - 1
       params['pageSize'] = this.pageSize
       getProcessAccept(params).then(resp => {
         const data = resp.result
         this.pageTotal = data.total
-        this.pageIndex = data.pageIndex
+        this.pageIndex = data.pageIndex + 1
         this.acceptTableData = data.data
       })
     },
@@ -279,6 +278,7 @@ export default {
     // 分页切换处理
     pageChangeHandle(page) {
       this.pageIndex = page
+      this.getProcessAcceptFunc()
     },
     // 每页显示条数切换处理
     pageSizeChangeHandle(val) {

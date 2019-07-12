@@ -5,7 +5,9 @@
         <span>{{ titleText }}</span>
         <i class="el-icon-error" @click="emitClosePop" />
       </header>
-      <main class="main">
+      <main
+        :class="{'border-bottom': mainBorder}"
+        class="main">
         <slot name="main-content" />
         <!-- <slot /> -->
       </main>
@@ -29,6 +31,10 @@ export default {
     width: {
       type: String,
       default: '500px'
+    },
+    mainBorder: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -79,6 +85,9 @@ export default {
       padding: 1px 20px;
       max-height: calc(100vh - 140px);
       overflow: auto;
+      &.border-bottom {
+        border-bottom: 1px solid #ccc;
+      }
     }
     .footer {
       min-height: 70px;
