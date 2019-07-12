@@ -470,14 +470,10 @@ export default {
   .problem-list-wrap {
     @include flex-layout(flex-start, center, row, wrap);
     .problem-list-item {
-      width: 15%;
       // height: 250px;
       font-size: 14px;
       margin: 2% 2% 0 0;
       border: 1px solid #c1c1c1;
-      &:nth-of-type(6n) {
-        margin-right: 0;
-      }
       &/deep/.el-card__body {
         padding: 0;
       }
@@ -526,6 +522,14 @@ export default {
         }
         .footer {
           color: #80848f;
+        }
+      }
+    }
+    @media screen and (min-width: 1514px) {
+      .problem-list-item {
+        width: 15%;
+        &:nth-of-type(6n) {
+          margin-right: 0;
         }
       }
     }
