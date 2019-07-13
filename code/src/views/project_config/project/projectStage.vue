@@ -26,6 +26,7 @@
             v-model="stageFormData.estateProjectDetailEntity.typeId"
             :loading="selectLoading"
             size="small"
+            clearable
             placeholder="请选择"
             @visible-change="(visiable) => getSelectData(visiable, 'projectStatus')">
             <el-option
@@ -44,6 +45,7 @@
               v-model="provinceSelected"
               :loading="selectLoading"
               size="small"
+              clearable
               placeholder="省"
               @visible-change="(visiable) => getSelectData(visiable, 'provinceData')">
               <el-option
@@ -57,6 +59,7 @@
               v-model="citySelected"
               :loading="selectLoading"
               size="small"
+              clearable
               placeholder="市">
               <!-- @visible-change="(visiable) => getSelectData(visiable, 'cityData')"> -->
               <el-option
@@ -70,6 +73,7 @@
               v-model="stageFormData.estateProjectDetailEntity.cityId"
               :loading="selectLoading"
               size="small"
+              clearable
               placeholder="区">
               <!-- @visible-change="(visiable) => getSelectData(visiable, 'districtData')"> -->
               <el-option
@@ -84,6 +88,7 @@
           <el-select
             v-model="stageFormData.status"
             size="small"
+            clearable
             placeholder="请选择">
             <el-option
               v-for="(item, idx) in enableStatus"
@@ -102,6 +107,7 @@
             v-model="stageFormData.estateProjectDetailEntity.deliveryType"
             :loading="selectLoading"
             size="small"
+            clearable
             placeholder="请选择"
             @visible-change="(visiable) => getSelectData(visiable, 'deliveryType')">
             <el-option
@@ -116,6 +122,7 @@
             v-model="stageFormData.estateProjectDetailEntity.constructionStage"
             :loading="selectLoading"
             size="small"
+            clearable
             placeholder="请选择"
             @visible-change="(visiable) => getSelectData(visiable, 'constructionType')">
             <el-option
@@ -134,7 +141,7 @@
           :show-file-list="false"
           :class="{'uploaded': stageFormData.estateProjectDetailEntity.aerialView !== ''}"
           action="">
-          <img :src="stageFormData.estateProjectDetailEntity.aerialView">
+          <img :src="GetOssImgFullPath(stageFormData.estateProjectDetailEntity.aerialView)">
           <i class="el-icon-plus" />
         </el-upload>
       </div>
@@ -705,7 +712,7 @@ export default {
   .footer {
     height: 80px;
     line-height: 85px;
-    width: 100%;
+    width: calc(100% - 210px);
     position: fixed;
     bottom: 0;
     right:0;

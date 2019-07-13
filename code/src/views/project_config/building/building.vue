@@ -816,6 +816,8 @@ export default {
                       height: 100%;
                       line-height: 28px;
                       font-size: 12px;
+                      overflow: hidden;
+                      text-overflow: ellipsis;
                     }
                     .text-wrap {
                       background: #f3eced;

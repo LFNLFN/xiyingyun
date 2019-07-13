@@ -23,6 +23,7 @@
           <el-select
             v-model="sectionFormData.status"
             size="small"
+            clearable
             placeholder="请选择">
             <el-option
               v-for="(item, idx) in projectStatus"
@@ -35,6 +36,7 @@
           <el-select
             v-model="sectionFormData.estateProjectStageEntity.constructionOrgId"
             size="small"
+            clearable
             placeholder="请选择">
             <el-option
               v-for="(item, idx) in constructionOrgs"
@@ -47,6 +49,7 @@
           <el-select
             v-model="sectionFormData.estateProjectStageEntity.supervisionOrgId"
             size="small"
+            clearable
             placeholder="请选择">
             <el-option
               v-for="(item, idx) in supervisionOrgs"
@@ -58,10 +61,16 @@
         <el-form-item prop="estateProjectStageEntity.floorPlanId" label="施工布置图">
           <el-select
             v-model="sectionFormData.estateProjectStageEntity.floorPlanId"
+            :loading="projectPlanDatas.length === 0"
             size="small"
-            placeholder="请选择">
+            clearable
+            placeholder="请选择"
+            @visible-change="(visiable) => getProjectPlan(visiable)">
             <el-option
-              value="1阶段" />
+              v-for="item in projectPlanDatas"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id" />
           </el-select>
         </el-form-item>
       </el-form>
@@ -108,6 +117,7 @@ import { mapGetters, mapActions } from 'vuex'
 import { searchArrByKeyVal } from '@/utils/public'
 import { getDictionaryItem } from '@/api/dictionary'
 import { getBuliding } from '@/api/project_config/building'
+import { getPlansNoPage } from '@/api/project_config/plan'
 import { addProjectStage, editProjectStage } from '@/api/project_config/project'
 export default {
   data() {
@@ -143,6 +153,7 @@ export default {
       transBuildingData: [], // 保存穿梭框展示的楼栋数据
       buildingSelected: [], // 保存所选择的楼栋Id
       /* ------------------- 专业信息相关 --------------------*/
+      projectPlanDatas: [], // 保存平面图数据
       allProfessionData: [], // 保存所有专业数据
       transProfessionData: [], // 保存穿梭框展示的专业数据
       professionSelected: [], // 保存所选择的专业Id
@@ -252,6 +263,26 @@ export default {
         this.sectionInfoLoading = false
       })
     },
+    // 加载平面图数据
+    getProjectPlan(visible) {
+      if (!visible || this.projectPlanDatas.length > 0) return
+      const { parentId, projectId } = this.$route.query
+      const idsStr = [parentId, projectId].join()
+      console.log('idsStr', idsStr)
+      const params = {
+        'terms[0].column': 'projectId$IN',
+        'terms[0].value': idsStr,
+        'terms[1].column': 'type',
+        'terms[1].value': 1,
+        pageIndex: this.pageIndex,
+        pageSize: 10
+      }
+      getPlansNoPage(params).then(resp => {
+        const result = resp.result
+        this.$set(this, 'projectPlanDatas', result)
+        console.log('projectPlanDatas', this.projectPlanDatas)
+      })
+    },
     // 加载楼栋数据处理
     getBuildingData() {
       const { parentId, projectId } = this.$route.query
@@ -289,7 +320,6 @@ export default {
         'terms[0].value': 'professionType'
       }
       getDictionaryItem(dictParams).then(resp => {
-        console.log('resp', resp)
         const _data = resp.result
         this.allProfessionData = _data
         const professionalList = this.sectionFormData.estateProjectStageEntity.professionalList
@@ -394,6 +424,9 @@ export default {
           max-height: 400px;
           .el-checkbox-group  {
             max-height: 350px;
+            .el-transfer-panel__item {
+              display: block !important;
+            }
           }
         }
         }
@@ -403,7 +436,7 @@ export default {
   .footer {
     height: 80px;
     line-height: 85px;
-    width: 100%;
+    width: calc(100% - 210px);
     position: fixed;
     bottom: 0;
     right:0;
