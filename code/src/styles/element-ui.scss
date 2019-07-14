@@ -34,6 +34,15 @@
   .el-tree-node {
     margin: 5px 0;
     .custom-tree-node {
+      display: inline-block;
+      width: calc(100% - 24px);
+      .tree-item-name {
+        display: inline-block;
+        width: 80%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        vertical-align: top;
+      }
       @include flex-layout(space-between, center, null, null);
       padding: 4px 8px;
       flex: 1;

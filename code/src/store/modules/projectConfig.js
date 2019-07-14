@@ -15,6 +15,7 @@ const projectConfig = {
     districtData: [], // 保存城市数据
     /* --------- 楼栋管理相关数据 ----------- */
     addUnitAndRoomsData: {
+      allUnitData: [],
       unitFormData: {},
       roomsData: [],
       status: 'addBuild',
@@ -53,10 +54,12 @@ const projectConfig = {
       keys.forEach(key => {
         Vue.set(state.addUnitAndRoomsData, key, _obj[key])
       })
+      console.log('state.addUnitAndRoomsData', state.addUnitAndRoomsData)
     },
     // 重置楼栋房间信息
     RESET_UNITROOM_DATA: (state) => {
       const _obj = {
+        allUnitData: [],
         unitFormData: {},
         roomsData: [],
         status: 'addBuild',

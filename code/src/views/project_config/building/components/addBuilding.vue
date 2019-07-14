@@ -70,6 +70,7 @@ export default {
         presaleFloorCount: [{ required: true, trigger: 'blur', message: '预售层数不能为空' }]
       },
       projectData: {},
+      allUnitData: [], // 保存所有楼栋数据
       addStatus: 'fill', // 当前状态：fill 填写表单，edit 编辑楼栋数据, added 新增完成
       buildRoomsChecked: true, // 选择是否生成房间
       isEditBuild: false, // 是否是编辑模式
@@ -132,6 +133,7 @@ export default {
           this.isLoading = true
           this.buildFormData.projectId = projectId
           const _obj = {
+            allUnitData: this.allUnitData,
             unitFormData: this.buildFormData,
             isNextAddUnit: true,
             isBuildRoom: this.buildRoomsChecked

@@ -333,7 +333,7 @@ export default {
       if (data.level === 0) {
         return (
           <span class='custom-tree-node'>
-            <span>{node.label}</span>
+            <span class='tree-item-name'>{node.label}</span>
             <span>
               <el-dropdown on-command={ (order) => this.handleyDropdown(order, roleData, 'supplier') }>
                 <el-button type='primary' circle size='mini' class='el-icon-edit tree-edit-btn'></el-button>
@@ -371,6 +371,7 @@ export default {
     @include gray-header;
   }
   .side-wrap {
+    width: 300px;
     min-height: 100%;
     padding: 20px 0 20px 20px;
     .tree-wrap {

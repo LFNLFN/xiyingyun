@@ -168,6 +168,11 @@ export default {
       const addUnitFormData = this.addUnitAndRoomsData.unitFormData
       // 如果是再新增楼栋时同步生成房间，则先添加楼栋数据
       if (this.addUnitAndRoomsData.isNextAddUnit) {
+        const unitDatas = this.addUnitAndRoomsData.allUnitData
+        console.log('unitDatas', unitDatas)
+        const sortIndex = unitDatas.length > 0 ? unitDatas[unitDatas.length - 1].sortIndex + 1 || 1 : 1
+        addUnitFormData.sortIndex = sortIndex
+        console.log('addUnitFormData', addUnitFormData)
         addBuilding(addUnitFormData).then(resp => {
           const unitId = resp.result
           this.addFloorRoomsSubmit(unitId)

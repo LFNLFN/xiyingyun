@@ -36,7 +36,7 @@
               :class="{'is-active': data.id === curUnitData.id}"
               class="custom-tree-node"
               @click="loadBuildingRooms(data)">
-              <span>
+              <span class="tree-item-name">
                 <template v-if="data.level === 1">
                   <span class="el-icon-office-building" />
                 </template>
@@ -326,7 +326,9 @@ export default {
       const proectIdStr = proectIds.join()
       const params = {
         'terms[0].column': 'projectId$IN',
-        'terms[0].value': `${proectIdStr}`
+        'terms[0].value': `${proectIdStr}`,
+        'sorts[0].name': 'sortIndex',
+        'sorts[0].order': 'asc'
       }
       getBuliding(params).then(resp => {
         this.allUnitData = resp.result
@@ -390,6 +392,9 @@ export default {
           duration: 1500
         })
       }
+      _treeData.sort(function(prev, next) {
+        return prev.sortIndex - next.sortIndex
+      })
       resolve(_treeData)
       // const params = {
       //   'terms[0].column': 'projectId',
@@ -478,7 +483,8 @@ export default {
     // 添加楼栋处理
     addBuildingHandle(data) {
       const _obj = {
-        projectData: data
+        projectData: data,
+        allUnitData: this.allUnitData
       }
       this.$refs.addBuildingCom.resetDataProperty(_obj)
       this.isAddBuildingShow = true
@@ -504,7 +510,8 @@ export default {
         delBuliding(buildingId).then(resp => {
           this.$message({
             message: '删除楼栋成功',
-            type: 'success'
+            type: 'success',
+            showClose: true
           })
           this.$refs.projectTree.remove(data)
           if (buildingId === this.curUnitData.id) {
@@ -889,7 +896,16 @@ export default {
   }
 
   &/deep/.custom-tree-node {
+    display: inline-block;
+    width: 100%;
     font-size: 14px;
+    .tree-item-name {
+      display: inline-block;
+      width: 80%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      vertical-align: top;
+    }
     .el-icon-office-building {
       vertical-align: bottom;
       margin-right: 5px;
