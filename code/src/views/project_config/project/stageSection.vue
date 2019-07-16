@@ -1,116 +1,112 @@
 <template>
-  <el-container v-loading="sectionLoading" direction="vertical">
-    <el-main v-loading="sectionInfoLoading" class="section-info-watp">
-      <div class="header">
-        <span>基础信息</span>
-      </div>
-      <el-form
-        ref="sectionForm"
-        :model="sectionFormData"
-        :rules="secionFormRules"
-        class="section-Info-form">
-        <el-form-item prop="name" label="标段名称">
-          <el-input v-model="sectionFormData.name" size="small"/>
-        </el-form-item>
-        <el-form-item label="所属项目">
-          <!-- <el-select v-model="projectSel" size="small" placeholder="请选择">
-            <el-option
-              value="在建" />
-          </el-select> -->
-          <el-input v-model="belongProject" disabled size="small"/>
-        </el-form-item>
-        <el-form-item prop="status" label="状态">
-          <el-select
-            v-model="sectionFormData.status"
-            size="small"
-            clearable
-            placeholder="请选择">
-            <el-option
-              v-for="(item, idx) in projectStatus"
-              :key="idx"
-              :label="item.value"
-              :value="item.id" />
-          </el-select>
-        </el-form-item>
-        <el-form-item prop="estateProjectStageEntity.constructionOrgId" label="总包单位">
-          <el-select
-            v-model="sectionFormData.estateProjectStageEntity.constructionOrgId"
-            size="small"
-            clearable
-            placeholder="请选择">
-            <el-option
-              v-for="(item, idx) in constructionOrgs"
-              :key="idx"
-              :label="item.fullName"
-              :value="item.id"/>
-          </el-select>
-        </el-form-item>
-        <el-form-item prop="estateProjectStageEntity.supervisionOrgId" label="监理单位">
-          <el-select
-            v-model="sectionFormData.estateProjectStageEntity.supervisionOrgId"
-            size="small"
-            clearable
-            placeholder="请选择">
-            <el-option
-              v-for="(item, idx) in supervisionOrgs"
-              :key="idx"
-              :label="item.fullName"
-              :value="item.id"/>
-          </el-select>
-        </el-form-item>
-        <el-form-item prop="estateProjectStageEntity.floorPlanId" label="施工布置图">
-          <el-select
-            v-model="sectionFormData.estateProjectStageEntity.floorPlanId"
-            :loading="projectPlanDatas.length === 0"
-            size="small"
-            clearable
-            placeholder="请选择"
-            @visible-change="(visiable) => getProjectPlan(visiable)">
-            <el-option
-              v-for="item in projectPlanDatas"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id" />
-          </el-select>
-        </el-form-item>
-      </el-form>
-    </el-main>
-    <el-main v-loading="buildingLoading" class="scope-wrap">
-      <div class="header">
-        <span>施工范围</span>
-      </div>
-      <div class="transfer-wrap">
-        <el-transfer
-          v-model="buildingSelected"
-          :data="transBuildingData"
-          :filter-method="filterSuppliers"
-          :titles="['楼栋列表', '已选']"
-          :button-texts="['删除楼栋', '添加楼栋']"
-          filterable
-          filter-placeholder="请输入楼栋名称" />
-      </div>
-    </el-main>
-    <el-main v-loading="professionLoading" class="profession-wrap">
-      <div class="header">
-        <span>专业范围</span>
-      </div>
-      <div class="transfer-wrap">
-        <el-transfer
-          v-model="professionSelected"
-          :data="transProfessionData"
-          :filter-method="filterSuppliers"
-          :titles="['专业列表', '已选']"
-          :button-texts="['删除专业', '添加专业']"
-          filterable />
-      </div>
-    </el-main>
-    <footer class="footer">
-      <div class="btn-warp">
-        <el-button @click="cancelHandle">取消</el-button>
-        <el-button type="primary" @click="submitHandle">确定</el-button>
-      </div>
-    </footer>
-  </el-container>
+  <footerBarContainer v-loading="sectionLoading" @cancelHandle="cancelHandle" @confirmHandle="submitHandle">
+    <template slot="main-content">
+      <el-main v-loading="sectionInfoLoading" class="section-info-watp">
+        <div class="header">
+          <span>基础信息</span>
+        </div>
+        <el-form
+          ref="sectionForm"
+          :model="sectionFormData"
+          :rules="secionFormRules"
+          class="section-Info-form">
+          <el-form-item prop="name" label="标段名称">
+            <el-input v-model="sectionFormData.name" size="small"/>
+          </el-form-item>
+          <el-form-item label="所属项目">
+            <!-- <el-select v-model="projectSel" size="small" placeholder="请选择">
+              <el-option
+                value="在建" />
+            </el-select> -->
+            <el-input v-model="belongProject" disabled size="small"/>
+          </el-form-item>
+          <el-form-item prop="status" label="状态">
+            <el-select
+              v-model="sectionFormData.status"
+              size="small"
+              clearable
+              placeholder="请选择">
+              <el-option
+                v-for="(item, idx) in projectStatus"
+                :key="idx"
+                :label="item.value"
+                :value="item.id" />
+            </el-select>
+          </el-form-item>
+          <el-form-item prop="estateProjectStageEntity.constructionOrgId" label="总包单位">
+            <el-select
+              v-model="sectionFormData.estateProjectStageEntity.constructionOrgId"
+              size="small"
+              clearable
+              placeholder="请选择">
+              <el-option
+                v-for="(item, idx) in constructionOrgs"
+                :key="idx"
+                :label="item.fullName"
+                :value="item.id"/>
+            </el-select>
+          </el-form-item>
+          <el-form-item prop="estateProjectStageEntity.supervisionOrgId" label="监理单位">
+            <el-select
+              v-model="sectionFormData.estateProjectStageEntity.supervisionOrgId"
+              size="small"
+              clearable
+              placeholder="请选择">
+              <el-option
+                v-for="(item, idx) in supervisionOrgs"
+                :key="idx"
+                :label="item.fullName"
+                :value="item.id"/>
+            </el-select>
+          </el-form-item>
+          <el-form-item prop="estateProjectStageEntity.floorPlanId" label="施工布置图">
+            <el-select
+              v-model="sectionFormData.estateProjectStageEntity.floorPlanId"
+              :loading="projectPlanDatas.length === 0"
+              size="small"
+              clearable
+              placeholder="请选择"
+              @visible-change="(visiable) => getProjectPlan(visiable)">
+              <el-option
+                v-for="item in projectPlanDatas"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id" />
+            </el-select>
+          </el-form-item>
+        </el-form>
+      </el-main>
+      <el-main v-loading="buildingLoading" class="scope-wrap">
+        <div class="header">
+          <span>施工范围</span>
+        </div>
+        <div class="transfer-wrap">
+          <el-transfer
+            v-model="buildingSelected"
+            :data="transBuildingData"
+            :filter-method="filterSuppliers"
+            :titles="['楼栋列表', '已选']"
+            :button-texts="['删除楼栋', '添加楼栋']"
+            filterable
+            filter-placeholder="请输入楼栋名称" />
+        </div>
+      </el-main>
+      <el-main v-loading="professionLoading" class="profession-wrap">
+        <div class="header">
+          <span>专业范围</span>
+        </div>
+        <div class="transfer-wrap">
+          <el-transfer
+            v-model="professionSelected"
+            :data="transProfessionData"
+            :filter-method="filterSuppliers"
+            :titles="['专业列表', '已选']"
+            :button-texts="['删除专业', '添加专业']"
+            filterable />
+        </div>
+      </el-main>
+    </template>
+  </footerBarContainer>
 </template>
 <script>
 import { mapGetters, mapActions } from 'vuex'
@@ -119,7 +115,9 @@ import { getDictionaryItem } from '@/api/dictionary'
 import { getBuliding } from '@/api/project_config/building'
 import { getPlansNoPage } from '@/api/project_config/plan'
 import { addProjectStage, editProjectStage } from '@/api/project_config/project'
+import FooterBarContainer from '@/components/FooterBarContainer'
 export default {
+  components: { FooterBarContainer },
   data() {
     return {
       /* ------------------- 表单数据相关 --------------------*/
@@ -378,39 +376,34 @@ export default {
 </script>
 <style ref="styleshheet/scss" lang="scss" scoped>
 @import "src/styles/mixin.scss";
-.el-container {
-  padding: 20px 20px 100px 20px;
-  width: 100%;
-  height: 100%;
-  background: #f0f1f5;
-  .header {
-    padding: 15px;
-    font-size: 18px;
-    font-weight: bold;
-    background: #fff;
-    border-bottom: 1px solid #ccc;
-  }
-  .section-info-watp {
-    padding: 0;
-    background: #fff;
-    .section-Info-form{
-      padding: 20px;
-      @include flex-layout(flex-start, center, row, wrap);
-      .el-form-item {
-        width: 27%;
-        margin: 10px 3%;
-        .el-input {
-          .el-button {
-            padding: 8px 5px;
-          }
+.header {
+  padding: 15px;
+  font-size: 18px;
+  font-weight: bold;
+  background: #fff;
+  border-bottom: 1px solid #ccc;
+}
+.section-info-watp {
+  padding: 0;
+  background: #fff;
+  .section-Info-form{
+    padding: 20px;
+    @include flex-layout(flex-start, center, row, wrap);
+    .el-form-item {
+      width: 27%;
+      margin: 10px 3%;
+      .el-input {
+        .el-button {
+          padding: 8px 5px;
         }
-        .el-select {
-          width: 100%;
-        }
+      }
+      .el-select {
+        width: 100%;
       }
     }
   }
-  .scope-wrap, .profession-wrap {
+}
+.scope-wrap, .profession-wrap {
     padding: 0;
     background: #fff;
     margin-top: 20px;
@@ -433,20 +426,4 @@ export default {
       }
     }
   }
-  .footer {
-    height: 80px;
-    line-height: 85px;
-    width: calc(100% - 210px);
-    position: fixed;
-    bottom: 0;
-    right:0;
-    background: #fff;
-    border-top: 2px solid #ccc;
-    z-index: 2019;
-    .btn-warp {
-      float: right;
-      margin-right: 30px;
-    }
-  }
-}
 </style>

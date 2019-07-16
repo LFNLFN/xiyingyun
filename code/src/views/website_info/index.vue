@@ -1,5 +1,5 @@
 <template>
-  <el-container>
+  <el-container class="global-container">
     <el-main class="left-wrap">
       <div class="statistics-wrap">
         <el-row :gutter="20">
@@ -78,8 +78,6 @@ export default {
 
 .el-container {
   padding: 10px;
-  min-height: calc(100vh - #{$navbarHeight});;
-  background: #f0f1f5;
   .header {
     font-size: 18px;
     padding: 20px 25px;

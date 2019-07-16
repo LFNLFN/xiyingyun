@@ -1,5 +1,5 @@
 <template>
-  <el-container>
+  <el-container class="global-container">
     <el-main>
       <el-tabs v-model="showTabName" @tab-click="changTabShow">
         <el-tab-pane label="企业文档" name="company">
@@ -38,8 +38,6 @@ export default {
 @import "src/styles/variables.scss";
 
 .el-container {
-  min-height: calc(100vh - #{$navbarHeight});
-  background: #f0f1f5;
   .el-main {
     padding: 0;
     &/deep/.el-tabs {

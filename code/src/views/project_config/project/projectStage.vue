@@ -1,203 +1,199 @@
 <template>
-  <el-container v-loading="stageLoading" direction="vertical">
-    <el-main class="stage-info-watp">
-      <div class="header">
-        <span>基础信息</span>
-      </div>
-      <el-form
-        ref="stageForm"
-        :model="stageFormData"
-        :rules="stageFormRules"
-        class="stage-Info-form">
-        <el-form-item prop="name" label="项目名称">
-          <el-input v-model="stageFormData.name" size="small" placeholder="请输入项目名称"/>
-        </el-form-item>
-        <el-form-item prop="code" label="项目编码">
-          <el-input v-model="stageFormData.code" size="small" placeholder="请输入项目编码"/>
-        </el-form-item>
-        <el-form-item prop="address" label="项目地址">
-          <el-input v-model="stageFormData.address" size="small" placeholder="请输入地址">
-            <!-- <el-button slot="append">查询经纬度</el-button> -->
-            <a slot="append" href="https://lbs.amap.com/console/show/picker" target="_blank">查询经纬度</a>
-          </el-input>
-        </el-form-item>
-        <el-form-item prop="estateProjectDetailEntity.typeId" label="项目状态">
-          <el-select
-            v-model="stageFormData.estateProjectDetailEntity.typeId"
-            :loading="selectLoading"
-            size="small"
-            clearable
-            placeholder="请选择"
-            @visible-change="(visiable) => getSelectData(visiable, 'projectStatus')">
-            <el-option
-              v-for="(item, idx) in projectStatus"
-              :key="idx"
-              :label="item.value"
-              :value="item.id" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="所属公司">
-          <el-input v-model="belongCompany" size="small" disabled/>
-        </el-form-item>
-        <el-form-item prop="estateProjectDetailEntity.cityId" label="所在城市">
-          <div class="city-selects-wrap">
+  <footerBarContainer v-loading="stageLoading" @cancelHandle="cancelHandle" @confirmHandle="submitHandle">
+    <template slot="main-content">
+      <el-main class="stage-info-watp">
+        <div class="header">
+          <span>基础信息</span>
+        </div>
+        <el-form
+          ref="stageForm"
+          :model="stageFormData"
+          :rules="stageFormRules"
+          class="stage-Info-form">
+          <el-form-item prop="name" label="项目名称">
+            <el-input v-model="stageFormData.name" size="small" placeholder="请输入项目名称"/>
+          </el-form-item>
+          <el-form-item prop="code" label="项目编码">
+            <el-input v-model="stageFormData.code" size="small" placeholder="请输入项目编码"/>
+          </el-form-item>
+          <el-form-item prop="address" label="项目地址">
+            <el-input v-model="stageFormData.address" size="small" placeholder="请输入地址">
+              <!-- <el-button slot="append">查询经纬度</el-button> -->
+              <a slot="append" href="https://lbs.amap.com/console/show/picker" target="_blank">查询经纬度</a>
+            </el-input>
+          </el-form-item>
+          <el-form-item prop="estateProjectDetailEntity.typeId" label="项目状态">
             <el-select
-              v-model="provinceSelected"
+              v-model="stageFormData.estateProjectDetailEntity.typeId"
               :loading="selectLoading"
               size="small"
               clearable
-              placeholder="省"
-              @visible-change="(visiable) => getSelectData(visiable, 'provinceData')">
+              placeholder="请选择"
+              @visible-change="(visiable) => getSelectData(visiable, 'projectStatus')">
               <el-option
-                v-for="(item, idx) in provinceData"
+                v-for="(item, idx) in projectStatus"
                 :key="idx"
                 :label="item.value"
                 :value="item.id" />
             </el-select>
-            <i class="city-selects-interval"/>
+          </el-form-item>
+          <el-form-item label="所属公司">
+            <el-input v-model="belongCompany" size="small" disabled/>
+          </el-form-item>
+          <el-form-item prop="estateProjectDetailEntity.cityId" label="所在城市">
+            <div class="city-selects-wrap">
+              <el-select
+                v-model="provinceSelected"
+                :loading="selectLoading"
+                size="small"
+                clearable
+                placeholder="省"
+                @visible-change="(visiable) => getSelectData(visiable, 'provinceData')">
+                <el-option
+                  v-for="(item, idx) in provinceData"
+                  :key="idx"
+                  :label="item.value"
+                  :value="item.id" />
+              </el-select>
+              <i class="city-selects-interval"/>
+              <el-select
+                v-model="citySelected"
+                :loading="selectLoading"
+                size="small"
+                clearable
+                placeholder="市">
+                <!-- @visible-change="(visiable) => getSelectData(visiable, 'cityData')"> -->
+                <el-option
+                  v-for="(item, idx) in cityData"
+                  :key="idx"
+                  :label="item.value"
+                  :value="item.id" />
+              </el-select>
+              <i class="city-selects-interval"/>
+              <el-select
+                v-model="stageFormData.estateProjectDetailEntity.cityId"
+                :loading="selectLoading"
+                size="small"
+                clearable
+                placeholder="区">
+                <!-- @visible-change="(visiable) => getSelectData(visiable, 'districtData')"> -->
+                <el-option
+                  v-for="(item, idx) in districtData"
+                  :key="idx"
+                  :label="item.value"
+                  :value="item.id" />
+              </el-select>
+            </div>
+          </el-form-item>
+          <el-form-item prop="status" label="状态">
             <el-select
-              v-model="citySelected"
-              :loading="selectLoading"
+              v-model="stageFormData.status"
               size="small"
               clearable
-              placeholder="市">
-              <!-- @visible-change="(visiable) => getSelectData(visiable, 'cityData')"> -->
+              placeholder="请选择">
               <el-option
-                v-for="(item, idx) in cityData"
+                v-for="(item, idx) in enableStatus"
                 :key="idx"
                 :label="item.value"
                 :value="item.id" />
             </el-select>
-            <i class="city-selects-interval"/>
+          </el-form-item>
+          <el-form-item label="建筑面积">
+            <el-input v-model="stageFormData.estateProjectDetailEntity.constructionArea" size="small" placeholder="请输入面积">
+              <span slot="append" class="area-text">㎡</span>
+            </el-input>
+          </el-form-item>
+          <el-form-item label="交付类型">
             <el-select
-              v-model="stageFormData.estateProjectDetailEntity.cityId"
+              v-model="stageFormData.estateProjectDetailEntity.deliveryType"
               :loading="selectLoading"
               size="small"
               clearable
-              placeholder="区">
-              <!-- @visible-change="(visiable) => getSelectData(visiable, 'districtData')"> -->
+              placeholder="请选择"
+              @visible-change="(visiable) => getSelectData(visiable, 'deliveryType')">
               <el-option
-                v-for="(item, idx) in districtData"
+                v-for="(item, idx) in deliveryType"
                 :key="idx"
                 :label="item.value"
                 :value="item.id" />
             </el-select>
-          </div>
-        </el-form-item>
-        <el-form-item prop="status" label="状态">
-          <el-select
-            v-model="stageFormData.status"
-            size="small"
-            clearable
-            placeholder="请选择">
-            <el-option
-              v-for="(item, idx) in enableStatus"
-              :key="idx"
-              :label="item.value"
-              :value="item.id" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="建筑面积">
-          <el-input v-model="stageFormData.estateProjectDetailEntity.constructionArea" size="small" placeholder="请输入面积">
-            <span slot="append" class="area-text">㎡</span>
-          </el-input>
-        </el-form-item>
-        <el-form-item label="交付类型">
-          <el-select
-            v-model="stageFormData.estateProjectDetailEntity.deliveryType"
-            :loading="selectLoading"
-            size="small"
-            clearable
-            placeholder="请选择"
-            @visible-change="(visiable) => getSelectData(visiable, 'deliveryType')">
-            <el-option
-              v-for="(item, idx) in deliveryType"
-              :key="idx"
-              :label="item.value"
-              :value="item.id" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="施工阶段">
-          <el-select
-            v-model="stageFormData.estateProjectDetailEntity.constructionStage"
-            :loading="selectLoading"
-            size="small"
-            clearable
-            placeholder="请选择"
-            @visible-change="(visiable) => getSelectData(visiable, 'constructionType')">
-            <el-option
-              v-for="(item, idx) in constructionType"
-              :key="idx"
-              :label="item.value"
-              :value="item.id" />
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <div class="aerialview-upload-wrap">
-        <span class="title-text">上传鸟瞰图 (建议不超过50M)</span>
-        <el-upload
-          v-loading="isUploadAerialview"
-          :http-request="uploadAerialview"
-          :show-file-list="false"
-          :class="{'uploaded': stageFormData.estateProjectDetailEntity.aerialView !== ''}"
-          action="">
-          <img :src="GetOssImgFullPath(stageFormData.estateProjectDetailEntity.aerialView)">
-          <i class="el-icon-plus" />
-        </el-upload>
-      </div>
-    </el-main>
-    <el-main class="house-type-wrap">
-      <div class="header">
-        <span>户型</span>
-      </div>
-      <div class="table-wrap">
-        <el-table
-          :data="houseTypeData"
-          :row-class-name="tableRowClassHandle"
-          class="house-type-table">
-          <template>
-            <el-table-column prop="name" label="名称" align="center">
-              <template slot-scope="scope">
-                <span class="td-text">{{ scope.row.name }}</span>
-                <el-input v-model="houseTypeForm.name" size="small" class="td-input" placeholder="请输入名称"/>
-              </template>
-            </el-table-column>
-            <el-table-column prop="constructionArea" label="面积" align="center">
-              <template slot-scope="scope">
-                <span class="td-text">{{ scope.row.constructionArea }}</span>
-                <el-input v-model="houseTypeForm.constructionArea" size="small" class="td-input" placeholder="请输入面积">
-                  <span slot="append" class="input-area-text">㎡</span>
-                </el-input>
-              </template>
-            </el-table-column>
-            <el-table-column prop="structure" label="房间结构" align="center">
-              <template slot-scope="scope">
-                <span class="td-text">{{ scope.row.structure }}</span>
-                <el-input v-model="houseTypeForm.structure" size="small" class="td-input" placeholder="请输入户型结构"/>
-              </template>
-            </el-table-column>
-            <el-table-column width="180" label="操作" align="center">
-              <template slot-scope="scope">
-                <el-button size="mini" type="primary" class="save-btn" @click="addHouseTypeHandle(scope.$index, scope.row)">保存</el-button>
-                <el-button size="mini" type="primary" class="edit-btn" @click="editHouseTypeHandle(scope.row)">编辑</el-button>
-                <el-button size="mini" type="primary" @click="deleteHoseType(scope.$index, scope.row)">删除</el-button>
-              </template>
-            </el-table-column>
-          </template>
-        </el-table>
-        <el-button size="small" plain class="add-house-property-btn" @click="addHouseTypeCtrl">
-          <i class="el-icon-plus" />
-          新增属性
-        </el-button>
-      </div>
-    </el-main>
-    <footer class="footer">
-      <div class="btn-warp">
-        <el-button @click="cancelHandle">取消</el-button>
-        <el-button type="primary" @click="submitHandle">确定</el-button>
-      </div>
-    </footer>
-  </el-container>
+          </el-form-item>
+          <el-form-item label="施工阶段">
+            <el-select
+              v-model="stageFormData.estateProjectDetailEntity.constructionStage"
+              :loading="selectLoading"
+              size="small"
+              clearable
+              placeholder="请选择"
+              @visible-change="(visiable) => getSelectData(visiable, 'constructionType')">
+              <el-option
+                v-for="(item, idx) in constructionType"
+                :key="idx"
+                :label="item.value"
+                :value="item.id" />
+            </el-select>
+          </el-form-item>
+        </el-form>
+        <div class="aerialview-upload-wrap">
+          <span class="title-text">上传鸟瞰图 (建议不超过50M)</span>
+          <el-upload
+            v-loading="isUploadAerialview"
+            :http-request="uploadAerialview"
+            :show-file-list="false"
+            :class="{'uploaded': stageFormData.estateProjectDetailEntity.aerialView !== ''}"
+            action="">
+            <img :src="GetOssImgFullPath(stageFormData.estateProjectDetailEntity.aerialView)">
+            <i class="el-icon-plus" />
+          </el-upload>
+        </div>
+      </el-main>
+      <el-main class="house-type-wrap">
+        <div class="header">
+          <span>户型</span>
+        </div>
+        <div class="table-wrap">
+          <el-table
+            :data="houseTypeData"
+            :row-class-name="tableRowClassHandle"
+            class="house-type-table">
+            <template>
+              <el-table-column prop="name" label="名称" align="center">
+                <template slot-scope="scope">
+                  <span class="td-text">{{ scope.row.name }}</span>
+                  <el-input v-model="houseTypeForm.name" size="small" class="td-input" placeholder="请输入名称"/>
+                </template>
+              </el-table-column>
+              <el-table-column prop="constructionArea" label="面积" align="center">
+                <template slot-scope="scope">
+                  <span class="td-text">{{ scope.row.constructionArea }}</span>
+                  <el-input v-model="houseTypeForm.constructionArea" size="small" class="td-input" placeholder="请输入面积">
+                    <span slot="append" class="input-area-text">㎡</span>
+                  </el-input>
+                </template>
+              </el-table-column>
+              <el-table-column prop="structure" label="房间结构" align="center">
+                <template slot-scope="scope">
+                  <span class="td-text">{{ scope.row.structure }}</span>
+                  <el-input v-model="houseTypeForm.structure" size="small" class="td-input" placeholder="请输入户型结构"/>
+                </template>
+              </el-table-column>
+              <el-table-column width="180" label="操作" align="center">
+                <template slot-scope="scope">
+                  <el-button size="mini" type="primary" class="save-btn" @click="addHouseTypeHandle(scope.$index, scope.row)">保存</el-button>
+                  <el-button size="mini" type="primary" class="edit-btn" @click="editHouseTypeHandle(scope.row)">编辑</el-button>
+                  <el-button size="mini" type="primary" @click="deleteHoseType(scope.$index, scope.row)">删除</el-button>
+                </template>
+              </el-table-column>
+            </template>
+          </el-table>
+          <el-button size="small" plain class="add-house-property-btn" @click="addHouseTypeCtrl">
+            <i class="el-icon-plus" />
+            新增属性
+          </el-button>
+        </div>
+      </el-main>
+    </template>
+  </footerBarContainer>
 </template>
 <script>
 import { uploadImg } from '@/utils/manageOSS'
@@ -205,9 +201,10 @@ import { mapGetters, mapActions } from 'vuex'
 import { searchArrByKeyVal } from '@/utils/public'
 import { addProjectStage, editProjectStage } from '@/api/project_config/project'
 import AddHouseType from '@/views/project_config/project/components/addHouseType'
+import FooterBarContainer from '@/components/FooterBarContainer'
 import { emptyTarget } from '@/utils/public'
 export default {
-  components: { AddHouseType },
+  components: { AddHouseType, FooterBarContainer },
   data() {
     const validCityFunc = (rule, val, callback) => {
       if (this.provinceSelected !== '' && this.citySelected !== '') {
@@ -532,8 +529,8 @@ export default {
             })
             return
           }
-          let _method, _msg
           this.stageLoading = true
+          let _method, _msg
           const eventType = this.$route.query.eventType
           console.log('this.stageFormData', this.stageFormData)
           if (eventType === 'add') {
@@ -574,153 +571,134 @@ export default {
 </script>
 <style ref="styleshheet/scss" lang="scss" scoped>
 @import "src/styles/mixin.scss";
-.el-container {
-  padding: 20px 20px 100px 20px;
-  width: 100%;
-  height: 100%;
-  background: #f0f1f5;
-  .header {
-    height: 50px;
-    padding: 0 15px;
-    font-size: 18px;
-    font-weight: bold;
-    background: #fff;
-    border-bottom: 1px solid #ccc;
-    @include flex-layout(space-between, center, null, null);
-  }
-  .stage-info-watp {
-    padding: 0;
-    background: #fff;
-    .stage-Info-form{
-      padding: 20px;
-      @include flex-layout(flex-start, center, row, wrap);
-      .el-form-item {
-        width: 27%;
-        margin: 10px 3%;
-        .el-input {
-          .el-button {
-            padding: 8px 5px;
-          }
-          &/deep/.el-input-group__append {
-            padding: 0 7px;
-          }
+
+.header {
+  height: 50px;
+  padding: 0 15px;
+  font-size: 18px;
+  font-weight: bold;
+  background: #fff;
+  border-bottom: 1px solid #ccc;
+  @include flex-layout(space-between, center, null, null);
+}
+.stage-info-watp {
+  padding: 0;
+  background: #fff;
+  .stage-Info-form{
+    padding: 20px;
+    @include flex-layout(flex-start, center, row, wrap);
+    .el-form-item {
+      width: 27%;
+      margin: 10px 3%;
+      .el-input {
+        .el-button {
+          padding: 8px 5px;
         }
+        &/deep/.el-input-group__append {
+          padding: 0 7px;
+        }
+      }
+      .el-select {
+        width: 100%;
+      }
+      .city-selects-wrap {
+        width: 100%;
+        display: inline-block;
+        text-align: center;
+        font-size: 0;
         .el-select {
-          width: 100%;
+          width: 30%;
         }
-        .city-selects-wrap {
-          width: 100%;
+        .city-selects-interval {
+          width: 3%;
+          margin: 0 1%;
           display: inline-block;
-          text-align: center;
-          font-size: 0;
-          .el-select {
-            width: 30%;
-          }
-          .city-selects-interval {
-            width: 3%;
-            margin: 0 1%;
-            display: inline-block;
-            border: 1px solid #ccc;
-          }
-        }
-      }
-    }
-    .aerialview-upload-wrap {
-      padding: 0 20px 30px 20px;
-      margin-left: 3%;
-      .title-text {
-        font-size: 14px;
-        margin-left: 10px;
-      }
-      & /deep/ .el-upload {
-        width: 130px;
-        height: 130px;
-        margin-top: 15px;
-        border: 1px dashed #d9d9d9;
-        border-radius: 6px;
-        overflow: hidden;
-        background: #fbfdff;
-        cursor: pointer;
-        @include flex-layout(center, center, null, nowrap);
-        img {
-          display: none;
-          width: 85%;
-        }
-        i {
-          font-size: 46px;
-          color: #ccc;
-        }
-      }
-      & /deep/ .uploaded {
-        background: #fff;
-        i {
-          display: none;
-        }
-        img {
-          display: block;
+          border: 1px solid #ccc;
         }
       }
     }
   }
-  .house-type-wrap {
-    padding: 0;
-    background: #fff;
-    margin-top: 20px;
-    .table-wrap {
-      padding: 20px;
-      .house-type-table {
-        border: 1px solid #ccc;
-        border-bottom: none;
-        & /deep/ .el-table__header {
-          th {
-            padding: 8px;
-            background: #f0f1f5;
-            border-bottom: 1px solid #ccc;
-          }
-        }
-        & /deep/.el-table__row {
-          .td-input {
-            display: none;
-          }
-          .save-btn {
-            display: none;
-            margin-left: 10px;
-          }
-          .el-input-group__append {
-            padding: 0 8px;
-          }
-        }
-        & /deep/.add-house-type-row {
-          .td-input, .save-btn {
-            display: inline-table;
-          }
-          .td-text, .edit-btn {
-            display: none;
-          }
-        }
+  .aerialview-upload-wrap {
+    padding: 0 20px 30px 20px;
+    margin-left: 3%;
+    .title-text {
+      font-size: 14px;
+      margin-left: 10px;
+    }
+    & /deep/ .el-upload {
+      width: 130px;
+      height: 130px;
+      margin-top: 15px;
+      border: 1px dashed #d9d9d9;
+      border-radius: 6px;
+      overflow: hidden;
+      background: #fbfdff;
+      cursor: pointer;
+      @include flex-layout(center, center, null, nowrap);
+      img {
+        display: none;
+        width: 85%;
+      }
+      i {
+        font-size: 46px;
+        color: #ccc;
       }
     }
-    .add-house-property-btn {
-      width: 100%;
-      border: 1px dashed #ccc;
-      margin-top: 10px;
-      &:hover {
-        border-color: #409EFF
+    & /deep/ .uploaded {
+      background: #fff;
+      i {
+        display: none;
+      }
+      img {
+        display: block;
       }
     }
   }
-  .footer {
-    height: 80px;
-    line-height: 85px;
-    width: calc(100% - 210px);
-    position: fixed;
-    bottom: 0;
-    right:0;
-    background: #fff;
-    border-top: 2px solid #ccc;
-    .btn-warp {
-      float: right;
-      margin-right: 30px;
+}
+.house-type-wrap {
+  padding: 0;
+  background: #fff;
+  margin-top: 20px;
+  .table-wrap {
+    padding: 20px;
+    .house-type-table {
+      border: 1px solid #ccc;
+      border-bottom: none;
+      & /deep/ .el-table__header {
+        th {
+          padding: 8px;
+          background: #f0f1f5;
+          border-bottom: 1px solid #ccc;
+        }
+      }
+      & /deep/.el-table__row {
+        .td-input {
+          display: none;
+        }
+        .save-btn {
+          display: none;
+          margin-left: 10px;
+        }
+        .el-input-group__append {
+          padding: 0 8px;
+        }
+      }
+      & /deep/.add-house-type-row {
+        .td-input, .save-btn {
+          display: inline-table;
+        }
+        .td-text, .edit-btn {
+          display: none;
+        }
+      }
+    }
+  }
+  .add-house-property-btn {
+    width: 100%;
+    border: 1px dashed #ccc;
+    margin-top: 10px;
+    &:hover {
+      border-color: #409EFF
     }
   }
 }

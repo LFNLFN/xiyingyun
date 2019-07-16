@@ -1,5 +1,5 @@
 <template>
-  <el-container>
+  <el-container class="global-container">
     <el-main>
       <el-form
         ref="filterForm"
@@ -293,8 +293,6 @@ export default {
 @import "src/styles/variables.scss";
 
 .el-container {
-  min-height: calc(100vh - #{$navbarHeight});;
-  background: #f0f1f5;
   padding: 20px;
   .el-main {
     background: #fff;

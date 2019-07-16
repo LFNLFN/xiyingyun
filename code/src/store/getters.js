@@ -13,7 +13,6 @@ const getters = {
   roles: state => state.user.roles,
   userAllInfo: state => state.user.userAllInfo,
   // 基础资料相关数据
-  checkItems: state => state.baseData.checkItems,
   permissionRoles: state => state.baseData.permissionRoles,
   organizationType: state => state.baseData.organizationType,
   // 项目配置相关数据

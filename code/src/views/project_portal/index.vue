@@ -1,5 +1,5 @@
 <template>
-  <el-container class="container">
+  <el-container class="container global-container">
     <el-header height="auto">
       <div class="project-info-wrap">
         <div class="project-name-wrap">
@@ -84,8 +84,6 @@ export default {
 @import "src/styles/variables.scss";
 
 .container {
-  min-height: calc(100vh - #{$navbarHeight});
-  background: #f0f1f5;
   .el-header {
     padding: 20px 20px 0 65px;
     margin-top: 5px;

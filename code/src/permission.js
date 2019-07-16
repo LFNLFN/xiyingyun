@@ -35,16 +35,6 @@ router.beforeEach((to, from, next) => {
           })
         })
       } else {
-        // 处理动态路由匹配的路径参数
-        const params = to.params
-        const paramKeys = Object.keys(to.params)
-        if (paramKeys.length) {
-          paramKeys.forEach(pk => {
-            if (params[pk].match(/:/)) {
-              next({ path: store.getters[pk][0].path })
-            }
-          })
-        }
         next()
       }
     }

@@ -68,6 +68,26 @@ export default {
 .navbar {
   background: #fff;
   box-shadow: 0 1px 3px 0 rgba(0,0,0,.1), 0 0 3px 0 rgba(0,0,0,.08);
+  .navbar-right-part {
+    height: $navbarHeight;
+    padding-right: 10px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    &/deep/.icon-container {
+      cursor: pointer;
+      height: $navbarHeight;
+      margin-right: 15px;
+      .btn-icon {
+        height: 33px;
+        width: 33px;
+        margin-top: 10px;
+      }
+    }
+  }
   .hamburger-container {
     line-height: 58px;
     height: 50px;

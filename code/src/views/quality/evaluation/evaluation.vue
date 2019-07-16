@@ -1,5 +1,5 @@
 <template>
-  <el-container>
+  <el-container class="global-container">
     <el-main>
       <el-tabs v-model="showTabName" @tab-click="changTabShow">
         <el-tab-pane label="集团检查" name="first">
@@ -33,8 +33,6 @@ export default {
 @import "src/styles/variables.scss";
 
 .el-container {
-  min-height: calc(100vh - #{$navbarHeight});;
-  background: #f0f1f5;
   .el-header {
     padding: 20px;
     margin-top: 5px;

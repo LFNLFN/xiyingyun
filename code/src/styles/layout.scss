@@ -9,40 +9,24 @@
     left: $sideBarWidth;
     right: 0;
     transition: left 0.28s;
-    .navbar-right-part {
-      height: $navbarHeight;
-      padding-right: 10px;
-      position: absolute;
-      right: 0;
-      top: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      .icon-container {
-        cursor: pointer;
-        height: $navbarHeight;
-        margin-right: 15px;
-        .btn-icon {
-          height: 33px;
-          width: 33px;
-          margin-top: 10px;
-        }
-      }
-    }
   }
 
   // 主体区域 Main container
-  .main-container {
+  .app-main-container {
     min-height: calc(100% - #{$navbarHeight});
     margin-top: $navbarHeight;
     transition: margin-left .28s;
     overflow: auto;
-    position: fixed;
+    position: absolute;
     top: 0;
     bottom: 0;
     right: 0;
     left: $sideBarWidth;
     transition: left 0.28s;
+    .footer-btn-bar {
+      width: calc(100% - 210px);
+      transition: width 0.28s;
+    }
   }
 
   // 侧边栏 Sidebar container
@@ -50,7 +34,7 @@
     transition: width 0.28s;
     width: $sideBarWidth !important;
     height: 100%;
-    position: fixed;
+    position: absolute;
     font-size: 0px;
     top: 0;
     bottom: 0;
@@ -120,13 +104,17 @@
     }
   }
 
+  // 隐藏侧边栏处理
   .hideSidebar {
     .sidebar-container {
       width: 54px !important;
     }
 
-    .main-container {
+    .app-main-container {
       left: 54px;
+      .footer-btn-bar {
+        width: calc(100% - 54px);
+      }
     }
 
     .navbar {
@@ -185,8 +173,12 @@
 
   // 适配移动端, Mobile responsive
   .mobile {
-    .main-container {
+    .app-main-container {
       left: 0;
+      .footer-btn-bar {
+        width: 100%;
+      }
+      
     }
     .navbar {
       left: 0;
@@ -208,7 +200,7 @@
 
   .withoutAnimation {
 
-    .main-container,
+    .app-main-container,
     .sidebar-container {
       transition: none;
     }

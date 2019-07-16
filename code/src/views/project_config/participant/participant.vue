@@ -129,7 +129,8 @@ export default {
     },
     // 通往参建方详情界面
     particiDetailHandle(row, column, event) {
-      const curProject = this.projectList.find(item => item.id === this.projectSelected)
+      console.log()
+      const curProject = this.projectDetailDatas.find(item => item.id === this.projectSelected)
       const params = {
         projectId: curProject.id,
         participantId: row.id
@@ -139,7 +140,7 @@ export default {
     // 解绑参建方
     unBindParticipant(row) {
       const particiIds = Array.of(row.id)
-      const curProject = this.projectList.find(item => item.id === this.projectSelected)
+      const curProject = this.projectDetailDatas.find(item => item.id === this.projectSelected)
       this.$confirm(`确定将 ${row.fullName} 移出 ${curProject.name} 项目？`, '警告', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',

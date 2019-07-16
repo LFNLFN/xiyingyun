@@ -1,5 +1,5 @@
 <template>
-  <el-container>
+  <el-container class="global-container">
     <el-header height="auto">
       <div class="search-wrap">
         <el-form>
@@ -158,8 +158,6 @@ export default {
 @import "src/styles/variables.scss";
 
 .el-container {
-  min-height: calc(100vh - #{$navbarHeight});;
-  background: #f0f1f5;
   .el-header {
     padding: 0;
     margin-top: 5px;

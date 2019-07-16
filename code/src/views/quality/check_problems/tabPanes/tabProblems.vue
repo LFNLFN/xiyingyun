@@ -318,7 +318,6 @@ export default {
     },
     // 获取加载问题数据的筛选条件
     getParams() {
-      // console.log('filterFormData', this.filterFormData)
       const params = {
         'sorts[0].name': 'createTime',
         'sorts[0].order': 'desc',

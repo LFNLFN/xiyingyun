@@ -1,15 +1,21 @@
 <template>
-  <el-container>
+  <el-container class="global-container">
     <el-main>
       <el-tabs v-model="showTabName" @tab-click="changTabShow">
-        <el-tab-pane label="集团检查" name="first">
-          <TapCheckDatas />
+        <el-tab-pane label="集团检查" name="groupCheck">
+          <TapCheckDatas
+            ref="groupCheck"
+            @addSpecialItem="addSpecialItemHandle" />
         </el-tab-pane>
-        <el-tab-pane label="区域检查" name="second">
-          <TapCheckDatas />
+        <el-tab-pane label="区域检查" name="areaCheck">
+          <TapCheckDatas
+            ref="areaCheck"
+            @addSpecialItem="addSpecialItemHandle" />
         </el-tab-pane>
-        <el-tab-pane label="项目检查" name="third">
-          <TapCheckDatas />
+        <el-tab-pane label="项目检查" name="projectCheck">
+          <TapCheckDatas
+            ref="projectCheck"
+            @addSpecialItem="addSpecialItemHandle" />
         </el-tab-pane>
       </el-tabs>
     </el-main>
@@ -22,21 +28,36 @@
   </el-container>
 </template>
 <script>
+import getProjectMixin from '@/mixins/getProjectStage'
 import AddSpecialItem from '@/views/quality/special_item_check/components/addSpecialItem'
 import SpecialItemDetail from '@/views/quality/special_item_check/components/specialItemDetail'
 import TapCheckDatas from '@/views/quality/special_item_check/tabPanes/tapCheckDatas'
 export default {
   components: { TapCheckDatas, SpecialItemDetail, AddSpecialItem },
+  mixins: [getProjectMixin],
   data() {
     return {
-      showTabName: 'first',
+      showTabName: 'groupCheck',
       isItemDetailShow: false,
       isAddSpecialItemShow: false
     }
   },
+  mounted() {
+    this.getProjectFunc((data) => {
+      this.changTabShow()
+    })
+  },
   methods: {
-    changTabShow(tab, event) {
-      console.log('tab', tab)
+    changTabShow() {
+      const tabName = this.showTabName
+      const _obj = {
+        // curTabStatus: this.tabStatusData[tabName],
+        projectDetailDatas: this.projectDetailDatas
+      }
+      this.$refs[tabName].resetDataProperty(_obj)
+    },
+    addSpecialItemHandle(data) {
+      this.isAddSpecialItemShow = true
     }
   }
 }
@@ -46,8 +67,6 @@ export default {
 @import "src/styles/variables.scss";
 
 .el-container {
-  min-height: calc(100vh - #{$navbarHeight});;
-  background: #f0f1f5;
   .el-main {
     padding: 0;
     &/deep/.el-tabs {

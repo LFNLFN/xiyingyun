@@ -139,13 +139,15 @@ export default {
     margin: 10px;
     border: 1px solid #ccc;
     background: #f3eced;
+    width: 160px;
     .plan-info-wrap {
-      width: 160px;
+      width: 100%;
       height: 160px;
       position: relative;
       @include flex-layout(center, center, null, null);
       img {
-        max-width: 98%;
+        width: 100%;
+        height: 100%;
       }
       .plan-checkbox {
         width: 18px;
@@ -180,6 +182,8 @@ export default {
       text-align: center;
       font-size: 14px;
       text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
     }
   }
 }

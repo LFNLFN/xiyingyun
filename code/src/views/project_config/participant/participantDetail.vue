@@ -1,5 +1,5 @@
 <template>
-  <el-container v-loading="isLoading">
+  <el-container v-loading="isLoading" class="global-container">
     <el-header height="none">
       <span class="title-text">参建方详情</span>
       <span>
@@ -182,8 +182,6 @@ export default {
 
 .el-container {
   width: 100%;
-  min-height: calc(100vh - #{$navbarHeight});
-  background: #f0f1f5;
   .el-header {
     height: 75px;
     margin: 6px 0;

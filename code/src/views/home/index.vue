@@ -1,5 +1,5 @@
 <template>
-  <el-container>
+  <el-container class="global-container">
     <el-amap
       ref="map"
       :zoom="amapCionfig.zoom"
@@ -126,9 +126,8 @@ export default {
 @import "src/styles/variables.scss";
 
 .el-container {
-  height: calc(100vh - #{$navbarHeight});
-  background: #f0f1f5;
   position: relative;
+  height: calc(100vh - #{$navbarHeight}) !important;
   .amap-entity {
     width: 100%;
     height: 100%;

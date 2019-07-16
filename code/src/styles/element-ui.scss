@@ -102,3 +102,12 @@
     }
   }
 }
+
+// 设置穿梭框 checkbox
+.el-transfer {
+  .el-transfer-panel {
+    .el-checkbox.el-transfer-panel__item {
+      display: block;
+    }
+  }
+}

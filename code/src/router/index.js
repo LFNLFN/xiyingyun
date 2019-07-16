@@ -399,7 +399,7 @@ export const asyncRouterMap = [
         ]
       },
       {
-        path: 'check_items/:checkItems',
+        path: 'check_items',
         name: 'checkItems',
         meta: { title: '检查项配置', icon: '' },
         component: () => import('@/views/base_data/check_items/check_items')

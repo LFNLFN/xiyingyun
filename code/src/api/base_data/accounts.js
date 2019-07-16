@@ -19,10 +19,9 @@ export function addAccount(datas) {
 }
 
 // 修改账号信息
-export function editAccountInfo(datas) {
-  const _url = `/person/${datas.id}`
+export function editAccountInfo(id, datas) {
   return request({
-    url: _url,
+    url: `/person/${id}`,
     method: 'put',
     data: JSON.stringify(datas)
   })

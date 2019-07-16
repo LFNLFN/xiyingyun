@@ -1,5 +1,5 @@
 <template>
-  <el-container>
+  <el-container class="global-container">
     <el-header>
       <h3>
         1栋
@@ -46,8 +46,6 @@ export default {
 @import 'src/styles/variables.scss';
 
 .el-container {
-  min-height: calc(100vh - #{$navbarHeight});
-  background: #f0f1f5;
   .accept-failed {
     background: $redStatus;
   }

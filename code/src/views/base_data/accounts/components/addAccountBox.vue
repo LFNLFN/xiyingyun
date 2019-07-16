@@ -1,7 +1,12 @@
 <template>
   <publicPopups title-text="重置密码" v-on="$listeners" @closePopupsBox="closeBox" @formConfirm="addAccountSubmit">
     <template slot="main-content">
-      <el-form ref="addAccountForm" :model="addAccountForm" :rules="addAccountRules" class="add-account-from">
+      <el-form
+        v-loading="addAccountLoading"
+        ref="addAccountForm"
+        :model="addAccountForm"
+        :rules="addAccountRules"
+        class="add-account-from">
         <el-form-item label="姓名" prop="name">
           <el-input v-model="addAccountForm.name" />
         </el-form-item>
@@ -113,7 +118,6 @@ export default {
           _keys.forEach(key => {
             this.addAccountForm[key] = this.editAccountData[key]
           })
-          console.log('this.addAccountForm', this.addAccountForm)
         }
       }
     }
@@ -148,7 +152,8 @@ export default {
             _method = addAccount(this.addAccountForm)
             msg = '新增成功'
           } else if (this.eventType === 'edit') {
-            _method = editAccountInfo(this.addAccountForm)
+            const personId = this.editAccountData.id
+            _method = editAccountInfo(personId, this.addAccountForm)
             msg = '编辑成功'
           }
           _method.then(respon => {

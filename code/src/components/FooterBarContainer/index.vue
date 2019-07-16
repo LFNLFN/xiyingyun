@@ -1,9 +1,10 @@
 <template>
   <el-container direction="vertical" class="global-container">
-    <footer class="footer">
+    <slot name="main-content" />
+    <footer class="footer-btn-bar">
       <div class="btn-warp">
-        <el-button @click="cancelHandle">取消</el-button>
-        <el-button type="primary" @click="submitHandle">确定</el-button>
+        <el-button size="small" @click="cancelHandle">取消</el-button>
+        <el-button type="primary" size="small" @click="confirmHandle">确定</el-button>
       </div>
     </footer>
   </el-container>
@@ -11,26 +12,24 @@
 <script>
 export default {
   methods: {
-    submitHandle() {
-      console.log('submit')
-    },
     cancelHandle() {
-      this.$router.go(-1)
+      this.$emit('cancelHandle')
+    },
+    confirmHandle() {
+      this.$emit('confirmHandle')
     }
   }
 }
 </script>
 <style ref="styleshheet/scss" lang="scss" scoped>
 @import 'src/styles/mixin.scss';
-@import "src/styles/variables.scss";
-
 .el-container {
   padding: 20px 20px 100px 20px;
   width: 100%;
-  .footer {
+
+  .footer-btn-bar {
     height: 80px;
     line-height: 85px;
-    width: 100%;
     position: fixed;
     bottom: 0;
     right:0;

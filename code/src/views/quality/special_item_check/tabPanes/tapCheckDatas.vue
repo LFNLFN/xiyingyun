@@ -5,25 +5,44 @@
       label-position="right"
       label-width="90px"
       class="filter-form">
-      <el-form-item label="选择项目:">
-        <el-select v-model="filterFormData.name" size="small">
-          <el-option
-            value="移动" />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="检查人:">
-        <el-select v-model="filterFormData.name" size="small">
-          <el-option
-            value="移动" />
-        </el-select>
-      </el-form-item>
-      <el-form-item class="btn-wrap">
-        <el-button type="primary" size="mini">查询</el-button>
-        <el-button size="mini">重置</el-button>
-      </el-form-item>
+      <el-row :gutter="10">
+        <el-col :span="6">
+          <el-form-item label="所在区域:">
+            <el-select v-model="filterFormData.name" size="small">
+              <el-option
+                value="移动" />
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="6">
+          <el-form-item prop="projectId" label="选择项目:">
+            <el-select v-model="filterFormData.projectId" size="small">
+              <el-option
+                v-for="item in projectDetailDatas"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id" />
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="6">
+          <el-form-item label="检查人:">
+            <el-select v-model="filterFormData.name" size="small">
+              <el-option
+                value="移动" />
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="6">
+          <el-form-item class="btn-wrap">
+            <el-button type="primary" size="mini">查询</el-button>
+            <el-button size="mini">重置</el-button>
+          </el-form-item>
+        </el-col>
+      </el-row>
     </el-form>
     <div class="operate-wrap">
-      <el-button type="primary" size="small" @click="addSpecialItemHandle">新增</el-button>
+      <el-button type="primary" size="small" @click="toAddSpecialItem">新增</el-button>
     </div>
     <el-table
       :data="tableData"
@@ -53,10 +72,13 @@
   </div>
 </template>
 <script>
+import { isEmpty } from '@/utils/public'
 export default {
   data() {
     return {
+      projectDetailDatas: [],
       filterFormData: {
+        projectId: '',
         name: ''
       },
       tableData: [],
@@ -64,10 +86,23 @@ export default {
       pageTotal: 10
     }
   },
+  watch: {
+    projectDetailDatas: function(newVal, oldVal) {
+      if (!isEmpty(newVal)) {
+        this.filterFormData.projectId = newVal[0].id
+      }
+    }
+  },
   methods: {
+    resetDataProperty(obj) {
+      const _keys = Object.keys(obj)
+      _keys.forEach(key => {
+        this.$set(this, key, obj[key])
+      })
+    },
     // 新增专项处理
-    addSpecialItemHandle() {
-      this.$router.push({ name: 'addSpecialItem' })
+    toAddSpecialItem() {
+      this.$emit('addSpecialItem')
     },
     pageChangeHandle(page) {
       this.pageIndex = page
@@ -85,11 +120,19 @@ export default {
   padding: 20px;
   background: #fff;
   .filter-form {
-    .el-form-item {
-      margin: 0 0 15px 0;
+    &/deep/ .el-form-item {
+      width: 100%;
       white-space: nowrap;
+      margin: 15px 0 0 0;
+      .el-form-item__content {
+        width: 100%;
+      }
+      .el-form-item__label {
+        width: 90px;
+        text-align: right
+      }
       .el-select, .date-select {
-        width: 200px;
+        width: calc(100% - 102px);
       }
       &.btn-wrap {
         padding-left: 20px;

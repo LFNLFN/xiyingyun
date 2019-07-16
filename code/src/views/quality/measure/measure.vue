@@ -1,5 +1,5 @@
 <template>
-  <el-container>
+  <el-container class="global-container">
     <el-main v-loading="isLoading">
       <el-form
         ref="filterForm"
@@ -34,7 +34,7 @@
               <el-form-item prop="type" label="类型">
                 <el-select v-model="filterFormData.type" size="small">
                   <el-option
-                    v-for="(item, idx) in measureType"
+                    v-for="(item, idx) in personType"
                     :key="idx"
                     :label="item.name"
                     :value="item.id" />
@@ -137,6 +137,7 @@
   </el-container>
 </template>
 <script>
+import personTypeData from '@/mixins/personTypeData'
 import getProjectMixin from '@/mixins/getProjectStage'
 import MeasureDetail from '@/views/quality/measure/components/measureDetail'
 import AddMeasure from '@/views/quality/measure/components/addMeasure'
@@ -144,7 +145,7 @@ import { getBuliding } from '@/api/project_config/building'
 import { getMeasureDatas, getMeasuerItems } from '@/api/quality/measure'
 export default {
   components: { MeasureDetail, AddMeasure },
-  mixins: [getProjectMixin],
+  mixins: [getProjectMixin, personTypeData],
   data() {
     return {
       filterFormData: {
@@ -155,11 +156,6 @@ export default {
         type: null
       },
       fullFilterForm: false,
-      measureType: [
-        { id: 1, name: '施工' },
-        { id: 2, name: '监理' },
-        { id: 3, name: '甲方' }
-      ],
       buildingDatas: [], // 保存所有楼栋数据
       measureItemDatas: [], // 保存所有实测实量项
       measureTableData: [], // 保存加载的实测实量数据
@@ -192,7 +188,7 @@ export default {
     },
     // 格式化实测实量类型数据
     measTypeFormatter(row) {
-      const type = this.measureType.find(item => {
+      const type = this.personType.find(item => {
         return item.id === Number(row.type)
       })
       return type.name
@@ -309,8 +305,6 @@ export default {
 @import "src/styles/variables.scss";
 
 .el-container {
-  min-height: calc(100vh - #{$navbarHeight});;
-  background: #f0f1f5;
   padding: 20px;
   .el-main {
     background: #fff;

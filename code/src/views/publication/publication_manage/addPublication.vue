@@ -1,5 +1,5 @@
 <template>
-  <el-container>
+  <el-container class="global-container">
     <el-header>
       <h3>
         新增公告
@@ -64,8 +64,6 @@ export default {
 @import "src/styles/variables.scss";
 
 .el-container {
-  min-height: calc(100vh - #{$navbarHeight});
-  background: #f0f1f5;
   .el-header {
     background: #fff;
     .el-button {

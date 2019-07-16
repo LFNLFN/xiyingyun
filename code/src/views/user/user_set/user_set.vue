@@ -1,5 +1,5 @@
 <template>
-  <el-container class="container">
+  <el-container class="container global-container">
     <el-main v-loading="isLoading">
       <el-form ref="userInfoForm" v-model="userInfoForm">
         <el-form-item label="头像">
@@ -106,7 +106,6 @@ export default {
   padding: 20px 20px 100px 20px;
   width: 100%;
   height: 100%;
-  background: #f0f1f5;
   .el-main {
     padding-left: 40px;
     background: #fff;

@@ -1,5 +1,5 @@
 <template>
-  <el-container>
+  <el-container class="global-container">
     <el-main />
   </el-container>
 </template>
@@ -12,7 +12,6 @@ export default {
   padding: 20px;
   width: 100%;
   height: 100%;
-  background: #f0f1f5;
   .el-main {
     padding: 30px 30px 30px 50px;
     background: #fff;
