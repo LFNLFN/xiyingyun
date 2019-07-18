@@ -33,7 +33,10 @@ export default {
   },
   watch: {
     isBoxShow: function(newVal) {
-      this.boxShow = newVal
+      if (newVal) {
+        console.log('newVal', newVal)
+        this.boxShow = newVal
+      }
     }
   },
   methods: {

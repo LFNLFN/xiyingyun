@@ -17,7 +17,7 @@
       <el-table-column prop="name" width="100" label="姓名" align="center" />
       <el-table-column prop="phone" label="联系方式" align="center" />
       <el-table-column :formatter="tableFormatter" width="180" label="所属部门" align="center" />
-      <el-table-column width="180" label="是否是项目经理" align="center">
+      <el-table-column width="140" label="是否是项目经理" align="center">
         <template slot-scope="scope">
           <el-switch
             v-model="scope.row.isManager"

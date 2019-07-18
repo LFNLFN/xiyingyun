@@ -21,6 +21,11 @@ $orangeStatus:#ff9900;
 $yellowStatus:#FFEB3B;
 $grayStatus:#D9D9D9;
 
+// 主题进度楼栋相关
+$acceptDefault: #fff; // 默认颜色
+$processAccepted: #59bba4; // 验收通过
+
+
 // the :export directive is the magic sauce for webpack
 // https://www.bluematador.com/blog/how-to-share-variables-between-js-and-sass
 :export {
@@ -38,4 +43,6 @@ $grayStatus:#D9D9D9;
   orangeStatus: $orangeStatus;
   yellowStatus: yellowStatus;
   grayStatus: $grayStatus;
+  acceptDefault: $acceptDefault;
+  processAccepted: $processAccepted;
 }

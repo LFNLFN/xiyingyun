@@ -18,9 +18,11 @@ export default {
             stages.forEach(stage => {
               this.projectDetailDatas.push({
                 id: stage.id,
+                parentName: project.name,
                 parentId: stage.parentId,
                 name: `${project.name}--${stage.name}`,
-                section: stage.childrenWithDetail || []
+                section: stage.childrenWithDetail || [],
+                source: stage
               })
             })
           }

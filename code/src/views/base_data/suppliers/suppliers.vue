@@ -97,7 +97,6 @@ import PositionMembers from '@/views/base_data/suppliers/components/PositionMemb
 import { delSuppliers } from '@/api/base_data/suppliers'
 import { getDictionaryItem } from '@/api/dictionary'
 import { getPosition, delPosition } from '@/api/base_data/suppliers'
-import { emptyTarget } from '@/utils/public.js'
 export default {
   components: { AddSupplier, AddPosition, AddMember, PullMember, PositionMembers },
   data() {
@@ -220,7 +219,7 @@ export default {
         this.postMembersPostData = row
       }
       if (this.isPostMembersShow) {
-        this.postMembersPostData = emptyTarget(this.postMembersPostData)
+        this.$set(this, 'postMembersPostData', {})
       }
       this.isPostMembersShow = !this.isPostMembersShow
     },

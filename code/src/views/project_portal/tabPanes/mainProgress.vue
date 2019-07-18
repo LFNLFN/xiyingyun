@@ -3,17 +3,88 @@
     <el-header>
       <h3>主体进度</h3>
       <div>
-        <el-select v-model="sectionSelected" size="small">
+        <el-select
+          v-model="processSelected"
+          clearable
+          size="small"
+          placeholder="请选择工序">
           <el-option
-            value="钢筋工程" />
+            v-for="item in processItemDatas"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id" />
         </el-select>
       </div>
     </el-header>
     <el-main>
-      <div class="section-info-container">
-        <h4 class="seection-name">一期一标</h4>
-        <div ref="canvasContainer" class="section-building-wrap">
+      <div class="legend-wrap">
+        <span
+          v-for="item in checkedProcessItemDatas"
+          :key="item.id"
+          class="legend-item">
+          <span
+            v-if="item.value && item.value !== ''"
+            :style="{'background': `#${item.value}`}"
+            class="color-icon" />
+          <span
+            v-else
+            :style="{'background': `${processAcceptedColor}`}"
+            class="color-icon" />
+          <span class="legend-text">{{ item.text || item.name }}</span>
+        </span>
+      </div>
+      <div
+        v-for="item in progressProjectData"
+        :key="item.id"
+        class="section-info-container">
+        <template v-if="item.level === 3">
+          <h4 class="seection-name">{{ item.name }}</h4>
+        </template>
+        <template v-else>
+          <h4 class="seection-name">其他</h4>
+        </template>
+        <div class="section-building-wrap">
           <div
+            v-for="build in item.unitEntityList"
+            :key="build.id"
+            class="building-wrap">
+            <template v-if="build.roomList && build.roomList.length > 0">
+              <div class="building-item-warp">
+                <div class="building-top" />
+                <div class="building-left">
+                  <span
+                    v-for="floor in build.roomList"
+                    :ref="`floorLeftCom${floor.id}`"
+                    :key="floor.id + 'left'"
+                    class="floor-wrap">
+                    <span class="room-item"/>
+                    <span class="room-item"/>
+                    <span class="room-item"/>
+                    <span class="room-item"/>
+                  </span>
+                </div>
+                <div class="building-right">
+                  <span
+                    v-for="floor in build.roomList"
+                    :ref="`floorRightCom${floor.id}`"
+                    :key="floor.id +'right'"
+                    class="floor-wrap">
+                    <span class="room-item"/>
+                    <span class="room-item"/>
+                    <span class="room-item"/>
+                    <span class="room-item"/>
+                    <span class="room-item"/>
+                    <span class="room-item"/>
+                  </span>
+                </div>
+              </div>
+            </template>
+            <div class="building-info-wrap">
+              <p>{{ build.name }}</p>
+              <p>({{ build.presaleFloorCount }}) 层</p>
+            </div>
+          </div>
+          <!-- <div
             v-for="(item, idx) in buildingData"
             :key="idx"
             class="building-wrap"
@@ -32,109 +103,145 @@
               <p>{{ item.name }}</p>
               <p>({{ item.floorData.length }}) 层</p>
             </div>
-          </div>
+          </div> -->
         </div>
       </div>
     </el-main>
   </el-container>
 </template>
 <script>
+import { getDictionaryItem } from '@/api/dictionary'
+import { acceptDefault, processAccepted } from '@/styles/variables.scss'
+import { getProcessItem, getMainProgress } from '@/api/project_portal/mainProgress'
 export default {
   data() {
     return {
-      sectionSelected: '钢筋工程',
-      buildingData: [
-        {
-          name: '1栋',
-          floorData: [
-            {
-              compeleted: false
-            },
-            {
-              compeleted: true
-            },
-            {
-              compeleted: false
-            },
-            {
-              compeleted: true
-            },
-            {
-              compeleted: true
-            },
-            {
-              compeleted: false
-            },
-            {
-              compeleted: false
-            },
-            {
-              compeleted: false
-            },
-            {
-              compeleted: false
-            }
-          ]
-        },
-        {
-          name: '1栋',
-          floorData: [
-            {
-              compeleted: false
-            },
-            {
-              compeleted: true
-            },
-            {
-              compeleted: false
-            },
-            {
-              compeleted: true
-            },
-            {
-              compeleted: true
-            }
-          ]
-        },
-        {
-          name: '3栋',
-          floorData: [
-            {
-              compeleted: true
-            },
-            {
-              compeleted: true
-            },
-            {
-              compeleted: true
-            },
-            {
-              compeleted: true
-            },
-            {
-              compeleted: true
-            },
-            {
-              compeleted: false
-            },
-            {
-              compeleted: false
-            },
-            {
-              compeleted: false
-            },
-            {
-              compeleted: false
-            }
-          ]
+      acceptDefaultColor: acceptDefault,
+      processAcceptedColor: processAccepted,
+      processSelected: '',
+      projectData: {}, // 项目数据
+      processItemDatas: [], // 所有工序项数据
+      presetProcessItemDatas: [], // 预设工序项数据
+      checkedProcessItemDatas: [], // 选中工序项数据
+      mainProgressData: {}, // 主题进度数据
+      progressProjectData: [] // 主题进度的项目数据
+      // buildingFloorTop: require('@/assets/building_images/floor_top.png'),
+      // buildingFloorItem: require('@/assets/building_images/floor_item.png'),
+      // buildingFloorItemDisabled: require('@/assets/building_images/floor_hover.png')
+    }
+  },
+  watch: {
+    projectData: function(newVal) {
+      if ('projectId' in newVal) {
+        this.pageInit()
+      }
+    },
+    processSelected: function(newVal) {
+      if (newVal === '') {
+        this.checkedProcessItemDatas = this.presetProcessItemDatas
+      } else {
+        let target
+        target = this.presetProcessItemDatas.find(item => {
+          return item.describe === newVal
+        })
+        if (target === undefined) {
+          console.log('processItemDatas', this.processItemDatas)
+          target = this.processItemDatas.find(item => {
+            return item.id === newVal
+          })
         }
-      ],
-      buildingFloorTop: require('@/assets/building_images/floor_top.png'),
-      buildingFloorItem: require('@/assets/building_images/floor_item.png'),
-      buildingFloorItemDisabled: require('@/assets/building_images/floor_hover.png')
+        this.checkedProcessItemDatas = Array.of(target)
+        this.getMainProgressFunc()
+      }
+    },
+    progressProjectData: function(newVal) {
+      if (newVal.length === 0) return
+      this.$nextTick(() => {
+        newVal.forEach(project => {
+          const unitList = project.unitEntityList
+          unitList.forEach(unit => {
+            const roomList = unit.roomList
+            roomList.forEach(room => {
+              let color
+              const { acceptItemId, acceptStatus, id } = room
+              if (!acceptStatus) {
+                const target = this.presetProcessItemDatas.find(item => {
+                  return item.describe === acceptItemId
+                })
+                if (target === undefined) {
+                  color = this.processAcceptedColor
+                } else {
+                  color = `#${target.value}`
+                }
+              } else {
+                color = this.acceptDefaultColor
+              }
+              const leftRoomCom = this.$refs[`floorLeftCom${id}`][0].querySelectorAll('.room-item')
+              const RightRoomCom = this.$refs[`floorRightCom${id}`][0].querySelectorAll('.room-item')
+              const allRooms = Array.from(leftRoomCom)
+              allRooms.push(...RightRoomCom)
+              allRooms.forEach(el => {
+                el.style.background = color
+              })
+            })
+          })
+        })
+      })
     }
   },
   methods: {
+    resetDataProperty(obj) {
+      const _keys = Object.keys(obj)
+      _keys.forEach(key => {
+        this.$set(this, key, obj[key])
+      })
+    },
+    async pageInit() {
+      // 获取工序项
+      await getProcessItem().then(resp => {
+        this.$set(this, 'processItemDatas', resp.result)
+      })
+      // 获取预设工序
+      await this.getPresetProcessItem()
+      // 获取主体进度数据
+      await this.getMainProgressFunc()
+    },
+    // 获取预设工序项处理
+    getPresetProcessItem() {
+      const params = {
+        'terms[0].column': 'dictId',
+        'terms[0].value': 'subjectProcessAcceptItem'
+      }
+      return new Promise((resolve, reject) => {
+        getDictionaryItem(params).then(resp => {
+          console.log('getPresetProcessItem resp', resp)
+          this.$set(this, 'presetProcessItemDatas', resp.result)
+          this.$set(this, 'checkedProcessItemDatas', resp.result)
+          resolve()
+        }).catch(() => {
+          reject()
+        })
+      })
+    },
+    // 获取主体进度详情
+    getMainProgressFunc() {
+      const projectId = this.projectData.id
+      const acceptItemId = this.processSelected
+      // 重置数据
+      this.$set(this, 'mainProgressData', [])
+      this.$set(this, 'progressProjectData', [])
+      return new Promise((resolve, reject) => {
+        getMainProgress(projectId, acceptItemId).then(resp => {
+          console.log('resp', resp)
+          const data = resp.result
+          this.$set(this, 'mainProgressData', data)
+          this.$set(this, 'progressProjectData', data.children)
+          resolve()
+        }).catch(() => {
+          reject()
+        })
+      })
+    },
     toProgressDetails() {
       this.$router.push({ name: 'buildingProcessDetail' })
     }
@@ -155,6 +262,30 @@ export default {
     }
   }
   .el-main {
+    .legend-wrap {
+      padding: 15px 10px;
+      .legend-item {
+        display: inline-block;
+        width: 250px;
+        padding: 0 15px;
+        margin: 6px 0;
+        .color-icon {
+          display: inline-block;
+          width: 12px;
+          height: 12px;
+          vertical-align: text-top;
+        }
+        .legend-text {
+          font-size: 14px;
+          display: inline-block;
+          width: calc( 100% - 25px);
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          letter-spacing: 2px;
+        }
+      }
+    }
     .section-info-container {
       padding: 1px;
       .seection-name {
@@ -166,33 +297,95 @@ export default {
         @include flex-layout(flex-start, flex-end, row, wrap);
         .building-wrap {
           width: 20%;
-          min-width: 80px;
+          min-width: 90px;
+          padding: 0 5px;
+          font-size: 0;
           .building-item-warp {
             width: 80px;
             cursor: pointer;
-            margin: 40px auto 0 auto;
-            .building-item {
-              padding: 10px;
-              img {
+            margin: 40px auto 20px auto;
+            position: relative;
+            .building-top {
+              position: absolute;
+              top: -34px;
+              left: 8px;
+              width: 65px;
+              height: 50px;
+              background: #f8f7f7;
+              transform: rotateX(55deg) rotate(-35deg);
+              perspective: 200;
+            }
+            .building-left, .building-right {
+              height: auto;
+              display: inline-block;
+              padding: 3px 2px 10px 2px;
+              .floor-wrap {
                 width: 100%;
-                display: block;
-                margin-top: -25%;
-                opacity: 0.3;
-                &.is-active {
-                  opacity: 1;
+                height: 12px;
+                font-size: 0;
+                @include flex-layout(flex-start, center, null, nowrap);
+                .room-item {
+                  display: block;
+                  width: 6px;
+                  height: 7px;
+                  background: #fff;
+                  margin: 0 1px;
                 }
               }
+            }
+            .building-left {
+              width: 35%;
+              background: #ccc;
+              transform: skewY(35deg);
+            }
+            .building-right {
+              width: 65%;
+              background: #e6e6e6;
+              transform: skewY(-20deg);
             }
           }
           .building-info-wrap {
             padding: 1px;
             font-size: 14px;
             p {
+              width: 100%;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
               margin: 8px 0 0px 0;
               text-align: center;
             }
           }
         }
+        // .building-wrap {
+        //   width: 20%;
+        //   min-width: 80px;
+        //   .building-item-warp {
+        //     width: 80px;
+        //     cursor: pointer;
+        //     margin: 40px auto 0 auto;
+        //     .building-item {
+        //       padding: 10px;
+        //       img {
+        //         width: 100%;
+        //         display: block;
+        //         margin-top: -25%;
+        //         opacity: 0.3;
+        //         &.is-active {
+        //           opacity: 1;
+        //         }
+        //       }
+        //     }
+        //   }
+        //   .building-info-wrap {
+        //     padding: 1px;
+        //     font-size: 14px;
+        //     p {
+        //       margin: 8px 0 0px 0;
+        //       text-align: center;
+        //     }
+        //   }
+        // }
       }
     }
   }

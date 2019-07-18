@@ -29,14 +29,16 @@
         </el-form>
         <ul class="project-list">
           <li>
-            <p class="project-city">佛山</p>
+            <p class="project-city">广州</p>
             <div
+              v-for="item in projectDetailDatas"
+              :key="item.id"
               class="project-wrap"
-              @click="goProjectPortal">
+              @click="goProjectPortal(item)">
               <div class="project-avatar" />
               <div class="project-info">
-                <p class="project-name">模拟体验项目</p>
-                <p class="project-area">1.2万平方米</p>
+                <p class="project-name">{{ item.name }}</p>
+                <p v-show="item.source.constructionArea !== 0 && item.source.constructionArea" class="project-area">{{ item.constructionArea || 0.00 }} 平方米</p>
               </div>
             </div>
           </li>
@@ -64,7 +66,9 @@
 <script>
 import { Message } from 'element-ui'
 import AmapManager from 'vue-amap'
+import getProjectMixin from '@/mixins/getProjectStage'
 export default {
+  mixins: [getProjectMixin],
   data() {
     return {
       amapCionfig: {
@@ -107,6 +111,9 @@ export default {
       message: '地图正在加载中...',
       duration: 0
     })
+    this.getProjectFunc((data) => {
+      console.log(data)
+    })
   },
   methods: {
     mapCompleteHandle() {
@@ -115,8 +122,8 @@ export default {
     projectListToggle() {
       this.projectListShow = !this.projectListShow
     },
-    goProjectPortal() {
-      this.$router.push({ name: 'projectPortal' })
+    goProjectPortal(data) {
+      this.$router.push({ name: 'projectPortal', query: { projectId: data.id, parentId: data.parentId }})
     }
   }
 }
@@ -178,6 +185,7 @@ export default {
             margin: 0 0 10px 5px;
           }
           .project-wrap {
+            margin-top: 8px;
             cursor: pointer;
             @include flex-layout(flex-start, center, null, null);
             .project-avatar {
@@ -187,9 +195,11 @@ export default {
               background: #edfbfe;
             }
             .project-info {
+              height: 60px;
               padding-left: 15px;
               p {
-                margin: 10px 0;
+                margin: 0;
+                line-height: 30px;
                 font-size: 14px;
                 &.project-area {
                   font-size: 12px;

@@ -120,6 +120,14 @@ export default {
         data: this.pieChartData
       }
     }
+  },
+  methods: {
+    resetDataProperty(obj) {
+      const _keys = Object.keys(obj)
+      _keys.forEach(key => {
+        this.$set(this, key, obj[key])
+      })
+    }
   }
 }
 </script>

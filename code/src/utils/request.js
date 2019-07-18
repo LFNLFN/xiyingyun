@@ -81,7 +81,7 @@ function handleCode(response) {
         break
       case 500:
         Message({
-          message: message,
+          message: `服务端异常：${message}`,
           type: 'error',
           duration: 5 * 1000
         })

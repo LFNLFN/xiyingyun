@@ -1,6 +1,6 @@
 <template>
   <!-- <div class="container-shadow"> -->
-  <transition name="slide-fade" @after-leave="afterLeaveHandle">
+  <transition name="slide-fade" @leave="afterLeaveHandle">
     <div v-show="show" :style="{ width:width }" class="left-slide-container">
       <slot name="main-content" />
     </div>
