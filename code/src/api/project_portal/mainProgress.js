@@ -15,3 +15,11 @@ export function getMainProgress(projectId, acceptItemId) {
     method: 'get'
   })
 }
+
+// 进度汇总
+export function getProgressCollect(unitId) {
+  return request({
+    url: `/processAccept/getProcessSummary/${unitId}`,
+    method: 'get'
+  })
+}

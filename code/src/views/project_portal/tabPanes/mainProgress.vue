@@ -16,7 +16,7 @@
         </el-select>
       </div>
     </el-header>
-    <el-main>
+    <el-main v-loading="processLoading">
       <div class="legend-wrap">
         <span
           v-for="item in checkedProcessItemDatas"
@@ -47,63 +47,47 @@
           <div
             v-for="build in item.unitEntityList"
             :key="build.id"
-            class="building-wrap">
+            class="building-wrap"
+            @click="toProgressDetails(build)">
             <template v-if="build.roomList && build.roomList.length > 0">
-              <div class="building-item-warp">
-                <div class="building-top" />
-                <div class="building-left">
-                  <span
-                    v-for="floor in build.roomList"
-                    :ref="`floorLeftCom${floor.id}`"
-                    :key="floor.id + 'left'"
-                    class="floor-wrap">
-                    <span class="room-item"/>
-                    <span class="room-item"/>
-                    <span class="room-item"/>
-                    <span class="room-item"/>
-                  </span>
-                </div>
-                <div class="building-right">
-                  <span
-                    v-for="floor in build.roomList"
-                    :ref="`floorRightCom${floor.id}`"
-                    :key="floor.id +'right'"
-                    class="floor-wrap">
-                    <span class="room-item"/>
-                    <span class="room-item"/>
-                    <span class="room-item"/>
-                    <span class="room-item"/>
-                    <span class="room-item"/>
-                    <span class="room-item"/>
-                  </span>
-                </div>
-              </div>
+              <MainBuilding
+                :room-list="build.roomList"
+                :process-items="presetProcessItemDatas" />
+                <!-- <div class="building-item-warp">
+                  <div class="building-top" />
+                  <div class="building-left">
+                    <span
+                      v-for="floor in build.roomList"
+                      :ref="`floorLeftCom${floor.id}`"
+                      :key="floor.id + 'left'"
+                      class="floor-wrap">
+                      <span class="room-item"/>
+                      <span class="room-item"/>
+                      <span class="room-item"/>
+                      <span class="room-item"/>
+                    </span>
+                  </div>
+                  <div class="building-right">
+                    <span
+                      v-for="floor in build.roomList"
+                      :ref="`floorRightCom${floor.id}`"
+                      :key="floor.id +'right'"
+                      class="floor-wrap">
+                      <span class="room-item"/>
+                      <span class="room-item"/>
+                      <span class="room-item"/>
+                      <span class="room-item"/>
+                      <span class="room-item"/>
+                      <span class="room-item"/>
+                    </span>
+                  </div>
+                </div> -->
             </template>
             <div class="building-info-wrap">
               <p>{{ build.name }}</p>
               <p>({{ build.presaleFloorCount }}) 层</p>
             </div>
           </div>
-          <!-- <div
-            v-for="(item, idx) in buildingData"
-            :key="idx"
-            class="building-wrap"
-            @click="toProgressDetails">
-            <div class="building-item-warp">
-              <div class="building-item">
-                <img :src="buildingFloorTop">
-                <div
-                  v-for="(floor, fidx) in item.floorData"
-                  :key="fidx">
-                  <img :src="buildingFloorItem" :class="{ 'is-active': floor.compeleted }">
-                </div>
-              </div>
-            </div>
-            <div class="building-info-wrap">
-              <p>{{ item.name }}</p>
-              <p>({{ item.floorData.length }}) 层</p>
-            </div>
-          </div> -->
         </div>
       </div>
     </el-main>
@@ -113,7 +97,9 @@
 import { getDictionaryItem } from '@/api/dictionary'
 import { acceptDefault, processAccepted } from '@/styles/variables.scss'
 import { getProcessItem, getMainProgress } from '@/api/project_portal/mainProgress'
+import MainBuilding from '@/views/project_portal/renderCom/mainBuilding'
 export default {
+  components: { MainBuilding },
   data() {
     return {
       acceptDefaultColor: acceptDefault,
@@ -124,10 +110,8 @@ export default {
       presetProcessItemDatas: [], // 预设工序项数据
       checkedProcessItemDatas: [], // 选中工序项数据
       mainProgressData: {}, // 主题进度数据
-      progressProjectData: [] // 主题进度的项目数据
-      // buildingFloorTop: require('@/assets/building_images/floor_top.png'),
-      // buildingFloorItem: require('@/assets/building_images/floor_item.png'),
-      // buildingFloorItemDisabled: require('@/assets/building_images/floor_hover.png')
+      progressProjectData: [], // 主题进度的项目数据
+      processLoading: true
     }
   },
   watch: {
@@ -151,43 +135,44 @@ export default {
           })
         }
         this.checkedProcessItemDatas = Array.of(target)
-        this.getMainProgressFunc()
       }
-    },
-    progressProjectData: function(newVal) {
-      if (newVal.length === 0) return
-      this.$nextTick(() => {
-        newVal.forEach(project => {
-          const unitList = project.unitEntityList
-          unitList.forEach(unit => {
-            const roomList = unit.roomList
-            roomList.forEach(room => {
-              let color
-              const { acceptItemId, acceptStatus, id } = room
-              if (!acceptStatus) {
-                const target = this.presetProcessItemDatas.find(item => {
-                  return item.describe === acceptItemId
-                })
-                if (target === undefined) {
-                  color = this.processAcceptedColor
-                } else {
-                  color = `#${target.value}`
-                }
-              } else {
-                color = this.acceptDefaultColor
-              }
-              const leftRoomCom = this.$refs[`floorLeftCom${id}`][0].querySelectorAll('.room-item')
-              const RightRoomCom = this.$refs[`floorRightCom${id}`][0].querySelectorAll('.room-item')
-              const allRooms = Array.from(leftRoomCom)
-              allRooms.push(...RightRoomCom)
-              allRooms.forEach(el => {
-                el.style.background = color
-              })
-            })
-          })
-        })
-      })
+      this.getMainProgressFunc()
     }
+    // progressProjectData: function(newVal) {
+    //   // 渲染楼栋颜色
+    //   if (newVal.length === 0) return
+    //   this.$nextTick(() => {
+    //     newVal.forEach(project => {
+    //       const unitList = project.unitEntityList
+    //       unitList.forEach(unit => {
+    //         const roomList = unit.roomList
+    //         roomList.forEach(room => {
+    //           let color
+    //           const { acceptItemId, acceptStatus, id } = room
+    //           if (!acceptStatus) {
+    //             const target = this.presetProcessItemDatas.find(item => {
+    //               return item.describe === acceptItemId
+    //             })
+    //             if (target === undefined) {
+    //               color = this.processAcceptedColor
+    //             } else {
+    //               color = `#${target.value}`
+    //             }
+    //           } else {
+    //             color = this.acceptDefaultColor
+    //           }
+    //           const leftRoomCom = this.$refs[`floorLeftCom${id}`][0].querySelectorAll('.room-item')
+    //           const RightRoomCom = this.$refs[`floorRightCom${id}`][0].querySelectorAll('.room-item')
+    //           const allRooms = Array.from(leftRoomCom)
+    //           allRooms.push(...RightRoomCom)
+    //           allRooms.forEach(el => {
+    //             el.style.background = color
+    //           })
+    //         })
+    //       })
+    //     })
+    //   })
+    // }
   },
   methods: {
     resetDataProperty(obj) {
@@ -228,6 +213,7 @@ export default {
       const projectId = this.projectData.id
       const acceptItemId = this.processSelected
       // 重置数据
+      this.processLoading = true
       this.$set(this, 'mainProgressData', [])
       this.$set(this, 'progressProjectData', [])
       return new Promise((resolve, reject) => {
@@ -236,14 +222,17 @@ export default {
           const data = resp.result
           this.$set(this, 'mainProgressData', data)
           this.$set(this, 'progressProjectData', data.children)
+          this.processLoading = false
           resolve()
         }).catch(() => {
+          this.processLoading = false
           reject()
         })
       })
     },
-    toProgressDetails() {
-      this.$router.push({ name: 'buildingProcessDetail' })
+    toProgressDetails(data) {
+      const unitId = data.id
+      this.$router.push({ name: 'buildingProcessDetail', query: { unitId: unitId, unitName: data.name }})
     }
   }
 }
@@ -262,6 +251,7 @@ export default {
     }
   }
   .el-main {
+    min-height: 400px;
     .legend-wrap {
       padding: 15px 10px;
       .legend-item {
@@ -300,7 +290,7 @@ export default {
           min-width: 90px;
           padding: 0 5px;
           font-size: 0;
-          .building-item-warp {
+          &/deep/ .building-item-warp {
             width: 80px;
             cursor: pointer;
             margin: 40px auto 20px auto;
@@ -357,35 +347,6 @@ export default {
             }
           }
         }
-        // .building-wrap {
-        //   width: 20%;
-        //   min-width: 80px;
-        //   .building-item-warp {
-        //     width: 80px;
-        //     cursor: pointer;
-        //     margin: 40px auto 0 auto;
-        //     .building-item {
-        //       padding: 10px;
-        //       img {
-        //         width: 100%;
-        //         display: block;
-        //         margin-top: -25%;
-        //         opacity: 0.3;
-        //         &.is-active {
-        //           opacity: 1;
-        //         }
-        //       }
-        //     }
-        //   }
-        //   .building-info-wrap {
-        //     padding: 1px;
-        //     font-size: 14px;
-        //     p {
-        //       margin: 8px 0 0px 0;
-        //       text-align: center;
-        //     }
-        //   }
-        // }
       }
     }
   }
