@@ -6,13 +6,18 @@
         <div>
           <el-select v-model="sectionSelected">
             <el-option
-              value="1标段" />
+              v-for="item in projectSectionList"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id" />
           </el-select>
         </div>
       </el-header>
       <el-main>
-        <div class="chart-wrap">
-          <EChartsTool :chart-option-data="chartOptionData" />
+        <div v-loading="isLoading" class="chart-wrap">
+          <EChartsTool
+            ref="eChartsTool"
+            :chart-option-data="chartOptionData" />
         </div>
       </el-main>
     </el-container>
@@ -20,70 +25,82 @@
 </template>
 <script>
 import EChartsTool from '@/components/EChartsTool'
+import { getMeasureSection, getMeasureProcess } from '@/api/project_portal/index'
 export default {
   components: { EChartsTool },
   data() {
     return {
+      projectData: {},
       sectionSelected: '',
-      chartOptionData: {}
+      projectSectionList: [], // 保存标段数据
+      isLoading: true,
+      xAxisDatas: [], // 图标x轴数据
+      chartOptionData: {
+        tooltip: {
+          trigger: 'axis',
+          padding: [5, 5, 5, 5],
+          axisPointer: {
+            type: 'shadow'
+          }
+        },
+        legend: {
+          show: true,
+          bottom: 0,
+          itemHeight: 10,
+          itemWidth: 10,
+          verticalAlign: 'middle',
+          textStyle: {
+            fontSize: 12
+          }
+        },
+        xAxis: {
+          type: 'category',
+          data: []
+        },
+        yAxis: [
+          {
+            type: 'value'
+          }
+        ],
+        series: [
+          {
+            name: '甲方',
+            type: 'bar',
+            label: {
+              show: false
+            },
+            data: []
+          },
+          {
+            name: '监理',
+            type: 'bar',
+            label: {
+              show: false
+            },
+            data: []
+          },
+          {
+            name: '施工',
+            type: 'bar',
+            label: {
+              show: false
+            },
+            data: []
+          }
+        ]
+      }
     }
   },
-  mounted() {
-    this.chartOptionData = {
-      tooltip: {
-        trigger: 'axis',
-        padding: [5, 5, 5, 5],
-        axisPointer: {
-          type: 'shadow'
-        }
-      },
-      legend: {
-        show: true,
-        bottom: 0,
-        itemHeight: 10,
-        itemWidth: 10,
-        verticalAlign: 'middle',
-        textStyle: {
-          fontSize: 12
-        }
-      },
-      xAxis: [
-        {
-          type: 'category',
-          data: ['混凝土结构工程', '砌筑工程', '抹灰工程', '铝合金门窗工程']
-        }
-      ],
-      yAxis: [
-        {
-          type: 'value'
-        }
-      ],
-      series: [
-        {
-          name: '甲方',
-          type: 'bar',
-          label: {
-            show: false
-          },
-          data: [92, 97, 93, 99]
-        },
-        {
-          name: '监理',
-          type: 'bar',
-          label: {
-            show: false
-          },
-          data: [98, 87, 99, 92]
-        },
-        {
-          name: '施工',
-          type: 'bar',
-          label: {
-            show: false
-          },
-          data: [97, 95, 98, 92]
-        }
-      ]
+  watch: {
+    projectData: function(newVal) {
+      if ('projectId' in newVal) {
+        this.initPage()
+      }
+    },
+    sectionSelected: function(newVal) {
+      if (newVal !== '') {
+        this.getMeasureProcessFunc()
+      }
     }
   },
   methods: {
@@ -91,6 +108,37 @@ export default {
       const _keys = Object.keys(obj)
       _keys.forEach(key => {
         this.$set(this, key, obj[key])
+      })
+    },
+    initPage() {
+      const projectId = this.projectData.id
+      getMeasureSection(projectId).then(resp => {
+        const data = resp.result
+        this.$set(this, 'projectSectionList', data)
+        this.sectionSelected = data[0].id
+      })
+    },
+    // 获取实测实量数据
+    getMeasureProcessFunc() {
+      const sectionId = this.sectionSelected
+      this.isLoading = true
+      getMeasureProcess(sectionId).then(resp => {
+        const data = resp.result
+        const [checkItems, supPassingRate, consPassingRate, partPassingRate] = [[], [], [], []]
+        data.forEach(item => {
+          checkItems.push(item.checkItemName)
+          supPassingRate.push(item.supPassingRate)
+          consPassingRate.push(item.consPassingRate)
+          partPassingRate.push(item.partPassingRate)
+        })
+        this.$set(this.chartOptionData.xAxis, 'data', checkItems)
+        this.$set(this.chartOptionData.series[0], 'data', partPassingRate)
+        this.$set(this.chartOptionData.series[1], 'data', consPassingRate)
+        this.$set(this.chartOptionData.series[2], 'data', supPassingRate)
+        this.$refs['eChartsTool'].refreshChart()
+        this.isLoading = false
+      }).catch(() => {
+        this.isLoading = false
       })
     }
   }

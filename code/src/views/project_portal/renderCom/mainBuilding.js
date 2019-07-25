@@ -87,7 +87,7 @@ export default {
     )
   },
   methods: {
-    // 返回设置背景验收的内联样式
+    // 返回设置背景颜色的内联样式
     styleHandle(data) {
       const roomId = data.id
       return { 'background': this.floorColors[roomId] }

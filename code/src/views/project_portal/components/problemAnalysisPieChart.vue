@@ -2,163 +2,158 @@
   <div class="content-wrap">
     <el-row>
       <el-col :span="12">
-        <EChartsTool :chart-option-data="qualityChartOption" />
+        <div class="chart-wrap">
+          <EChartsTool :chart-option-data="qualityChartOption" />
+        </div>
+        <div class="legend-wrap">
+          <el-row :gutter="15">
+            <el-col
+              v-for="(item, idx) in qualityLegendData"
+              :key="idx"
+              :span="8">
+              <span class="legend-item">
+                <span
+                  :style="{'background': item.itemStyle.color}"
+                  class="icon" />
+                {{ item.name }}
+              </span>
+            </el-col>
+          </el-row>
+        </div>
       </el-col>
       <el-col :span="12">
-        <EChartsTool :chart-option-data="safeChartOption" />
+        <div class="chart-wrap">
+          <EChartsTool :chart-option-data="safeChartOption" />
+        </div>
+        <div class="legend-wrap">
+          <el-row :gutter="15">
+            <el-col
+              v-for="(item, idx) in safeLegendData"
+              :key="idx"
+              :span="8">
+              <span class="legend-item">
+                <span
+                  :style="{'background': item.itemStyle.color}"
+                  class="icon" />
+                {{ item.name }}
+              </span>
+            </el-col>
+          </el-row>
+        </div>
       </el-col>
     </el-row>
   </div>
 </template>
 <script>
 import EChartsTool from '@/components/EChartsTool'
+import { isEmpty, DeepClone, getRandomString } from '@/utils/public'
 export default {
   components: { EChartsTool },
+  props: {
+    problemTypeData: {
+      type: Object,
+      default: () => {
+        return {}
+      }
+    }
+  },
   data() {
     return {
-      qualityChartData: [
-        {
-          name: '其他',
-          value: 38
+      colorPool: ['#ffc53d', '#73d13d', '#597ef7', '#ff7a45', '#ffec3d', '#36cfc9', '#9254de', '#ffa940', '#bae637', '#40a9ff', '#f759ab', '#80848f', '#19be6b', '#0066CC', '#FFB114', '#FFE600'],
+      chartOptionConfig: {
+        0: {
+          title: '质量风险',
+          dataKey: 'qualityChartOption',
+          legendKey: 'qualityLegendData'
         },
-        {
-          name: '其他',
-          value: 21
-        },
-        {
-          name: '混凝土外观检查',
-          value: 12
-        },
-        {
-          name: '其他',
-          value: 8
-        },
-        {
-          name: '电气线槽、线管安装工艺要求',
-          value: 6
-        },
-        {
-          name: '幕墙、隔墙',
-          value: 5
-        },
-        {
-          name: '通风管道安装',
-          value: 4
-        },
-        {
-          name: '监控机房施工工艺检查',
-          value: 3
-        },
-        {
-          name: '砌筑质量',
-          value: 3
-        },
-        {
-          name: '消防管道',
-          value: 2
+        1: {
+          title: '安全文明',
+          dataKey: 'safeChartOption',
+          legendKey: 'safeLegendData'
         }
-      ],
+      },
+      chartTitle: {
+        text: '',
+        top: 'middle',
+        left: 'middle',
+        textAlign: 'center'
+      },
+      chartSeries: {
+        name: 'item',
+        type: 'pie',
+        radius: ['45%', '60%'],
+        label: {
+          formatter: '{d}%'
+        },
+        data: []
+      },
+      chartTooltip: {
+        trigger: 'item',
+        formatter: '{b} : {c} ({d}%)'
+      },
       qualityChartOption: {},
-      safeChartData: [
-        {
-          name: '电缆进出线洞口、墙壁桥架孔洞封堵情况检查',
-          value: 2
-        },
-        {
-          name: '混凝土反坎',
-          value: 1
-        },
-        {
-          name: '其他',
-          value: 1
-        },
-        {
-          name: '其他',
-          value: 1
-        },
-        {
-          name: '支架、吊架制作安装基本要求',
-          value: 1
-        },
-        {
-          name: '通风管道连接',
-          value: 1
-        },
-        {
-          name: '空鼓、开裂',
-          value: 1
-        },
-        {
-          name: '出屋面反坎',
-          value: 1
-        },
-        {
-          name: '砂浆配合比',
-          value: 1
-        },
-        {
-          name: '凿毛',
-          value: 1
-        },
-        {
-          name: '给水管道安装基本要求',
-          value: 1
-        }
-      ],
-      safeChartOption: {}
+      safeChartOption: {},
+      qualityLegendData: [],
+      safeLegendData: []
+    }
+  },
+  watch: {
+    problemTypeData: function(newVal) {
+      this.resetData()
+      if (!isEmpty(newVal)) {
+        const keys = Object.keys(newVal)
+        keys.forEach(key => {
+          const curVal = newVal[key]
+          const seriesData = []
+          curVal.forEach((item, vidx) => {
+            seriesData.push({
+              name: item.checkSettingName,
+              value: item.num,
+              itemStyle: {
+                color: this.getItemColor(vidx)
+              }
+            })
+          })
+          const title = DeepClone(this.chartTitle)
+          const tooltip = DeepClone(this.chartTooltip)
+          const series = DeepClone(this.chartSeries)
+          title.text = this.chartOptionConfig[key].title
+          series['data'] = seriesData
+          const optionKey = this.chartOptionConfig[key].dataKey
+          const legendKey = this.chartOptionConfig[key].legendKey
+          const _option = {
+            title: title,
+            tooltip: tooltip,
+            series: series
+          }
+          this.$set(this, optionKey, _option)
+          this.$set(this, legendKey, seriesData)
+          // console.log(legendKey, this[legendKey])
+          // console.log(optionKey, this[optionKey])
+        })
+      }
     }
   },
   mounted() {
-    // const legend = {
-    //   bottom: 0,
-    //   padding: [5, 5, 5, 5],
-    //   itemHeight: 10,
-    //   itemWidth: 10,
-    //   orient: 'vertical',
-    //   textStyle: {
-    //     fontSize: 12,
-    //     width: '33%'
-    //   }
-    // }
-    const tooltip = {
-      trigger: 'item',
-      formatter: '{b} : {c} ({d}%)'
-    }
     this.qualityChartOption = {
-      title: {
-        text: '质量风险',
-        top: 'middle',
-        left: 'middle',
-        textAlign: 'center'
-      },
-      tooltip: tooltip,
-      series: {
-        name: 'item',
-        type: 'pie',
-        radius: ['40%', '60%'],
-        label: {
-          formatter: '{d}%'
-        },
-        data: this.qualityChartData
-      }
     }
     this.safeChartOption = {
-      title: {
-        text: '安全文明',
-        top: 'middle',
-        left: 'middle',
-        textAlign: 'center'
-      },
-      tooltip: tooltip,
-      series: {
-        name: 'item',
-        type: 'pie',
-        radius: ['40%', '60%'],
-        label: {
-          formatter: '{d}%'
-        },
-        data: this.safeChartData
+    }
+  },
+  methods: {
+    getItemColor(index) {
+      let color = this.colorPool[index]
+      if (color === undefined) {
+        const colorStr = getRandomString(6, '0123456789abcdef')
+        color = `#${colorStr}`
       }
+      return color
+    },
+    resetData() {
+      this.$set(this, 'qualityChartOption', {})
+      this.$set(this, 'safeChartOption', {})
+      this.$set(this, 'qualityLegendData', [])
+      this.$set(this, 'safeLegendData', [])
     }
   }
 }
@@ -168,9 +163,31 @@ export default {
 
 .content-wrap {
   width: 100%;
-  height: 100%;
+  // height: 100%;
   .el-row, .el-col {
-    height: 100%;
+    .chart-wrap {
+      height: 350px;
+    }
+    .legend-wrap {
+      padding: 10px;
+      .legend-item {
+        display: block;
+        padding-left: 18px;
+        width: 100%;
+        font-size: 12px;
+        position: relative;
+        line-height: 18px;
+        .icon {
+          display: block;
+          width: 12px;
+          height: 12px;
+          border-radius: 3px;
+          position: absolute;
+          top: 2px;
+          left: 0;
+        }
+      }
+    }
   }
 }
 </style>

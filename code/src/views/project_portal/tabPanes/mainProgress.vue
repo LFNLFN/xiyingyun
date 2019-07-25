@@ -53,35 +53,6 @@
               <MainBuilding
                 :room-list="build.roomList"
                 :process-items="presetProcessItemDatas" />
-                <!-- <div class="building-item-warp">
-                  <div class="building-top" />
-                  <div class="building-left">
-                    <span
-                      v-for="floor in build.roomList"
-                      :ref="`floorLeftCom${floor.id}`"
-                      :key="floor.id + 'left'"
-                      class="floor-wrap">
-                      <span class="room-item"/>
-                      <span class="room-item"/>
-                      <span class="room-item"/>
-                      <span class="room-item"/>
-                    </span>
-                  </div>
-                  <div class="building-right">
-                    <span
-                      v-for="floor in build.roomList"
-                      :ref="`floorRightCom${floor.id}`"
-                      :key="floor.id +'right'"
-                      class="floor-wrap">
-                      <span class="room-item"/>
-                      <span class="room-item"/>
-                      <span class="room-item"/>
-                      <span class="room-item"/>
-                      <span class="room-item"/>
-                      <span class="room-item"/>
-                    </span>
-                  </div>
-                </div> -->
             </template>
             <div class="building-info-wrap">
               <p>{{ build.name }}</p>
@@ -96,7 +67,7 @@
 <script>
 import { getDictionaryItem } from '@/api/dictionary'
 import { acceptDefault, processAccepted } from '@/styles/variables.scss'
-import { getProcessItem, getMainProgress } from '@/api/project_portal/mainProgress'
+import { getProcessItem, getMainProgress } from '@/api/project_portal/index'
 import MainBuilding from '@/views/project_portal/renderCom/mainBuilding'
 export default {
   components: { MainBuilding },

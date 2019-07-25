@@ -1,3 +1,18 @@
+// 深度复制对象属性
+export function DeepClone(target) {
+  const isObject = (typeof target === 'object' || typeof target === 'function') && target !== null
+  if (!isObject) {
+    return target
+  }
+  const isArray = Array.isArray(target)
+  const cloneObj = isArray ? [] : {}
+  for (const key in target) {
+    cloneObj[key] = isObject ? DeepClone(target[key]) : target[key]
+  }
+  return cloneObj
+}
+
+// 清空接受的参数对象
 export function emptyTarget(data) {
   if (Array.isArray(data)) {
     return data.splice(0, data.length)
@@ -20,6 +35,7 @@ export function emptyTarget(data) {
   }
 }
 
+// 根据key在数组中寻找对于的值
 export function searchArrByKeyVal(arr, key, val) {
   let backData
   for (const item of arr) {
@@ -44,6 +60,7 @@ export function searchArrByKeyVal(arr, key, val) {
   return backData
 }
 
+// 判断对象或数组是否为空
 export function isEmpty(target) {
   if (typeof target === 'object') {
     const _keys = Object.keys(target)
@@ -53,9 +70,10 @@ export function isEmpty(target) {
   }
 }
 
-export function getRandomString(len) {
+// 获取随机字符串
+export function getRandomString(len, soruceArg) {
   let _backStr = ''
-  const soruce = 'abcdefghijklmnopqrstuvwxyz0123456789'
+  const soruce = soruceArg || 'abcdefghijklmnopqrstuvwxyz0123456789'
   const rdmIndex = (str) => {
     return Math.random() * str.length
   }
@@ -63,6 +81,11 @@ export function getRandomString(len) {
     _backStr += soruce.charAt(rdmIndex(soruce))
   }
   return _backStr
+}
+
+// 判断是否数字是否应该带0，比如 1 则返回 01
+export function NumberAddZero(num) {
+  return Number(num) > 9 ? num : `0${num}`
 }
 
 // 返回 xxxx-xx-xx xx:xx:xx 格式的日期

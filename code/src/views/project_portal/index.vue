@@ -58,10 +58,10 @@
           <Measure
             ref="measure" />
         </el-tab-pane>
-        <el-tab-pane :lazy="true" label="工序验收" name="progressAcceptance">
+        <!-- <el-tab-pane :lazy="true" label="工序验收" name="progressAcceptance">
           <progressAcceptance
             ref="progressAcceptance" />
-        </el-tab-pane>
+        </el-tab-pane> -->
         <!-- <el-tab-pane :lazy="true" label="形象进度" name="imageProgress">
           <mainProgress />
         </el-tab-pane> -->
@@ -84,7 +84,7 @@ export default {
       searchFormData: {
         searchKey: ''
       },
-      showTabName: 'mainProgress',
+      showTabName: 'chenckProblem',
       projectData: {}, // 项目简略信息
       fullProjectData: {}, // 项目所有信息
       projectStatusData: [] // 项目状态相关的数据，包含项目状态，交付类型，阶段数据
@@ -135,12 +135,13 @@ export default {
       return ''
     },
     changTabShow() {
-      const tabName = this.showTabName
-      if (tabName !== 'mainProgress') return
-      const _obj = {
-        projectData: this.fullProjectData
-      }
-      this.$refs[tabName].resetDataProperty(_obj)
+      this.$nextTick(() => {
+        const tabName = this.showTabName
+        const _obj = {
+          projectData: this.fullProjectData
+        }
+        this.$refs[tabName].resetDataProperty(_obj)
+      })
     }
   }
 }

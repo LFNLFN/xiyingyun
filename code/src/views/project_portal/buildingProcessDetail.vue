@@ -62,7 +62,7 @@
   </el-container>
 </template>
 <script>
-import { getProgressCollect } from '@/api/project_portal/mainProgress'
+import { getProgressCollect } from '@/api/project_portal/index'
 import { redStatus, orangeStatus, greenStatus, grayStatus } from '@/styles/variables.scss'
 export default {
   data() {

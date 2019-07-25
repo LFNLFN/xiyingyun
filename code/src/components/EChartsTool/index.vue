@@ -3,6 +3,7 @@
 </template>
 <script>
 import echarts from 'echarts'
+import { isEmpty } from '@/utils/public'
 export default {
   props: {
     chartOptionData: {
@@ -19,7 +20,11 @@ export default {
   },
   watch: {
     chartOptionData: function(newVal) {
-      this.buildChart()
+      if (isEmpty(newVal)) {
+        this.clearChart()
+      } else {
+        this.refreshChart()
+      }
     }
   },
   mounted() {
@@ -34,11 +39,19 @@ export default {
   },
   methods: {
     buildChart() {
-      this.chartEntity = echarts.init(this.$refs.chartContainer)
-      this.chartEntity.setOption(this.chartOptionData)
+      this.refreshChart()
       window.addEventListener('resize', () => {
         this.chartEntity.resize()
       })
+    },
+    refreshChart() {
+      if (!this.chartEntity) {
+        this.chartEntity = echarts.init(this.$refs.chartContainer)
+      }
+      this.chartEntity.setOption(this.chartOptionData)
+    },
+    clearChart() {
+      this.chartEntity.clear()
     }
   }
 }
