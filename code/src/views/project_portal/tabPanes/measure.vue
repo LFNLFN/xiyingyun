@@ -115,7 +115,11 @@ export default {
       getMeasureSection(projectId).then(resp => {
         const data = resp.result
         this.$set(this, 'projectSectionList', data)
-        this.sectionSelected = data[0].id
+        if (data.length > 0) {
+          this.sectionSelected = data[0].id
+        } else {
+          this.isLoading = false
+        }
       })
     },
     // 获取实测实量数据

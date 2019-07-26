@@ -18,6 +18,11 @@ export default {
       chartEntity: null
     }
   },
+  computed: {
+    sidebarOpen() {
+      return this.$store.getters.sidebar.opened
+    }
+  },
   watch: {
     chartOptionData: function(newVal) {
       if (isEmpty(newVal)) {
@@ -25,6 +30,14 @@ export default {
       } else {
         this.refreshChart()
       }
+    },
+    // 侧边栏显示或隐藏后调整图标尺寸
+    sidebarOpen: function(newVal) {
+      this.$nextTick(() => {
+        setTimeout(() => {
+          this.chartEntity.resize()
+        }, 500)
+      })
     }
   },
   mounted() {

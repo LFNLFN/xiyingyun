@@ -89,7 +89,6 @@ export default {
             this.acceptItemList.push(...item.acceptItemList)
           }
         })
-        console.log('acceptItemList', this.acceptItemList)
       }
     }
   },

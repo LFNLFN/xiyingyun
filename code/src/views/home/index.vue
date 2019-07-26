@@ -28,17 +28,19 @@
           </el-form-item>
         </el-form>
         <ul class="project-list">
-          <li>
-            <p class="project-city">广州</p>
+          <li
+            v-for="(item, idx) in cityAndProjectData"
+            :key="idx">
+            <p class="project-city">{{ item.city.describe }}</p>
             <div
-              v-for="item in projectDetailDatas"
-              :key="item.id"
+              v-for="project in item.projectList"
+              :key="project.id"
               class="project-wrap"
-              @click="goProjectPortal(item)">
+              @click="goProjectPortal(project)">
               <div class="project-avatar" />
               <div class="project-info">
-                <p class="project-name">{{ item.name }}</p>
-                <p v-show="item.source.constructionArea !== 0 && item.source.constructionArea" class="project-area">{{ item.constructionArea || 0.00 }} 平方米</p>
+                <p class="project-name">{{ project.name }}</p>
+                <p v-show="project.source.constructionArea !== 0 && project.source.constructionArea" class="project-area">{{ project.constructionArea || 0.00 }} 平方米</p>
               </div>
             </div>
           </li>
@@ -67,6 +69,7 @@
 import { Message } from 'element-ui'
 import AmapManager from 'vue-amap'
 import getProjectMixin from '@/mixins/getProjectStage'
+import { getDictionaryItem } from '@/api/dictionary'
 export default {
   mixins: [getProjectMixin],
   data() {
@@ -79,6 +82,7 @@ export default {
           'complete': this.mapCompleteHandle
         }
       },
+      cityAndProjectData: [],
       searchProjetName: '',
       citySelectedList: [
         {
@@ -111,8 +115,36 @@ export default {
       message: '地图正在加载中...',
       duration: 0
     })
-    this.getProjectFunc((data) => {
-      console.log(data)
+    this.getProjectFunc((proejctList) => {
+      const cityProjects = {}
+      const cityIdList = []
+      proejctList.forEach(project => {
+        const cityId = project.source.estateProjectDetailEntity.cityId || null
+        if (cityId) {
+          cityIdList.push(cityId)
+          if (cityId in cityProjects) {
+            cityProjects[cityId].push(project)
+          } else {
+            cityProjects[cityId] = Array.of(project)
+          }
+        }
+      })
+      const params = {
+        'terms[0].column': 'dictId',
+        'terms[0].value': 'city',
+        'terms[1].column': 'id',
+        'terms[1].termType': 'in',
+        'terms[1].value': cityIdList.join()
+      }
+      getDictionaryItem(params).then(resp => {
+        const cityData = resp.result
+        cityData.forEach(city => {
+          this.cityAndProjectData.push({
+            city: city,
+            projectList: cityProjects[city.id]
+          })
+        })
+      })
     })
   },
   methods: {

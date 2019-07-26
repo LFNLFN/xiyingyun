@@ -109,41 +109,6 @@ export default {
       }
       this.getMainProgressFunc()
     }
-    // progressProjectData: function(newVal) {
-    //   // 渲染楼栋颜色
-    //   if (newVal.length === 0) return
-    //   this.$nextTick(() => {
-    //     newVal.forEach(project => {
-    //       const unitList = project.unitEntityList
-    //       unitList.forEach(unit => {
-    //         const roomList = unit.roomList
-    //         roomList.forEach(room => {
-    //           let color
-    //           const { acceptItemId, acceptStatus, id } = room
-    //           if (!acceptStatus) {
-    //             const target = this.presetProcessItemDatas.find(item => {
-    //               return item.describe === acceptItemId
-    //             })
-    //             if (target === undefined) {
-    //               color = this.processAcceptedColor
-    //             } else {
-    //               color = `#${target.value}`
-    //             }
-    //           } else {
-    //             color = this.acceptDefaultColor
-    //           }
-    //           const leftRoomCom = this.$refs[`floorLeftCom${id}`][0].querySelectorAll('.room-item')
-    //           const RightRoomCom = this.$refs[`floorRightCom${id}`][0].querySelectorAll('.room-item')
-    //           const allRooms = Array.from(leftRoomCom)
-    //           allRooms.push(...RightRoomCom)
-    //           allRooms.forEach(el => {
-    //             el.style.background = color
-    //           })
-    //         })
-    //       })
-    //     })
-    //   })
-    // }
   },
   methods: {
     resetDataProperty(obj) {
@@ -170,7 +135,6 @@ export default {
       }
       return new Promise((resolve, reject) => {
         getDictionaryItem(params).then(resp => {
-          console.log('getPresetProcessItem resp', resp)
           this.$set(this, 'presetProcessItemDatas', resp.result)
           this.$set(this, 'checkedProcessItemDatas', resp.result)
           resolve()
@@ -189,7 +153,6 @@ export default {
       this.$set(this, 'progressProjectData', [])
       return new Promise((resolve, reject) => {
         getMainProgress(projectId, acceptItemId).then(resp => {
-          console.log('resp', resp)
           const data = resp.result
           this.$set(this, 'mainProgressData', data)
           this.$set(this, 'progressProjectData', data.children)

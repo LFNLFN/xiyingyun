@@ -84,7 +84,7 @@ export default {
       searchFormData: {
         searchKey: ''
       },
-      showTabName: 'chenckProblem',
+      showTabName: 'mainProgress',
       projectData: {}, // 项目简略信息
       fullProjectData: {}, // 项目所有信息
       projectStatusData: [] // 项目状态相关的数据，包含项目状态，交付类型，阶段数据
