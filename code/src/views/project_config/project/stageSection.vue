@@ -125,6 +125,7 @@ export default {
         name: '',
         parentId: '',
         type: 2,
+        orgId: '',
         status: '',
         estateProjectStageEntity: {
           professionalEntityList: [],
@@ -192,13 +193,13 @@ export default {
     if (eventType === 'add') {
       const curProject = searchArrByKeyVal(this.projectList, 'id', parentId)
       this.sectionFormData.parentId = parentId
+      this.sectionFormData.orgId = curProject.orgId
       if (curProject) {
         this.belongProject = curProject.name
       }
     } else if (eventType === 'edit') {
       // 编辑项目分期，加载表单数据
       const curProject = searchArrByKeyVal(this.projectDetails, 'id', projectId)
-      console.log('curProject', curProject)
       if (curProject) {
         const _keys = Object.keys(curProject)
         const parentProject = searchArrByKeyVal(this.projectList, 'id', parentId)

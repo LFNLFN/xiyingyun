@@ -73,7 +73,8 @@ export default {
       padding: 10px 5px 10px 20px;
       background: #e6e6e6;
       height: 50px;
-      font-size: 24px;
+      line-height: 32px;
+      font-size: 18px;
       i {
         cursor: pointer;
         float: right;

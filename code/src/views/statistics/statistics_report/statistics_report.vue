@@ -9,30 +9,62 @@
         <el-table-column prop="name" label="报表名称" />/>
         <el-table-column width="120px" label="操作" align="center">
           <template slot-scope="scope">
-            <el-button class="no-border" size="mini">预览</el-button>
+            <el-button
+              class="no-border"
+              size="mini"
+              @click="showFilterBox(scope.row)">预览</el-button>
           </template>
         </el-table-column>
       </el-table>
-      <!-- <el-pagination
-        :total="pageTotal"
-        :page-size="10"
-        :page-sizes="[10, 20, 30, 40]"
-        :current-page="pageIndex"
-        background
-        layout="total, prev, pager, next, sizes, jumper"
-        class="pager-wrap"
-        @current-change="pageChangeHandle"
-        @size-change="pageSizeChangeHandle"/> -->
     </el-main>
-    <measureDetail
-      v-show="isMeasureDetailShow"
-      :is-measure-detail-show.sync="isMeasureDetailShow" />
+    <checkProblemFilter
+      v-show="showBoxName === 'checkProblemFilterCom'"
+      ref="checkProblemFilterCom"
+      :show-box-name.sync="showBoxName" />
+    <processAcceptFilter
+      v-show="showBoxName === 'processAcceptFilterCom'"
+      ref="processAcceptFilterCom"
+      :show-box-name.sync="showBoxName" />
+    <measureFilter
+      v-show="showBoxName === 'measureFilterCom'"
+      ref="measureFilterCom"
+      :show-box-name.sync="showBoxName" />
+    <projectInitFilter
+      v-show="showBoxName === 'projectInitFilterCom'"
+      ref="projectInitFilterCom"
+      :show-box-name.sync="showBoxName" />
+    <memberWorkFilter
+      v-show="showBoxName === 'memberWorkFilterCom'"
+      ref="memberWorkFilterCom"
+      :show-box-name.sync="showBoxName" />
+    <onlineStatisticsFilter
+      v-show="showBoxName === 'onlineStatisticsFilterCom'"
+      ref="onlineStatisticsFilterCom"
+      :show-box-name.sync="showBoxName" />
+    <memberWorkCountFilter
+      v-show="showBoxName === 'memberWorkCountFilterCom'"
+      ref="memberWorkCountFilterCom"
+      :show-box-name.sync="showBoxName" />
   </el-container>
 </template>
 <script>
-import MeasureDetail from '@/views/quality/measure/components/measureDetail'
+import CheckProblemFilter from '@/views/statistics/statistics_report/components/checkProblemFilter'
+import ProcessAcceptFilter from '@/views/statistics/statistics_report/components/processAcceptFilter'
+import MeasureFilter from '@/views/statistics/statistics_report/components/measureFilter'
+import ProjectInitFilter from '@/views/statistics/statistics_report/components/projectInitFilter'
+import OnlineStatisticsFilter from '@/views/statistics/statistics_report/components/onlineStatisticsFilter'
+import MemberWorkCountFilter from '@/views/statistics/statistics_report/components/memberWorkCountFilter'
+import MemberWorkFilter from '@/views/statistics/statistics_report/components/memberWorkFilter'
 export default {
-  components: { MeasureDetail },
+  components: {
+    CheckProblemFilter,
+    ProcessAcceptFilter,
+    MeasureFilter,
+    ProjectInitFilter,
+    OnlineStatisticsFilter,
+    MemberWorkCountFilter,
+    MemberWorkFilter
+  },
   data() {
     return {
       filterFormData: {
@@ -41,34 +73,66 @@ export default {
       },
       fullFilterForm: false,
       materialTableData: [
-        { name: '检查问题明细表' },
-        { name: '工序验收明细表' },
-        { name: '实测实量明细表' },
-        { name: '人员工作量统计表' },
-        { name: '验房问题明细表' },
-        { name: '材料进场统计表' },
-        { name: '项目初始化情况统计表' },
-        { name: '日常质量、安全检查上线情况统计表' },
-        { name: '实测实量上线情况统计表' },
-        { name: '工序验收上线情况统计表' },
-        { name: '材料进场明细表' },
-        { name: '人员工作量报表(区域平台)' },
-        { name: '评估管理报表' }
+        {
+          name: '检查问题明细表',
+          component: 'checkProblemFilterCom',
+          url: 'http://120.78.143.62:8088/ReportServer?reportlet=ProblemCheckDetail.cpt'
+        },
+        {
+          name: '工序验收明细表',
+          component: 'processAcceptFilterCom',
+          url: 'http://120.78.143.62:8088/ReportServer?reportlet=ProcessAcceptDetail.cpt'
+        },
+        {
+          name: '实测实量明细表',
+          component: 'measureFilterCom',
+          url: 'http://120.78.143.62:8088/ReportServer?reportlet=MeasuredQuantityDetail.cpt'
+        },
+        {
+          name: '项目初始化统计表',
+          component: 'projectInitFilterCom',
+          url: 'http://120.78.143.62:8088/ReportServer?reportlet=ProjectInitSituation.cpt'
+        },
+        {
+          name: '日常质量、安全检查上线情况统计表',
+          component: 'onlineStatisticsFilterCom',
+          url: 'http://120.78.143.62:8088/ReportServer?reportlet=ProblemCheckOnlineSituation.cpt'
+        },
+        {
+          name: '实测实量上线情况统计表',
+          component: 'onlineStatisticsFilterCom',
+          url: 'http://120.78.143.62:8088/ReportServer?reportlet=MeasuredQuantityOnline.cpt'
+        },
+        {
+          name: '工序验收上线情况统计表',
+          component: 'onlineStatisticsFilterCom',
+          url: 'http://120.78.143.62:8088/ReportServer?reportlet=ProcessAcceptOnline.cpt'
+        },
+        {
+          name: '人员工作量统计表',
+          component: 'memberWorkCountFilterCom',
+          url: 'http://120.78.143.62:8088/ReportServer?reportlet=PersonWorkload.cpt'
+        },
+        {
+          name: '人员工作量报表(区域平台)',
+          component: 'memberWorkFilterCom',
+          url: 'http://120.78.143.62:8088/ReportServer?reportlet=PersonWorkloadArea.cpt'
+        }
       ],
-      pageIndex: 0,
-      pageTotal: 10,
-      isMeasureDetailShow: false
+      showBoxName: ''
     }
   },
   methods: {
     setTableCellStyle() {
       return 'nowrap-row'
     },
-    pageChangeHandle(page) {
-      this.pageIndex = page
-    },
-    pageSizeChangeHandle(val) {
-      console.log('val', val)
+    showFilterBox(data) {
+      const com = data.component
+      const _obj = {
+        reportInfo: data
+      }
+      this.$refs[com].resetDataProperty(_obj)
+      this.showBoxName = com
     }
   }
 }

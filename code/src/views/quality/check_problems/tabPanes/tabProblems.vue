@@ -184,7 +184,7 @@
         :key="idx"
         class="problem-list-item">
         <div
-          :style="{'background-image': `url(${GetOssImgFullPath(item.image.split(',')[0])})`}"
+          :style="{'background-image': `url(${GetOssImgFullPath(item.images.split(',')[0])})`}"
           class="img-wrap"
           @click="toProblemDetailHandle(item)">
           <span

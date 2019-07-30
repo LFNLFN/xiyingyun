@@ -133,12 +133,13 @@
 import { getBuliding } from '@/api/project_config/building'
 import { getProcessAccept, getProcessItems } from '@/api/quality/processAcceptance'
 import PhotosZoom from '@/components/PhotosZoom'
-import getProjectMixin from '@/mixins/getProjectStage'
+import GetProjectMixin from '@/mixins/getProjectStage'
+import AcceptanceStatusData from '@/mixins/acceptanceStatusData'
 import AcceptDetail from '@/views/quality/process_acceptance/components/AcceptDetail'
 import { redStatus, greenStatus, orangeStatus, yellowStatus, grayStatus } from '@/styles/variables.scss'
 export default {
   components: { AcceptDetail, PhotosZoom },
-  mixins: [getProjectMixin],
+  mixins: [GetProjectMixin, AcceptanceStatusData],
   data() {
     return {
       filterFormData: {
@@ -152,13 +153,13 @@ export default {
       projectDetailDatas: [], // 保存项目数据
       buildingDatas: [], // 保存楼栋数据
       processItemDatas: [], // 保存工序项数据
-      acceptanceStatus: [
-        { type: 0, name: '验收通过' },
-        { type: 1, name: '未验收' },
-        { type: 2, name: '待验收' },
-        { type: 3, name: '验收不通过' },
-        { type: 4, name: '已作废' }
-      ], // 保存验收状态数据
+      // acceptanceStatus: [
+      //   { type: 0, name: '验收通过' },
+      //   { type: 1, name: '未验收' },
+      //   { type: 2, name: '待验收' },
+      //   { type: 3, name: '验收不通过' },
+      //   { type: 4, name: '已作废' }
+      // ], // 保存验收状态数据
       acceptStatusColors: [greenStatus, yellowStatus, orangeStatus, redStatus, grayStatus],
       acceptTableData: [], // 保存工序验收数据
       pageSize: 10,

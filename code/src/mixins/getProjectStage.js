@@ -12,6 +12,7 @@ export default {
     getProjectFunc(callback) {
       // 加载项目数据
       this.getProjectDetailsVuex().then(resp => {
+        this.$set(this, 'projectDetailDatas', [])
         resp.forEach((project) => {
           const stages = project.childrenWithDetail
           if (stages && stages.length > 0) {
@@ -22,7 +23,8 @@ export default {
                 parentId: stage.parentId,
                 name: `${project.name}--${stage.name}`,
                 section: stage.childrenWithDetail || [],
-                source: stage
+                source: stage,
+                parent: project
               })
             })
           }

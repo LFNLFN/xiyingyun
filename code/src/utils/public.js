@@ -23,12 +23,14 @@ export function emptyTarget(data) {
       const cur = data[key]
       if (Array.isArray(cur)) {
         _obj[key] = []
+      } else if (cur === null) {
+        _obj[key] = null
       } else if (typeof cur === 'object') {
         _obj[key] = emptyTarget(cur)
       } else if (typeof cur === 'string') {
         _obj[key] = ''
       } else if (typeof cur === 'number') {
-        _obj[key] = null
+        _obj[key] = ''
       }
     })
     return _obj
