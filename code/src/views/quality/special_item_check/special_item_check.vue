@@ -43,7 +43,7 @@ export default {
     }
   },
   mounted() {
-    this.getProjectFunc((data) => {
+    this.getProjectFunc().then((data) => {
       this.changTabShow()
     })
   },

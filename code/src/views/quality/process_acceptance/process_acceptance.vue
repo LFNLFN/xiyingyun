@@ -98,7 +98,7 @@
         <el-table-column prop="statusName" label="状态">
           <template slot-scope="scope">
             <span :style="{ 'background': acceptStatusColors[Number(scope.row.status)] }" class="status-icon" />
-            <span class="">{{ scope.row.statusName }}</span>
+            <span>{{ scope.row.statusName }}</span>
           </template>
         </el-table-column>
         <el-table-column prop="projectName" label="项目名称" />
@@ -176,7 +176,7 @@ export default {
     }
   },
   created() {
-    this.getProjectFunc((data) => {
+    this.getProjectFunc().then((data) => {
       const _projectId = data[0].id
       this.filterFormData.projectId = _projectId
       this.getProcessAcceptFunc()

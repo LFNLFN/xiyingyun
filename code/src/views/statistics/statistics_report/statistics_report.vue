@@ -45,6 +45,10 @@
       v-show="showBoxName === 'memberWorkCountFilterCom'"
       ref="memberWorkCountFilterCom"
       :show-box-name.sync="showBoxName" />
+    <materialAcceptFilter
+      v-show="showBoxName === 'materialAcceptFilterCom'"
+      ref="materialAcceptFilterCom"
+      :show-box-name.sync="showBoxName" />
   </el-container>
 </template>
 <script>
@@ -55,6 +59,7 @@ import ProjectInitFilter from '@/views/statistics/statistics_report/components/p
 import OnlineStatisticsFilter from '@/views/statistics/statistics_report/components/onlineStatisticsFilter'
 import MemberWorkCountFilter from '@/views/statistics/statistics_report/components/memberWorkCountFilter'
 import MemberWorkFilter from '@/views/statistics/statistics_report/components/memberWorkFilter'
+import MaterialAcceptFilter from '@/views/statistics/statistics_report/components/materialAcceptFilter'
 export default {
   components: {
     CheckProblemFilter,
@@ -63,9 +68,11 @@ export default {
     ProjectInitFilter,
     OnlineStatisticsFilter,
     MemberWorkCountFilter,
-    MemberWorkFilter
+    MemberWorkFilter,
+    MaterialAcceptFilter
   },
   data() {
+    const domainName = 'https://report-dev.gzxiyingyun.com'
     return {
       filterFormData: {
         date: '',
@@ -76,47 +83,57 @@ export default {
         {
           name: '检查问题明细表',
           component: 'checkProblemFilterCom',
-          url: 'http://120.78.143.62:8088/ReportServer?reportlet=ProblemCheckDetail.cpt'
+          url: `${domainName}/ReportServer?reportlet=ProblemCheckDetail.cpt`
         },
         {
           name: '工序验收明细表',
           component: 'processAcceptFilterCom',
-          url: 'http://120.78.143.62:8088/ReportServer?reportlet=ProcessAcceptDetail.cpt'
+          url: `${domainName}/ReportServer?reportlet=ProcessAcceptDetail.cpt`
         },
         {
           name: '实测实量明细表',
           component: 'measureFilterCom',
-          url: 'http://120.78.143.62:8088/ReportServer?reportlet=MeasuredQuantityDetail.cpt'
+          url: `${domainName}/ReportServer?reportlet=MeasuredQuantityDetail.cpt`
         },
         {
           name: '项目初始化统计表',
           component: 'projectInitFilterCom',
-          url: 'http://120.78.143.62:8088/ReportServer?reportlet=ProjectInitSituation.cpt'
+          url: `${domainName}/ReportServer?reportlet=ProjectInitSituation.cpt`
         },
         {
           name: '日常质量、安全检查上线情况统计表',
           component: 'onlineStatisticsFilterCom',
-          url: 'http://120.78.143.62:8088/ReportServer?reportlet=ProblemCheckOnlineSituation.cpt'
+          url: `${domainName}/ReportServer?reportlet=ProblemCheckOnlineSituation.cpt`
         },
         {
           name: '实测实量上线情况统计表',
           component: 'onlineStatisticsFilterCom',
-          url: 'http://120.78.143.62:8088/ReportServer?reportlet=MeasuredQuantityOnline.cpt'
+          url: `${domainName}/ReportServer?reportlet=MeasuredQuantityOnline.cpt`
         },
         {
           name: '工序验收上线情况统计表',
           component: 'onlineStatisticsFilterCom',
-          url: 'http://120.78.143.62:8088/ReportServer?reportlet=ProcessAcceptOnline.cpt'
+          url: `${domainName}/ReportServer?reportlet=ProcessAcceptOnline.cpt`
         },
         {
           name: '人员工作量统计表',
           component: 'memberWorkCountFilterCom',
-          url: 'http://120.78.143.62:8088/ReportServer?reportlet=PersonWorkload.cpt'
+          url: `${domainName}/ReportServer?reportlet=PersonWorkload.cpt`
         },
         {
           name: '人员工作量报表(区域平台)',
           component: 'memberWorkFilterCom',
-          url: 'http://120.78.143.62:8088/ReportServer?reportlet=PersonWorkloadArea.cpt'
+          url: `${domainName}/ReportServer?reportlet=PersonWorkloadArea.cpt`
+        },
+        {
+          name: '材料进场统计表',
+          component: 'materialAcceptFilterCom',
+          url: `${domainName}/ReportServer?reportlet=MetarialAcceptStatistics.cpt`
+        },
+        {
+          name: '材料进场明细表',
+          component: 'materialAcceptFilterCom',
+          url: `${domainName}/ReportServer?reportlet=MetarialAcceptDetail.cpt`
         }
       ],
       showBoxName: ''

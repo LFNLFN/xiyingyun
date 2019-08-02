@@ -99,7 +99,7 @@ export default {
   },
   methods: {
     async initPage() {
-      await this.getProjectFunc((data) => {
+      await this.getProjectFunc().then((data) => {
         const projectId = this.$route.query.projectId
         this.projectData = data.find(item => {
           return item.id === projectId

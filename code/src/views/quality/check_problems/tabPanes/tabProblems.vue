@@ -105,7 +105,7 @@
                 </el-select>
               </el-form-item>
             </el-col>
-            <el-col :span="8">
+            <!-- <el-col :span="8">
               <el-form-item prop="createTime" label="创建时间:">
                 <el-date-picker
                   v-model="filterFormData.createTime"
@@ -117,7 +117,7 @@
                   value-format="yyyy-MM-dd HH:mm:ss"
                   class="date-select" />
               </el-form-item>
-            </el-col>
+            </el-col> -->
             <el-col :span="8">
               <el-form-item prop="creatorId" label="创建人:">
                 <el-select
@@ -428,7 +428,7 @@ export default {
         white-space: nowrap;
         margin: 15px 0 0 0;
         .el-form-item__content {
-          width: 100%;
+          width: calc(100% - 102px);
         }
         .el-form-item__label {
           width: 90px;
@@ -446,10 +446,7 @@ export default {
           }
         }
         .el-cascader, .el-select, .date-select {
-          width: calc(100% - 102px);
-        }
-        .el-cascader {
-          overflow: hidden;
+          width: 100%;
         }
         &.btn-wrap {
           padding-left: 50px;

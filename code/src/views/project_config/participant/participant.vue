@@ -70,7 +70,7 @@ export default {
   },
   created() {
     // 获取项目列表
-    this.getProjectFunc((data) => {
+    this.getProjectFunc().then((data) => {
       this.projectSelected = data[0].id
       this.getParticipants(this.projectSelected)
     })

@@ -103,6 +103,12 @@
   }
 }
 
+// 设置下拉选择框的树状图
+.el-tree.select-tree_tree {
+  max-height: 300px;
+  overflow: auto;
+}
+
 // 设置穿梭框 checkbox
 .el-transfer {
   .el-transfer-panel {
@@ -110,4 +116,8 @@
       display: block;
     }
   }
+}
+
+.el-cascader {
+  line-height: unset;
 }

@@ -112,7 +112,7 @@ export default {
       const com = this.reportInfo.component
       if (com && com === newVal) {
         this.getOrganTree()
-        this.getProjectFunc((projects) => {
+        this.getProjectFunc().then((projects) => {
           this.$set(this, 'companyProjects', projects)
         })
         this.getProfession()

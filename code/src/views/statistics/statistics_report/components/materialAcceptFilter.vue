@@ -23,45 +23,14 @@
               :value="item.id" />
           </el-select>
         </el-form-item>
-        <el-form-item label="时间范围: ">
-          <el-date-picker
-            v-model="timeSelected"
-            type="daterange"
-            size="small"
-            clearable
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
-            format="yyyy-MM-dd"
-            value-format="yyyy-MM-dd HH:mm:ss"
-            class="date-picker"/>
-        </el-form-item>
-        <el-form-item label="楼栋: ">
-          <el-select v-model="filterFormData.unitId">
-            <el-option
-              v-for="item in buildingDatas"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="实测方: ">
-          <el-select
-            v-model="filterFormData.type">
-            <el-option
-              v-for="item in personType"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="专业分类: ">
-          <el-select v-model="filterFormData.professionalId">
-            <el-option
-              v-for="item in professionDatas"
-              :key="item.id"
-              :label="item.describe"
-              :value="item.id" />
-          </el-select>
+        <el-form-item label="材料分类: ">
+          <el-cascader
+            v-model="filterFormData.typeId"
+            :clearabled="true"
+            :options="materialTypeData"
+            :props="materialTypeProp"
+            :show-all-levels="false"
+            size="small" />
         </el-form-item>
       </el-form>
     </template>
@@ -69,19 +38,16 @@
 </template>
 <script>
 import getProjectMixin from '@/mixins/getProjectStage'
-import personTypeData from '@/mixins/personTypeData'
 import { emptyTarget } from '@/utils/public'
-import { companyMixin, professionMixin, buildingMixin, confirmMixin } from '@/views/statistics/statistics_report/mixins/statisticsFilter'
+import { companyMixin, materialTypeMixin, confirmMixin } from '@/views/statistics/statistics_report/mixins/statisticsFilter'
 import PublicPopups from '@/components/Pop-ups/PublicPopups'
 export default {
   components: { PublicPopups },
   mixins: [
-    personTypeData,
     confirmMixin,
     getProjectMixin,
     companyMixin,
-    buildingMixin,
-    professionMixin
+    materialTypeMixin
   ],
   props: {
     showBoxName: {
@@ -95,13 +61,8 @@ export default {
       filterFormData: {
         orgId: '',
         projectId: '',
-        beginDate: '',
-        endDate: '',
-        unitId: '',
-        type: '',
-        professionalId: ''
+        typeId: ''
       },
-      timeSelected: [],
       companyProjects: []
     }
   },
@@ -113,25 +74,12 @@ export default {
         this.getProjectFunc().then((projects) => {
           this.$set(this, 'companyProjects', projects)
         })
-        this.getProfession()
+        this.getMaterialTypeList()
       }
     },
     'filterFormData.orgId': function(newVal) {
       if (newVal !== '') {
         this.filterOrgProject(newVal)
-      }
-    },
-    'filterFormData.projectId': function(newVal) {
-      if (newVal !== '') {
-        this.getBuildingDatas()
-      }
-    },
-    timeSelected: function(newVal) {
-      if (newVal && newVal.length > 0) {
-        const timeList = newVal[1].split(' ')
-        const time = `${timeList[0]} 23:59:59`
-        this.filterFormData.beginDate = newVal[0]
-        this.filterFormData.endDate = time
       }
     }
   },
@@ -145,9 +93,7 @@ export default {
     resetData() {
       this.areaCompanys = []
       this.companyProjects = []
-      this.buildingDatas = []
-      this.professionDatas = []
-      this.timeSelected = []
+      this.materialTypeData = []
       this.$set(this, 'filterFormData', emptyTarget(this.filterFormData))
     },
     closeBox() {
@@ -170,7 +116,7 @@ export default {
     }
     .el-form-item__content {
       width: calc(100% - 120px);
-      .el-select, .el-date-editor {
+      .el-select, .el-cascader {
         width: 100%;
       }
     }

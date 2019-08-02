@@ -3,6 +3,7 @@ import { getBuliding } from '@/api/project_config/building'
 import { getDictionaryItem } from '@/api/dictionary'
 import { getParticipant } from '@/api/project_config/participant'
 import { getdutyOrganization } from '@/api/statistics/statisticsREport'
+import { getMaterialType } from '@/api/material/material_acceptance'
 
 // 获取区域公司
 export const companyMixin = {
@@ -25,6 +26,7 @@ export const companyMixin = {
         })
       })
     },
+    // 根据已选择的公司过滤出该公司的项目
     filterOrgProject(newVal) {
       if (newVal !== '') {
         const orgIdList = Array.of(newVal)
@@ -166,6 +168,28 @@ export const confirmMixin = {
       this.resetData()
       this.$emit('update:showBoxName', '')
       window.open(toLink + params)
+    }
+  }
+}
+
+// 获取材料类型
+export const materialTypeMixin = {
+  data() {
+    return {
+      materialTypeData: [], // 保存材料类型数据
+      materialTypeProp: {
+        label: 'name',
+        value: 'id',
+        children: 'children',
+        emitPath: false
+      } // 保存材料类型级联选择器的配置数据
+    }
+  },
+  methods: {
+    getMaterialTypeList() {
+      getMaterialType().then(resp => {
+        this.$set(this, 'materialTypeData', resp.result)
+      })
     }
   }
 }

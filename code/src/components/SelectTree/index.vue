@@ -56,12 +56,6 @@ export default {
     }
   },
   methods: {
-    // // 计算树形空间宽度
-    // treeWidth(str) {
-    //   const width = Number(/^\d*/g.test(str))
-    //   console.log('width', width)
-    //   return strreplace(/^\d*/g, width - 24)
-    // },
     nodeClickHandle(data, node, com) {
       this.$emit('input', data[this.prop])
     },

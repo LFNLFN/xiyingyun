@@ -168,7 +168,7 @@ export default {
     }
   },
   created() {
-    this.getProjectFunc((data) => {
+    this.getProjectFunc().then((data) => {
       this.filterFormData.projectId = data[0].id
       // 初始化数据
       this.initData().then(() => {

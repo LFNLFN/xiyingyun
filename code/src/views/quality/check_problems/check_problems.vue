@@ -97,7 +97,7 @@ export default {
     }
   },
   created() {
-    this.getProjectFunc((data) => {
+    this.getProjectFunc().then((data) => {
       const tabName = this.showTabName
       const _obj = {
         curTabStatus: this.tabStatusData[tabName],
