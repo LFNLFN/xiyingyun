@@ -48,6 +48,40 @@ export default {
     })
   },
   methods: {
+    // 获取专项检查表格数据
+    getSpecialItemCheckFunc() {
+      const params = {}
+      const _keys = Object.keys(this.filterFormData)
+      let paramIndex = 0
+      _keys.forEach((key) => {
+        const _data = this.filterFormData[key]
+        if (_data !== null && _data !== '') {
+          if (key === 'applyDate' && Array.isArray(_data)) {
+            const termType = ['gte', 'lte']
+            _data.forEach((item, idx) => {
+              params[`terms[${paramIndex}].column`] = key
+              params[`terms[${paramIndex}].value`] = item
+              params[`terms[${paramIndex}].termType`] = termType[idx]
+              paramIndex++
+            })
+          } else {
+            params[`terms[${paramIndex}].column`] = key
+            params[`terms[${paramIndex}].value`] = _data
+            paramIndex++
+          }
+        }
+      })
+      params[`sorts[0].name`] = 'applyDate'
+      params[`sorts[0].order`] = 'desc'
+      params['pageIndex'] = this.pageIndex - 1
+      params['pageSize'] = this.pageSize
+      getProcessAccept(params).then(resp => {
+        const data = resp.result
+        this.pageTotal = data.total
+        this.pageIndex = data.pageIndex + 1
+        this.acceptTableData = data.data
+      })
+    },
     changTabShow() {
       const tabName = this.showTabName
       const _obj = {

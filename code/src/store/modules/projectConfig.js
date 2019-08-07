@@ -95,6 +95,8 @@ const projectConfig = {
       })
     },
     // 加载项目列表并保存
+    // 1-尝试获得localProjectList，没有就保存为空数组
+    // 2-
     getProjectListVuex({ commit, state }, _obj = { isGet: false }) {
       return new Promise((reslove, reject) => {
         let localProjectList
