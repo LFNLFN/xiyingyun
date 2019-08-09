@@ -1,35 +1,35 @@
 <template>
   <div class="main-content">
-    <el-form
-      :inline="true"
-      label-position="right"
-      label-width="90px"
-      class="filter-form">
+    <el-form :inline="true" label-position="right" label-width="90px" class="filter-form">
       <el-row :gutter="10">
         <el-col :span="6">
-          <el-form-item label="所在区域:">
-            <el-select v-model="filterFormData.name" size="small">
+          <el-form-item label="所选区域">
+            <el-select v-model="filterFormData.orgId" size="small">
               <el-option
-                value="移动" />
+                v-for="(item, idx) in areaCompanys"
+                :key="idx"
+                :label="item.name"
+                :value="item.id"
+              />
             </el-select>
           </el-form-item>
         </el-col>
         <el-col :span="6">
-          <el-form-item prop="projectId" label="选择项目:">
+          <el-form-item label="选择项目">
             <el-select v-model="filterFormData.projectId" size="small">
               <el-option
-                v-for="item in projectDetailDatas"
-                :key="item.id"
+                v-for="(item, idx) in companyProjects"
+                :key="idx"
                 :label="item.name"
-                :value="item.id" />
+                :value="item.id"
+              />
             </el-select>
           </el-form-item>
         </el-col>
         <el-col :span="6">
           <el-form-item label="检查人:">
             <el-select v-model="filterFormData.name" size="small">
-              <el-option
-                value="移动" />
+              <el-option value="移动"/>
             </el-select>
           </el-form-item>
         </el-col>
@@ -44,15 +44,12 @@
     <div class="operate-wrap">
       <el-button type="primary" size="small" @click="toAddSpecialItem">新增</el-button>
     </div>
-    <el-table
-      :data="tableData"
-      size="small"
-      class="no-border-gary-head" >
-      <el-table-column label="项目名称" />
-      <el-table-column label="检查批次名称" />
-      <el-table-column label="检查人" />
-      <el-table-column label="责任人" />
-      <el-table-column label="计划开始日期" />
+    <el-table :data="tableData" size="small" class="no-border-gary-head">
+      <el-table-column label="项目名称"/>
+      <el-table-column label="检查批次名称"/>
+      <el-table-column label="检查人"/>
+      <el-table-column label="责任人"/>
+      <el-table-column label="计划开始日期"/>
       <el-table-column width="80" label="操作">
         <template slot-scope="scope">
           <el-button size="small" class="no-border">删除</el-button>
@@ -64,57 +61,120 @@
       :page-size="10"
       :page-sizes="[10, 20, 30, 40]"
       :current-page="pageIndex"
-      background
+      background=""
       layout="total, prev, pager, next, sizes, jumper"
       class="pager-wrap"
       @current-change="pageChangeHandle"
-      @size-change="pageSizeChangeHandle"/>
+      @size-change="pageSizeChangeHandle"
+    />
   </div>
 </template>
 <script>
-import { isEmpty } from '@/utils/public'
+/* eslint-disable */
+
+import { isEmpty } from "@/utils/public";
+import { mapActions } from "vuex";
+import { log } from "util";
+import getProjectMixin from "@/mixins/getProjectStage";
 export default {
+  mixins: [getProjectMixin],
   data() {
     return {
       projectDetailDatas: [],
       filterFormData: {
-        projectId: '',
-        name: ''
+        projectId: "",
+        name: ""
       },
       tableData: [],
       pageIndex: 0,
-      pageTotal: 10
-    }
+      pageTotal: 10,
+      areaCompanys: [], // 保存区域公司数据
+      companyProjects: [] // 保存选址区域公司后获取的项目数据
+    };
   },
   watch: {
     projectDetailDatas: function(newVal, oldVal) {
       if (!isEmpty(newVal)) {
-        this.filterFormData.projectId = newVal[0].id
+        this.filterFormData.projectId = newVal[0].id;
+      }
+    },
+    "filterFormData.orgId": function(newVal) {
+      if (newVal !== "") {
+        const orgIdList = Array.of(newVal);
+        const orgData = this.areaCompanys.find(item => {
+          return item.id === newVal;
+        });
+        if (orgData.children) {
+          orgData.children.forEach(org => {
+            orgIdList.push(org.id);
+          });
+        }
+        const _projects = this.projectDetailDatas.filter(project => {
+          return orgIdList.includes(project.parent.orgId);
+        });
+        this.$set(this, "companyProjects", _projects);
       }
     }
   },
   methods: {
+    ...mapActions({
+      getOrganization: "getOrganizationData"
+    }),
+    // 页面初始化
+    async initPage() {
+      const type = this.$store.getters.organizationType.organization;
+      await this.getOrganization({ type, reGet: true }).then(resp => {
+        resp.forEach(item => {
+          if ("children" in item) {
+            this.areaCompanys.push(...item.children);
+          }
+        });
+      });
+      await this.getProjectFunc()
+        .then(data => {
+          this.$set(this, "companyProjects", data);
+          this.filterFormData.projectId = ''
+        })
+        .catch(() => {});
+      // await getMaterialType().then(resp => {
+      //   this.$set(this, "materialTypeData", resp.result);
+      // });
+    },
     resetDataProperty(obj) {
-      const _keys = Object.keys(obj)
+      const _keys = Object.keys(obj);
       _keys.forEach(key => {
-        this.$set(this, key, obj[key])
-      })
+        this.$set(this, key, obj[key]);
+      });
     },
     // 新增专项处理
     toAddSpecialItem() {
-      this.$emit('addSpecialItem')
+      this.$emit("addSpecialItem");
     },
     pageChangeHandle(page) {
-      this.pageIndex = page
+      this.pageIndex = page;
     },
     pageSizeChangeHandle(val) {
-      console.log('val', val)
+      console.log("val", val);
     }
+  },
+  created() {
+    const message = this.$message({
+      message: "数据加载中",
+      duration: 0
+    });
+    this.initPage()
+      .then(() => {
+        message.close();
+        // this.getMaterialDatas()
+      })
+      .catch(() => {
+        message.close();
+      });
   }
-}
+};
 </script>
 <style ref="styleshheet/scss" lang="scss" scoped>
-@import 'src/styles/mixin.scss';
+@import "src/styles/mixin.scss";
 
 .main-content {
   padding: 20px;
@@ -129,9 +189,10 @@ export default {
       }
       .el-form-item__label {
         width: 90px;
-        text-align: right
+        text-align: right;
       }
-      .el-select, .date-select {
+      .el-select,
+      .date-select {
         width: calc(100% - 102px);
       }
       &.btn-wrap {

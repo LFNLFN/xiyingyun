@@ -19,7 +19,7 @@ export default {
             if (stages && stages.length > 0) {
               stages.forEach(stage => {
                 this.projectDetailDatas.push({
-                  id: stage.id,
+                  id: stage.id, // 项目id
                   parentName: project.name,
                   parentId: stage.parentId,
                   name: `${project.name}--${stage.name}`,
