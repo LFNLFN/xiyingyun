@@ -3,7 +3,12 @@
     <el-main>
       <el-tabs v-model="showTabName" @tab-click="changTabShow">
         <el-tab-pane label="集团检查" name="groupCheck">
-          <TapCheckDatas ref="groupCheck" @addSpecialItem="addSpecialItemHandle"/>
+          <TapCheckDatas
+            ref="groupCheck"
+            :org-id.sync="filterFormData.orgId"
+            @searchAction="getSpecialItemCheckFunc"
+            @addSpecialItem="addSpecialItemHandle"
+          />
         </el-tab-pane>
         <el-tab-pane label="区域检查" name="areaCheck">
           <TapCheckDatas ref="areaCheck" @addSpecialItem="addSpecialItemHandle"/>

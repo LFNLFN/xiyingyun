@@ -35,7 +35,7 @@
         </el-col>
         <el-col :span="6">
           <el-form-item class="btn-wrap">
-            <el-button type="primary" size="mini">查询</el-button>
+            <el-button type="primary" size="mini" @click="searchHandler">查询</el-button>
             <el-button size="mini">重置</el-button>
           </el-form-item>
         </el-col>
@@ -100,10 +100,10 @@ export default {
     },
     "filterFormData.orgId": function(newVal) {
       if (newVal !== "") {
-        const orgIdList = Array.of(newVal);
+        const orgIdList = Array.of(newVal); // 生成一个含有newVal的数组
         const orgData = this.areaCompanys.find(item => {
           return item.id === newVal;
-        });
+        }); // 返回所选区域的数据对象
         if (orgData.children) {
           orgData.children.forEach(org => {
             orgIdList.push(org.id);
@@ -113,6 +113,7 @@ export default {
           return orgIdList.includes(project.parent.orgId);
         });
         this.$set(this, "companyProjects", _projects);
+        this.$emit("update:orgId", this.filterFormData.orgId);
       }
     }
   },
@@ -133,7 +134,7 @@ export default {
       await this.getProjectFunc()
         .then(data => {
           this.$set(this, "companyProjects", data);
-          this.filterFormData.projectId = ''
+          this.filterFormData.projectId = "";
         })
         .catch(() => {});
       // await getMaterialType().then(resp => {
@@ -145,6 +146,9 @@ export default {
       _keys.forEach(key => {
         this.$set(this, key, obj[key]);
       });
+    },
+    searchHandler() {
+      this.$emit('searchAction')
     },
     // 新增专项处理
     toAddSpecialItem() {
