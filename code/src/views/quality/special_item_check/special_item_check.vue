@@ -6,6 +6,8 @@
           <TapCheckDatas
             ref="groupCheck"
             :org-id.sync="filterFormData.orgId"
+            :project-id.sync="filterFormData.projectId"
+            :check-person-name.sync="filterFormData.checkPersonName"
             @searchAction="getSpecialItemCheckFunc"
             @addSpecialItem="addSpecialItemHandle"
           />
@@ -50,7 +52,7 @@ export default {
         type: "",
         orgId: "",
         projectId: "",
-        // checkPersonName: "",
+        checkPersonName: "",
         termType: "like"
       },
       pageIndex: 0,

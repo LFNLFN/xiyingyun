@@ -26,11 +26,9 @@
             </el-select>
           </el-form-item>
         </el-col>
-        <el-col :span="6">
+        <el-col :span="9">
           <el-form-item label="检查人:">
-            <el-select v-model="filterFormData.name" size="small">
-              <el-option value="移动"/>
-            </el-select>
+            <el-input style="width: 200px" v-model="filterFormData.checkPersonName" size="small" placeholder="请输入内容"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="6">
@@ -45,7 +43,7 @@
       <el-button type="primary" size="small" @click="toAddSpecialItem">新增</el-button>
     </div>
     <el-table :data="tableData" size="small" class="no-border-gary-head">
-      <el-table-column label="项目名称"/>
+      <el-table-column label="项目名称" prop=""/>
       <el-table-column label="检查批次名称"/>
       <el-table-column label="检查人"/>
       <el-table-column label="责任人"/>
@@ -83,7 +81,7 @@ export default {
       projectDetailDatas: [],
       filterFormData: {
         projectId: "",
-        name: ""
+        checkPersonName: ""
       },
       tableData: [],
       pageIndex: 0,
@@ -114,6 +112,17 @@ export default {
         });
         this.$set(this, "companyProjects", _projects);
         this.$emit("update:orgId", this.filterFormData.orgId);
+        this.$emit("update:projectId", this.filterFormData.projectId);
+      }
+    },
+    "filterFormData.projectId": function(newVal) {
+      if (newVal !== "") {
+        this.$emit("update:projectId", this.filterFormData.projectId);
+      }
+    },
+    "filterFormData.checkPersonName": function(newVal) {
+      if (newVal !== "") {
+        this.$emit("update:checkPersonName", this.filterFormData.checkPersonName);
       }
     }
   },
@@ -148,7 +157,7 @@ export default {
       });
     },
     searchHandler() {
-      this.$emit('searchAction')
+      this.$emit("searchAction");
     },
     // 新增专项处理
     toAddSpecialItem() {
