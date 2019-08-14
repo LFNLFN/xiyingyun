@@ -30,7 +30,7 @@
 <script>
 /* eslint-disable */
 import getProjectMixin from "@/mixins/getProjectStage";
-import { getSpecialItemCheck } from "@/api/quality/specialItemCheck";
+import { getSpecialItemCheck, fetchSpcialInspection } from "@/api/quality/specialItemCheck";
 import AddSpecialItem from "@/views/quality/special_item_check/components/addSpecialItem";
 import SpecialItemDetail from "@/views/quality/special_item_check/components/specialItemDetail";
 import TapCheckDatas from "@/views/quality/special_item_check/tabPanes/tapCheckDatas";

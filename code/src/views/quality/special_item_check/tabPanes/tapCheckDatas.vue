@@ -28,7 +28,12 @@
         </el-col>
         <el-col :span="9">
           <el-form-item label="检查人:">
-            <el-input style="width: 200px" v-model="filterFormData.checkPersonName" size="small" placeholder="请输入内容"></el-input>
+            <el-input
+              v-model="filterFormData.checkPersonName"
+              size="small"
+              placeholder="请输入内容"
+              style="width: 200px"
+            />
           </el-form-item>
         </el-col>
         <el-col :span="6">
@@ -43,7 +48,7 @@
       <el-button type="primary" size="small" @click="toAddSpecialItem">新增</el-button>
     </div>
     <el-table :data="tableData" size="small" class="no-border-gary-head">
-      <el-table-column label="项目名称" prop=""/>
+      <el-table-column label="项目名称" prop/>
       <el-table-column label="检查批次名称"/>
       <el-table-column label="检查人"/>
       <el-table-column label="责任人"/>
@@ -122,7 +127,10 @@ export default {
     },
     "filterFormData.checkPersonName": function(newVal) {
       if (newVal !== "") {
-        this.$emit("update:checkPersonName", this.filterFormData.checkPersonName);
+        this.$emit(
+          "update:checkPersonName",
+          this.filterFormData.checkPersonName
+        );
       }
     }
   },

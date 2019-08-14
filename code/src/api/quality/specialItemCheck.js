@@ -9,3 +9,11 @@ export function getSpecialItemCheck(params) {
   })
 }
 
+// 新增专项检查批次
+export function addProblemCheckBatch(param) {
+  return request({
+    url: `/problemCheckBatch/batch`,
+    method: 'post',
+    param: param
+  })
+}
