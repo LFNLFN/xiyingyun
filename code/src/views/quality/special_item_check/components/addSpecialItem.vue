@@ -3,12 +3,12 @@
     <template slot="main-content">
       <el-form :model="addItemFormData" :inline="true" size="small">
         <el-form-item label="项目名称">
-          <el-select v-model="addItemFormData.checkId">
+          <el-select v-model="addItemFormData.projectId">
             <el-option value="选项一"/>
           </el-select>
         </el-form-item>
         <el-form-item label="检查批次名称">
-          <el-input v-model="addItemFormData.checkId"/>
+          <el-input v-model="addItemFormData.name"/>
         </el-form-item>
         <el-form-item label="检查人">
           <el-select v-model="addItemFormData.checkId">
@@ -26,7 +26,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="巡检模板">
-          <el-select v-model="addItemFormData.checkId">
+          <el-select v-model="addItemFormData.templateId">
             <el-option value="选项一"/>
           </el-select>
         </el-form-item>
@@ -37,7 +37,7 @@
         </el-form-item>
         <el-form-item label="计划开始日期">
           <el-date-picker
-            v-model="addItemFormData.date"
+            v-model="addItemFormData.planStartTime"
             size="small"
             start-placeholder="开始日期"
             end-placeholder="结束日期"

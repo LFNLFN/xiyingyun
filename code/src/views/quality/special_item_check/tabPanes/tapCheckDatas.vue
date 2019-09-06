@@ -74,7 +74,6 @@
 </template>
 <script>
 /* eslint-disable */
-
 import { isEmpty } from "@/utils/public";
 import { mapActions } from "vuex";
 import { log } from "util";
@@ -98,9 +97,10 @@ export default {
   watch: {
     projectDetailDatas: function(newVal, oldVal) {
       if (!isEmpty(newVal)) {
-        this.filterFormData.projectId = newVal[0].id;
+        // this.filterFormData.projectId = newVal[0].id;
       }
     },
+    // 所选区域公司改变时会发生的行为
     "filterFormData.orgId": function(newVal) {
       if (newVal !== "") {
         const orgIdList = Array.of(newVal); // 生成一个含有newVal的数组
@@ -112,10 +112,12 @@ export default {
             orgIdList.push(org.id);
           });
         }
+        // 把对应区域公司的项目写入下拉框
         const _projects = this.projectDetailDatas.filter(project => {
           return orgIdList.includes(project.parent.orgId);
         });
-        this.$set(this, "companyProjects", _projects);
+        this.$set(this, "companyProjects", _projects); // 选址区域公司后获取的项目数据
+        // 同步父组件的数据
         this.$emit("update:orgId", this.filterFormData.orgId);
         this.$emit("update:projectId", this.filterFormData.projectId);
       }
@@ -136,21 +138,24 @@ export default {
   },
   methods: {
     ...mapActions({
-      getOrganization: "getOrganizationData"
+      getOrganization: "getOrganizationData" // 获取组织架构以及供应商
     }),
     // 页面初始化
     async initPage() {
-      const type = this.$store.getters.organizationType.organization;
+      const type = this.$store.getters.organizationType.organization; // 组织种类：1供应商，0某组织
+      // 获取组织架构以及供应商
       await this.getOrganization({ type, reGet: true }).then(resp => {
         resp.forEach(item => {
           if ("children" in item) {
+            // 区域公司数组存放在children里面（获取区域公司）
             this.areaCompanys.push(...item.children);
           }
         });
       });
+      // 加载项目数据
       await this.getProjectFunc()
         .then(data => {
-          this.$set(this, "companyProjects", data);
+          this.$set(this, "companyProjects", data); // 区域公司后获取的项目数据
           this.filterFormData.projectId = "";
         })
         .catch(() => {});
