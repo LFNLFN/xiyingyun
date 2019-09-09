@@ -66,10 +66,10 @@ export default {
       isItemDetailShow: false,
       isAddSpecialItemShow: false,
       filterFormData: {
-        type: ""
-        // orgId: "",
-        // projectId: "",
-        // checkPersonName: "" // 'termType=like'
+        type: null,
+        orgId: null,
+        projectId: null,
+        checkPersonName: null // 'termType=like'
       },
       pageIndex: 0,
       pageSize: 10,
@@ -124,15 +124,16 @@ export default {
       });
     },
     changTabShow() {
-      const _thisVue = this;
-      const tabName = this.showTabName;
+      // const _thisVue = this;
+      // const tabName = this.showTabName;
 
-      const tabStatus = _thisVue.tabStatusData[tabName];
-      let _obj = {
-        curTabStatus: tabStatus,
-        projectDetailDatas: _thisVue.projectDetailDatas
-      };
-      _thisVue.$refs[tabName].resetDataProperty(_obj);
+      // const tabStatus = _thisVue.tabStatusData[tabName];
+      // let _obj = {
+      //   curTabStatus: tabStatus,
+      //   projectDetailDatas: _thisVue.projectDetailDatas
+      // };
+      // _thisVue.$refs[tabName].resetDataProperty(_obj);
+      this.getSpecialItemCheckFunc()
     },
     addSpecialItemHandle(data) {
       this.isAddSpecialItemShow = true;

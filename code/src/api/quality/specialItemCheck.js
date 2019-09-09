@@ -17,3 +17,11 @@ export function addProblemCheckBatch(param) {
     param: param
   })
 }
+
+// 专项检查详情及问题
+export function batchProblemDetail(id) {
+  return request({
+    url: `/problemCheckBatch/batchProblemDetail/${id}`,
+    method: 'get',
+  })
+}

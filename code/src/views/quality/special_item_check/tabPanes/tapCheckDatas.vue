@@ -47,12 +47,12 @@
     <div class="operate-wrap">
       <el-button type="primary" size="small" @click="toAddSpecialItem">新增</el-button>
     </div>
-    <el-table :data="tableData" size="small" class="no-border-gary-head">
-      <el-table-column label="项目名称" prop/>
-      <el-table-column label="检查批次名称"/>
-      <el-table-column label="检查人"/>
-      <el-table-column label="责任人"/>
-      <el-table-column label="计划开始日期"/>
+    <el-table :data="tableData" size="small" class="no-border-gary-head" @row-click="tableRowClick">
+      <el-table-column label="项目名称" prop="projectName"/>
+      <el-table-column label="检查批次名称" prop="name"/>
+      <el-table-column label="检查人" prop="checkPersonName"/>
+      <el-table-column label="责任人" prop="dutyPersonName"/>
+      <el-table-column label="计划开始日期" prop="planStartTime"/>
       <el-table-column width="80" label="操作">
         <template slot-scope="scope">
           <el-button size="small" class="no-border">删除</el-button>
@@ -70,6 +70,7 @@
       @current-change="pageChangeHandle"
       @size-change="pageSizeChangeHandle"
     />
+    <SpecialItemDetail v-if="isDetailItemShow" :detailData="detailData"/> 
   </div>
 </template>
 <script>
@@ -78,20 +79,30 @@ import { isEmpty } from "@/utils/public";
 import { mapActions } from "vuex";
 import { log } from "util";
 import getProjectMixin from "@/mixins/getProjectStage";
+import SpecialItemDetail from "@/views/quality/special_item_check/components/specialItemDetail";
+import {
+  batchProblemDetail
+} from "@/api/quality/specialItemCheck";
 export default {
   mixins: [getProjectMixin],
+  components: {
+    SpecialItemDetail
+  },
   data() {
     return {
       projectDetailDatas: [],
       filterFormData: {
-        projectId: "",
-        checkPersonName: ""
+        projectId: null,
+        checkPersonName: null
       },
+      curTabStatus: null,
       tableData: [],
       pageIndex: 0,
       pageTotal: 10,
       areaCompanys: [], // 保存区域公司数据
-      companyProjects: [] // 保存选址区域公司后获取的项目数据
+      companyProjects: [], // 保存选址区域公司后获取的项目数据
+      isDetailItemShow: false,
+      detailData: {},
     };
   },
   watch: {
@@ -165,6 +176,7 @@ export default {
     },
     resetDataProperty(obj) {
       const _keys = Object.keys(obj);
+
       _keys.forEach(key => {
         this.$set(this, key, obj[key]);
       });
@@ -181,7 +193,32 @@ export default {
     },
     pageSizeChangeHandle(val) {
       console.log("val", val);
-    }
+    },
+    // 请求专项检查详情及问题
+    async specialItemCheckDetailAndProblem() {
+      
+    },
+    tableRowClick(row, column, event) {
+      batchProblemDetail(encodeURI(row.projectId)).then(resp => {
+        const data = resp.result;
+        this.detailData = {
+          '项目名称' : data.projectName,
+          '检查批次名称' : data.name,
+          '类型' : data.typeName,
+          '检查人' : data.checkPersonList[0].personName,
+          '督办人' : data.supervisor[0].personName,
+          '责任人' : data,
+          '抄送人' : data.ccPersonList[0].personName,
+          '检查模板' : data.templateMainEntity.name,
+          '计划开始时间' : data.planStartTime,
+        }
+        // this.$refs[tabName].resetDataProperty(_obj); // 表格数据获取成功并处理后传入子组件之中
+        this.isDetailItemShow = true
+      });
+    },
+    detailTabClick() {
+
+    },
   },
   created() {
     const message = this.$message({

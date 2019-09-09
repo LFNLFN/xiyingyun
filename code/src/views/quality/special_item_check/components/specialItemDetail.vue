@@ -4,9 +4,9 @@
       <el-tabs v-model="showTabName" class="tabs-container">
         <el-tab-pane label="基础信息" name="baseInfos">
           <div class="base-Info-wrap">
-            <div class="Info-item">
-              <span class="info-label">项目名称：</span>
-              <span class="info-text">相如大街项目-二期</span>
+            <div class="Info-item" v-for="(value, name) in detailData" :key="name">
+              <span class="info-label">{{name}}: </span>
+              <span class="info-text">{{value}}</span>
             </div>
           </div>
         </el-tab-pane>
@@ -80,6 +80,10 @@ export default {
     isItemDetailShow: {
       type: Boolean,
       default: false
+    },
+    // 基础信息
+    detailData: {
+      type: Object,
     }
   },
   data() {
