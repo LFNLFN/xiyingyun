@@ -19,9 +19,9 @@ export function addProblemCheckBatch(param) {
 }
 
 // 专项检查详情及问题
-export function batchProblemDetail(id) {
+export function batchProblemDetail({ id }) {
   return request({
     url: `/problemCheckBatch/batchProblemDetail/${id}`,
-    method: 'get',
+    method: 'get'
   })
 }

@@ -1,0 +1,31 @@
+@import './variables.scss';
+
+// 全部
+.all-problem-type-text {
+  font-weight: bold
+}
+// 待指派
+.to-be-assigned-text {
+  color: $orangeStatus;
+  font-weight: bold
+}
+// 待整改
+.to-be-rectified-text {
+  color: $redStatus;
+  font-weight: bold;
+}
+// 待销项
+.to-be-destroyed-text {
+  color: $blueStatus;
+  font-weight: bold
+}
+// 已销项
+.already-destroyed-text {
+  color: $blueStatus;
+  font-weight: bold
+}
+// 已作废
+.already-obsolete-text {
+  color: $grayStatus;
+  font-weight: bold
+}

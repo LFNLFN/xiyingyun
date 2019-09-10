@@ -70,19 +70,18 @@
       @current-change="pageChangeHandle"
       @size-change="pageSizeChangeHandle"
     />
-    <SpecialItemDetail v-if="isDetailItemShow" :detailData="detailData"/> 
+    <SpecialItemDetail ref="SpecialItemDetail" v-show="isDetailItemShow" :is-item-detail-show.sync="isDetailItemShow" :detail-data="detailData" :problem-data="problemData"/>
   </div>
 </template>
 <script>
 /* eslint-disable */
-import { isEmpty } from "@/utils/public";
 import { mapActions } from "vuex";
+import { isEmpty } from "@/utils/public";
+import { getPersonNameStr } from "@/utils/dataFormat";
 import { log } from "util";
+import { batchProblemDetail } from "@/api/quality/specialItemCheck";
 import getProjectMixin from "@/mixins/getProjectStage";
 import SpecialItemDetail from "@/views/quality/special_item_check/components/specialItemDetail";
-import {
-  batchProblemDetail
-} from "@/api/quality/specialItemCheck";
 export default {
   mixins: [getProjectMixin],
   components: {
@@ -103,6 +102,7 @@ export default {
       companyProjects: [], // 保存选址区域公司后获取的项目数据
       isDetailItemShow: false,
       detailData: {},
+      problemData: {},
     };
   },
   watch: {
@@ -195,29 +195,46 @@ export default {
       console.log("val", val);
     },
     // 请求专项检查详情及问题
-    async specialItemCheckDetailAndProblem() {
-      
-    },
     tableRowClick(row, column, event) {
-      batchProblemDetail(encodeURI(row.projectId)).then(resp => {
-        const data = resp.result;
-        this.detailData = {
-          '项目名称' : data.projectName,
-          '检查批次名称' : data.name,
-          '类型' : data.typeName,
-          '检查人' : data.checkPersonList[0].personName,
-          '督办人' : data.supervisor[0].personName,
-          '责任人' : data,
-          '抄送人' : data.ccPersonList[0].personName,
-          '检查模板' : data.templateMainEntity.name,
-          '计划开始时间' : data.planStartTime,
-        }
-        // this.$refs[tabName].resetDataProperty(_obj); // 表格数据获取成功并处理后传入子组件之中
-        this.isDetailItemShow = true
+      const message = this.$message({
+        message: "数据加载中",
+        duration: 0
       });
-    },
-    detailTabClick() {
-
+      batchProblemDetail({ id: row.id })
+        .then(resp => {
+          const data = resp.result;
+          // 人名拼接
+          let checkPersonFormat = getPersonNameStr(data.checkPersonList)
+          let ccPersonListFormat = getPersonNameStr(data.ccPersonList)
+          this.detailData = {
+            项目名称: data.projectName,
+            检查批次名称: data.name,
+            类型: data.typeName,
+            检查人: checkPersonFormat,
+            督办人: data.supervisor.personName,
+            责任人: data.dutyPerson.personName,
+            抄送人: ccPersonListFormat,
+            检查模板: data.templateName,
+            计划开始时间: data.planStartTime
+          };
+          this.problemData = {
+            allProblemList: data.allProblemList, // 全部问题
+            assignProblemList: data.assignProblemList, // 待指派问题集合
+            rectificationProblemList: data.rectificationProblemList, // 待整改问题集合
+            waitSalesProblemList: data.waitSalesProblemList, // 待销项问题集合
+            hasSalesProblemList: data.hasSalesProblemList, // 已销项问题集合
+            invalidProblemList: data.invalidProblemList, // 已作废问题集合
+            timelyRate: data.timelyRate, // 按时整改率
+            rectificationRate: data.rectificationRate, // 整改完成率
+          }
+          // this.$refs[tabName].resetDataProperty(_obj); // 表格数据获取成功并处理后传入子组件之中
+          message.close()
+          this.$refs['SpecialItemDetail'].selectProblemType(this.problemData.allProblemList)
+          this.isDetailItemShow = true;
+        })
+        .catch(err => {
+          console.log(err);
+        });
     },
   },
   created() {

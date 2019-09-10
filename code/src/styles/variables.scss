@@ -14,13 +14,13 @@ $sideBarWidth: 210px;
 
 $navbarHeight: 50px;
 
-// 状态颜色
-$redStatus:#ed3f14;
-$greenStatus:#59bba4;
-$orangeStatus:#ff9900;
+// 状态颜色 （问题种类）
+$orangeStatus:#ff9900; // 待指派
+$redStatus:#ed3f14; // 待整改
+$blueStatus: #2c8fea; // 待销项
+$greenStatus:#59bba4; // 已销项
+$grayStatus:#D9D9D9; // 已作废
 $yellowStatus:#FFEB3B;
-$grayStatus:#D9D9D9;
-$blueStatus: #2c8fea;
 
 // 主题进度楼栋相关
 $acceptDefault: #fff; // 默认颜色

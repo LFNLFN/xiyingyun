@@ -34,7 +34,13 @@
         </el-tab-pane>
       </el-tabs>
     </el-main>
-    <specialItemDetail v-show="isItemDetailShow" :is-item-detail-show.sync="isItemDetailShow"/>
+    <!-- <SpecialItemDetail
+      ref="SpecialItemDetail"
+      v-show="isDetailItemShow"
+      :is-item-detail-show.sync="isDetailItemShow"
+      :detail-data="detailData"
+      :problem-data="problemData"
+    /> -->
     <addSpecialItem
       v-show="isAddSpecialItemShow"
       :is-add-special-item-show.sync="isAddSpecialItemShow"
@@ -53,7 +59,11 @@ import SpecialItemDetail from "@/views/quality/special_item_check/components/spe
 import TapCheckDatas from "@/views/quality/special_item_check/tabPanes/tapCheckDatas";
 import { log } from "util";
 export default {
-  components: { TapCheckDatas, SpecialItemDetail, AddSpecialItem },
+  components: {
+    TapCheckDatas,
+    SpecialItemDetail,
+    AddSpecialItem
+  },
   mixins: [getProjectMixin],
   data() {
     return {
@@ -73,7 +83,11 @@ export default {
       },
       pageIndex: 0,
       pageSize: 10,
-      pageTotal: 0
+      pageTotal: 0,
+      isProblemDetailShow: false,
+      isDetailItemShow: false,
+      detailData: {},
+      problemData: {},
     };
   },
   async mounted() {
@@ -89,6 +103,10 @@ export default {
   methods: {
     // 获取专项检查主体表格数据
     getSpecialItemCheckFunc() {
+      const loadingMessage = this.$message({
+        message: "数据加载中",
+        duration: 0
+      });
       const params = {};
       const tabName = this.showTabName; // 决定是集团检查、区域检查还是项目检查
       this.filterFormData.type = this.tabStatusData[tabName]; // 确定检查类型（1-集团检查，2-区域检查，3-项目检查）
@@ -113,15 +131,20 @@ export default {
       params["pageSize"] = this.pageSize;
       console.log(params);
       // 之前是传输参数处理，后面是正式调用接口查询
-      getSpecialItemCheck(params).then(resp => {
-        const data = resp.result;
-        const _obj = {
-          pageTotal: data.total,
-          pageIndex: data.pageIndex + 1,
-          tableData: data.data
-        };
-        this.$refs[tabName].resetDataProperty(_obj); // 表格数据获取成功并处理后传入子组件之中
-      });
+      getSpecialItemCheck(params)
+        .then(resp => {
+          const data = resp.result;
+          const _obj = {
+            pageTotal: data.total,
+            pageIndex: data.pageIndex + 1,
+            tableData: data.data
+          };
+          this.$refs[tabName].resetDataProperty(_obj); // 表格数据获取成功并处理后传入子组件之中
+          loadingMessage.close();
+        })
+        .catch(err => {
+          console.log(err);
+        });
     },
     changTabShow() {
       // const _thisVue = this;
@@ -133,7 +156,7 @@ export default {
       //   projectDetailDatas: _thisVue.projectDetailDatas
       // };
       // _thisVue.$refs[tabName].resetDataProperty(_obj);
-      this.getSpecialItemCheckFunc()
+      this.getSpecialItemCheckFunc();
     },
     addSpecialItemHandle(data) {
       this.isAddSpecialItemShow = true;

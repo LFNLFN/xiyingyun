@@ -4,9 +4,9 @@
       <el-tabs v-model="showTabName" class="tabs-container">
         <el-tab-pane label="基础信息" name="baseInfos">
           <div class="base-Info-wrap">
-            <div class="Info-item" v-for="(value, name) in detailData" :key="name">
-              <span class="info-label">{{name}}: </span>
-              <span class="info-text">{{value}}</span>
+            <div v-for="(value, name) in detailData" :key="name" class="Info-item">
+              <span class="info-label">{{ name }}: </span>
+              <span class="info-text">{{ value }}</span>
             </div>
           </div>
         </el-tab-pane>
@@ -17,48 +17,52 @@
               <el-button size="mini">导出整改回复报告</el-button>
             </div>
             <el-row class="count-wrap">
-              <el-col :span="4">
+              <el-col :span="4" @click.native="selectProblemType(problemData.allProblemList)">
                 <p>全部</p>
-                <p>3</p>
+                <p class="all-problem-type-text">{{ problemData.allProblemList? problemData.allProblemList.length : 0 }}</p>
               </el-col>
-              <el-col :span="4">
+              <el-col :span="4" @click.native="selectProblemType(problemData.assignProblemList)">
                 <p>待指派</p>
-                <p>0</p>
+                <p class="to-be-assigned-text">{{ problemData.assignProblemList? problemData.assignProblemList.length : 0 }}</p>
               </el-col>
-              <el-col :span="4">
+              <el-col :span="4" @click.native="selectProblemType(problemData.rectificationProblemList)">
                 <p>待整改</p>
-                <p>5</p>
+                <p class="to-be-rectified-text">{{ problemData.rectificationProblemList? problemData.rectificationProblemList.length : 0 }}</p>
               </el-col>
-              <el-col :span="4">
+              <el-col :span="4" @click.native="selectProblemType(problemData.waitSalesProblemList)">
                 <p>待销项</p>
-                <p>2</p>
+                <p class="to-be-destroyed-text">{{ problemData.waitSalesProblemList? problemData.waitSalesProblemList.length : 0 }}</p>
               </el-col>
-              <el-col :span="4">
+              <el-col :span="4" @click.native="selectProblemType(problemData.hasSalesProblemList)">
                 <p>已销项</p>
-                <p>6</p>
+                <p class="already-destroyed-text">{{ problemData.hasSalesProblemList? problemData.hasSalesProblemList.length : 0 }}</p>
               </el-col>
-              <el-col :span="4">
+              <el-col :span="4" @click.native="selectProblemType(problemData.invalidProblemList)">
                 <p>已作废</p>
-                <p>4</p>
+                <p class="already-obsolete-text">{{ problemData.invalidProblemList? problemData.invalidProblemList.length : 0 }}</p>
               </el-col>
             </el-row>
             <div class="percent-wrap">
-              <span>整改完成率：100.00%</span>
-              <span>按时整改率：100.00%</span>
+              <span>整改完成率：{{ problemData.rectificationRate }}</span>
+              <span>按时整改率：{{ problemData.timelyRate }}</span>
             </div>
-            <div class="problem-wrap">
+            <div v-for="(item) in displayProblemList" :key="item.id" class="problem-wrap">
               <div class="header">
                 <span class="status">
-                  <i class="status-icon" />
-                  待整改
+                  <i :style="{background: problemTypeMsg[item.status].color}" class="status-icon"/>
+                  {{ problemTypeMsg[item.status].title }}
                 </span>
-                <el-button class="detail-btn no-border" size="mini">查看详情 ></el-button>
+                <el-button class="detail-btn no-border" size="mini" @click="checkProblemDetail">查看详情 ></el-button>
               </div>
               <div class="main">
                 <div class="main-header">
-                  <h3>安全管理</h3>
-                  <span class="time-limit">整改期限：2019-07-04</span>
+                  <div>
+                    <h3>{{ item.checkProblemDesc }}</h3>
+                    <p>{{ item.content }}</p>
+                  </div>
+                  <span class="time-limit">整改期限：{{ item.deadline }}</span>
                 </div>
+                <div class="photo-wrap"><img :src="GetOssImgFullPath(item.image)" alt=""/></div>
               </div>
             </div>
           </div>
@@ -67,15 +71,26 @@
       <div class="close-box-btn" @click="popupHideHandle">
         <i class="el-icon-close" />
       </div>
+      <!-- <problemDetail
+        v-show="isProblemDetailShow"
+        ref="problemDetailCom"
+        :is-problem-detail-show.sync="isProblemDetailShow"
+        @toPhotosZoom="toPhotosZoomHandle"
+        @toShowPlanMark="toShowPlanMarkHandle"
+      /> -->
     </div>
   </leftSlidePopup>
 </template>
 <script>
+import problemTypeData from '@/mixins/problemTypeData.js'
 import LeftSlidePopup from '@/components/Pop-ups/LeftSlidePopup'
+import problemDetail from "@/views/quality/special_item_check/problemDetail.vue"
 export default {
   components: {
-    LeftSlidePopup
+    LeftSlidePopup,
+    problemDetail
   },
+  mixins: [problemTypeData],
   props: {
     isItemDetailShow: {
       type: Boolean,
@@ -84,26 +99,45 @@ export default {
     // 基础信息
     detailData: {
       type: Object,
+      default: () => {
+        return {}
+      }
+    },
+    problemData: {
+      type: Object,
+      default: () => {
+        return {}
+      }
     }
   },
   data() {
     return {
       isPopupShow: true,
-      showTabName: 'baseInfos'
+      showTabName: 'baseInfos',
+      displayProblemList: []
     }
   },
   methods: {
     popupHideHandle() {
-      this.isPopupShow = false
+      // this.isPopupShow = false
+      this.$emit('update:isItemDetailShow', false)
     },
     closeBoxHandle() {
       this.$emit('update:isItemDetailShow', false)
+    },
+    checkProblemDetail() {
+      // this.$emit('update:isProblemDetailShow', false)
+    },
+    selectProblemType(arr) {
+      this.displayProblemList = arr
     }
   }
 }
 </script>
 <style ref="styleshheet/scss" lang="scss" scoped>
+@import 'src/styles/variables.scss';
 @import 'src/styles/mixin.scss';
+@import 'src/styles/problemType.scss';
 
 .container {
   height: 100%;

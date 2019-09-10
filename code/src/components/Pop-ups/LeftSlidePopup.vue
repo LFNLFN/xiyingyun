@@ -44,7 +44,7 @@ export default {
 //     // margin-top: 52px;
 //     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 //     background: #fff;
-//     overflow: hidden;
+//     // overflow: hidden;
 //   }
 // }
 .left-slide-container {
@@ -54,7 +54,7 @@ export default {
   height: calc(100vh - #{$navbarHeight});
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
   background: #fff;
-  overflow: hidden;
+  overflow: auto;
 }
 .slide-fade-enter-active {
   transition: all .3s ease;
