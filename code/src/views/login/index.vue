@@ -118,10 +118,12 @@ export default {
             this.$SetLocalStorage('loginSave', _saveObj)
           } else {
             // 取消记住密码处理
-            this.$RemoveLocalStorage('loginSave')
+            this.$RemoveLocalStorage('loginSave') // 清除本地存储的账号数据
           }
           this.loading = true
+          // 调用store里面的登录函数
           this.$store.dispatch('Login', this.loginForm).then(() => {
+            // 登录成功后，返回token，跳转页面
             this.loading = false
             this.$router.push({ path: this.redirect || '/' })
           }).catch(() => {

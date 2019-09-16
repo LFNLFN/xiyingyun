@@ -5,7 +5,7 @@ import { getToken, setToken, removeToken } from '@/utils/auth'
 const user = {
   state: {
     token: getToken(),
-    name: '',
+    name: 'admin',
     avatar: require('@/assets/user_images/avatar.png'),
     roles: [],
     userAllInfo: {}
@@ -32,7 +32,7 @@ const user = {
   },
 
   actions: {
-    // 登录
+    // 登录 返回token
     Login({ commit }, userInfo) {
       const username = userInfo.username.trim()
       return new Promise((resolve, reject) => {
@@ -62,6 +62,7 @@ const user = {
           commit('SET_USERALLINFO', data)
           resolve(response)
         }).catch(error => {
+          // console.log(error,99)
           reject(error)
         })
       })

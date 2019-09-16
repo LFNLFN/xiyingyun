@@ -23,16 +23,22 @@ router.beforeEach((to, from, next) => {
       } else {
         store.dispatch('ToggleFullScreenBtn', false)
       }
-      // 权限判断相关
       if (store.getters.roles.length === 0) {
         // 拉取用户信息
         store.dispatch('GetInfo').then(res => {
           next()
         }).catch((err) => {
-          store.dispatch('FedLogOut').then(() => {
-            Message.error(err || '登录失败，请检查网络或重试')
-            next({ path: '/' })
-          })
+          // 当登录者是admin
+          if (store.getters.name == 'admin') {
+            // next({ path: '/home' })
+            next()
+          } else  {
+            store.dispatch('FedLogOut').then(() => {
+              // Message.error(err || '登录失败，请检查网络或重试')
+              Message.error('登录失败，请检查网络再重试或者核实账号是否存在')
+              next({ path: '/' })
+            })
+          }
         })
       } else {
         next()
