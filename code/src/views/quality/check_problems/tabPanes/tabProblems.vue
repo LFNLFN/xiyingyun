@@ -4,6 +4,7 @@
       <el-form
         ref="filterForm"
         :inline="true"
+        :model="filterFormData"
         class="filter-form">
         <el-form-item label="快捷筛选:" class="block-item">
           <el-button
@@ -152,7 +153,7 @@
           <el-col :span="8">
             <el-form-item class="btn-wrap">
               <el-button type="primary" size="mini" @click="getCheckProblemsFunc">查询</el-button>
-              <el-button size="mini" @clock="resetForm">重置</el-button>
+              <el-button size="mini" @click="resetForm()">重置</el-button>
               <el-dropdown
                 trigger="click"
                 size="small">

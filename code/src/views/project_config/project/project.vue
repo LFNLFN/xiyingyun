@@ -82,6 +82,7 @@
     </el-footer> -->
     <addProject
       v-show="isAddProjectShow"
+      :title-text="titleText"
       :edit-project-data="editProjectData"
       :event-type.sync="eventType"
       :is-add-project-show.sync="isAddProjectShow"
@@ -104,6 +105,7 @@ export default {
       editProjectData: {}, // 要编辑的项目数据
       projectIdAndStatus: {}, // key：项目id，value：项目状态
       eventType: 'add',
+      titleText: '新增项目',
       projectTableLoading: false,
       isAddProjectShow: false,
       pageTotal: 20
@@ -202,12 +204,14 @@ export default {
         // 新增项目
         case 'addProject':
           this.isAddProjectShow = !this.isAddProjectShow
+          this.titleText = '新增项目'
           break
         // 编辑项目
         case 'editProject':
           this.isAddProjectShow = !this.isAddProjectShow
           this.editProjectData = data
           this.eventType = 'edit'
+          this.titleText = '编辑项目'
           break
         // 增加项目分期
         case 'addStage':
@@ -215,6 +219,7 @@ export default {
             projectId: data.id,
             eventType: 'add'
           }})
+          this.titleText = '增加项目分期'
           break
         // 编辑项目分期
         case 'editStage':
@@ -222,10 +227,12 @@ export default {
             projectId: data.id,
             eventType: 'edit'
           }})
+          this.titleText = '编辑项目分期'
           break
         // 设置运营图
         case 'setMap':
           console.log('setNap')
+          this.titleText = '设置运营图'
           break
         // 增加分期标段
         case 'addSection':
@@ -234,6 +241,7 @@ export default {
             parentId: data.id,
             eventType: 'add'
           }})
+          this.titleText = '增加分期标段'
           break
         // 编辑分期标段
         case 'editSection':
@@ -242,14 +250,17 @@ export default {
             parentId: data.parentId,
             eventType: 'edit'
           }})
+          this.titleText = '编辑分期标段'
           break
         // 标段分包设置
         case 'setContract':
           console.log('setContract')
+          this.titleText = '标段分包设置'
           break
         // 删除处理
         case 'delete':
           this.delProjectHandle(data)
+          this.titleText = '删除处理'
       }
     },
     // 删除项目处理

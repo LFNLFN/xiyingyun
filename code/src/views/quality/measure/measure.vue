@@ -1,4 +1,5 @@
 <template>
+  <!-- 实测实量页面 -->
   <el-container class="global-container">
     <el-main v-loading="isLoading">
       <el-form
@@ -295,7 +296,7 @@ export default {
       this.getMeasureDatasFunc()
     },
     resetForm() {
-      this.refs.filterForm.resetFields()
+      this.$refs.filterForm.resetFields()
     }
   }
 }

@@ -62,7 +62,7 @@
                   </div>
                   <span class="time-limit">整改期限：{{ item.deadline }}</span>
                 </div>
-                <div class="photo-wrap"><img :src="GetOssImgFullPath(item.image)" alt=""/></div>
+                <div class="photo-wrap"><img :src="GetOssImgFullPath(item.image)" alt=""></div>
               </div>
             </div>
           </div>
@@ -84,7 +84,7 @@
 <script>
 import problemTypeData from '@/mixins/problemTypeData.js'
 import LeftSlidePopup from '@/components/Pop-ups/LeftSlidePopup'
-import problemDetail from "@/views/quality/special_item_check/problemDetail.vue"
+import problemDetail from '@/views/quality/special_item_check/problemDetail.vue'
 export default {
   components: {
     LeftSlidePopup,

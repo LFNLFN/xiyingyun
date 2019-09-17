@@ -1,4 +1,5 @@
 <template>
+  <!-- 检查问题页面 -->
   <el-container class="global-container">
     <el-header height="auto">
       <div class="search-wrap">

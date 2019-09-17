@@ -1,4 +1,5 @@
 <template>
+  <!-- 材料验收页面 -->
   <el-container class="global-container">
     <el-main>
       <el-form
@@ -102,6 +103,7 @@
         :data="materialTableData"
         :cell-class-name="setTableCellStyle"
         :header-cell-class-name="setTableCellStyle"
+        height="300"
         size="small"
         class="no-border-gary-head"
         @row-click="showMaterialDetail" >

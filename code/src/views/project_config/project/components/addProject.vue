@@ -1,5 +1,5 @@
 <template>
-  <publicPopups title-text="增加项目" v-on="$listeners" @formConfirm="addProjectHandle" @closePopupsBox="closeBox">
+  <publicPopups :title-text="titleText" v-on="$listeners" @formConfirm="addProjectHandle" @closePopupsBox="closeBox">
     <template slot="main-content">
       <el-form v-loading="isLoading" ref="addProjectForm" :model="addProjectForm" :rules="addProjectRules" class="add-project-from">
         <el-form-item label="项目编号" prop="code">
@@ -40,6 +40,10 @@ export default {
       }
     },
     eventType: {
+      type: String,
+      default: ''
+    },
+    titleText: {
       type: String,
       default: ''
     }

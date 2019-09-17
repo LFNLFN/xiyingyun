@@ -1,9 +1,9 @@
 <template>
   <div class="main-content">
-    <el-form :inline="true" label-position="right" label-width="90px" class="filter-form">
+    <el-form ref="filterForm" :inline="true" :model="filterFormData" label-position="right" label-width="90px" class="filter-form">
       <el-row :gutter="10">
         <el-col :span="6">
-          <el-form-item label="所选区域">
+          <el-form-item label="所选区域" prop="orgId">
             <el-select v-model="filterFormData.orgId" size="small">
               <el-option
                 v-for="(item, idx) in areaCompanys"
@@ -15,7 +15,7 @@
           </el-form-item>
         </el-col>
         <el-col :span="6">
-          <el-form-item label="选择项目">
+          <el-form-item label="选择项目" prop="projectId">
             <el-select v-model="filterFormData.projectId" size="small">
               <el-option
                 v-for="(item, idx) in companyProjects"
@@ -27,7 +27,7 @@
           </el-form-item>
         </el-col>
         <el-col :span="9">
-          <el-form-item label="检查人:">
+          <el-form-item label="检查人:" prop="checkPersonName">
             <el-input
               v-model="filterFormData.checkPersonName"
               size="small"
@@ -39,7 +39,7 @@
         <el-col :span="6">
           <el-form-item class="btn-wrap">
             <el-button type="primary" size="mini" @click="searchHandler">查询</el-button>
-            <el-button size="mini">重置</el-button>
+            <el-button size="mini" @click="resetForm()">重置</el-button>
           </el-form-item>
         </el-col>
       </el-row>
@@ -70,7 +70,7 @@
       @current-change="pageChangeHandle"
       @size-change="pageSizeChangeHandle"
     />
-    <SpecialItemDetail ref="SpecialItemDetail" v-show="isDetailItemShow" :is-item-detail-show.sync="isDetailItemShow" :detail-data="detailData" :problem-data="problemData"/>
+    <SpecialItemDetail v-show="isDetailItemShow" ref="SpecialItemDetail" :is-item-detail-show.sync="isDetailItemShow" :detail-data="detailData" :problem-data="problemData"/>
   </div>
 </template>
 <script>
@@ -91,8 +91,9 @@ export default {
     return {
       projectDetailDatas: [],
       filterFormData: {
-        projectId: null,
-        checkPersonName: null
+        projectId: '',
+        orgId: '',
+        checkPersonName: '',
       },
       curTabStatus: null,
       tableData: [],
@@ -236,6 +237,10 @@ export default {
           console.log(err);
         });
     },
+    // 重置表单
+    resetForm() {
+      this.$refs.filterForm.resetFields()
+    }
   },
   created() {
     const message = this.$message({

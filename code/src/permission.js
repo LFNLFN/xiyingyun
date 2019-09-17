@@ -27,12 +27,12 @@ router.beforeEach((to, from, next) => {
         // 拉取用户信息
         store.dispatch('GetInfo').then(res => {
           next()
-        }).catch((err) => {
+        }).catch(() => {
           // 当登录者是admin
-          if (store.getters.name == 'admin') {
+          if (store.getters.name === 'admin') {
             // next({ path: '/home' })
             next()
-          } else  {
+          } else {
             store.dispatch('FedLogOut').then(() => {
               // Message.error(err || '登录失败，请检查网络或重试')
               Message.error('登录失败，请检查网络再重试或者核实账号是否存在')
