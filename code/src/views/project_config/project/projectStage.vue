@@ -98,12 +98,12 @@
                 :value="item.id" />
             </el-select>
           </el-form-item>
-          <el-form-item label="建筑面积">
+          <el-form-item prop="estateProjectDetailEntity.constructionArea" label="建筑面积">
             <el-input v-model="stageFormData.estateProjectDetailEntity.constructionArea" size="small" placeholder="请输入面积">
               <span slot="append" class="area-text">㎡</span>
             </el-input>
           </el-form-item>
-          <el-form-item label="交付类型">
+          <el-form-item prop="estateProjectDetailEntity.deliveryType" label="交付类型">
             <el-select
               v-model="stageFormData.estateProjectDetailEntity.deliveryType"
               :loading="selectLoading"
@@ -118,7 +118,7 @@
                 :value="item.id" />
             </el-select>
           </el-form-item>
-          <el-form-item label="施工阶段">
+          <el-form-item prop="estateProjectDetailEntity.constructionStage" label="施工阶段">
             <el-select
               v-model="stageFormData.estateProjectDetailEntity.constructionStage"
               :loading="selectLoading"
@@ -133,19 +133,20 @@
                 :value="item.id" />
             </el-select>
           </el-form-item>
+          <el-row style="width: 100%">
+            <el-form-item prop="estateProjectDetailEntity.aerialView" label="鸟瞰图上传(建议不超过50M)">
+            <el-upload
+              v-loading="isUploadAerialview"
+              :http-request="uploadAerialview"
+              :show-file-list="false"
+              class="avatar-uploader"
+              action="">
+              <img v-if="stageFormData.estateProjectDetailEntity.aerialView" :src="GetOssImgFullPath(stageFormData.estateProjectDetailEntity.aerialView)" class="avatar">
+              <i v-else class="el-icon-plus avatar-uploader-icon" />
+            </el-upload>
+          </el-form-item>
+          </el-row>
         </el-form>
-        <div class="aerialview-upload-wrap">
-          <span class="title-text">上传鸟瞰图 (建议不超过50M)</span>
-          <el-upload
-            v-loading="isUploadAerialview"
-            :http-request="uploadAerialview"
-            :show-file-list="false"
-            :class="{'uploaded': stageFormData.estateProjectDetailEntity.aerialView !== ''}"
-            action="">
-            <img :src="GetOssImgFullPath(stageFormData.estateProjectDetailEntity.aerialView)">
-            <i class="el-icon-plus" />
-          </el-upload>
-        </div>
       </el-main>
       <el-main class="house-type-wrap">
         <div class="header">
@@ -206,15 +207,19 @@ import { emptyTarget } from '@/utils/public'
 export default {
   components: { AddHouseType, FooterBarContainer },
   data() {
-    const validCityFunc = (rule, val, callback) => {
-      if (this.provinceSelected !== '' && this.citySelected !== '') {
-        console.log('val', val)
-        if (val === '') {
+    const validCityFunc = (rule, val, callback) => { // 验证项目所在城市是否输入
+      if (val === '') {
           callback(new Error('请选择城市'))
         } else {
           callback()
         }
-      }
+    }
+    const validCityAreaView = (rule, val, callback) => { // 验证项目鸟瞰图是否输入
+      if (val === '') {
+          callback(new Error('请选择鸟瞰图'))
+        } else {
+          callback()
+        }
     }
     return {
       // ----------- 添加项目分期表单数据 -----------
@@ -239,10 +244,15 @@ export default {
       stageFormRules: {
         name: [{ required: true, trigger: 'blur', message: '项目名称不能为空' }],
         code: [{ required: true, trigger: 'blur', message: '项目编码不能为空' }],
+        address: [{ required: true, trigger: 'blur', message: '项目地址不能为空' }],
         status: [{ required: true, trigger: 'change', message: '请选择状态' }],
         estateProjectDetailEntity: {
           cityId: [{ required: true, trigger: 'blur', validator: validCityFunc }],
-          typeId: [{ required: true, trigger: 'change', message: '请选择项目状态' }]
+          typeId: [{ required: true, trigger: 'change', message: '请选择项目状态' }],
+          constructionArea: [{ required: true, trigger: 'blur', message: '请输入建筑面积' }],
+          deliveryType: [{ required: true, trigger: 'change', message: '请选择项目状态' }],
+          constructionStage: [{ required: true, trigger: 'change', message: '请选择施工阶段' }],
+          aerialView: [{ required: true, trigger: 'change', validator: validCityAreaView }]
         }
       },
       // ------------------ 添加户型的表单数据 -------------------
@@ -619,8 +629,8 @@ export default {
     }
   }
   .aerialview-upload-wrap {
-    padding: 0 20px 30px 20px;
-    margin-left: 3%;
+    // padding: 0 20px 30px 20px;
+    // margin-left: 3%;
     .title-text {
       font-size: 14px;
       margin-left: 10px;
@@ -705,4 +715,31 @@ export default {
 /deep/.el-popper {
   margin-top: 0;
 }
+
+  .avatar-uploader .avatar-uploader-icon {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .avatar-uploader .avatar-uploader-icon:hover {
+    border-color: #409EFF;
+  }
+
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 178px;
+    height: 178px;
+    line-height: 178px;
+    text-align: center;
+  }
+
+  .avatar {
+    width: 178px;
+    height: 178px;
+    display: block;
+  }
 </style>

@@ -49,7 +49,7 @@
 </template>
 <script>
 import PublicPopups from '@/components/Pop-ups/PublicPopups'
-import { isvalidUsername, isvalidPhoneNum } from '@/utils/validate'
+import { isvalidUsername, isvalidPhoneNum, isvalidEmail } from '@/utils/validate'
 import { addAccount, editAccountInfo } from '@/api/base_data/accounts'
 import { mapActions } from 'vuex'
 
@@ -89,7 +89,8 @@ export default {
       },
       addAccountRules: {
         name: [{ required: true, trigger: 'blur', validator: isvalidUsername }],
-        phone: [{ required: true, trigger: 'blur', validator: isvalidPhoneNum }]
+        phone: [{ required: true, trigger: 'blur', validator: isvalidPhoneNum }],
+        email: [{ required: true, trigger: 'blur', validator: isvalidEmail }]
       },
       // expireDateRadio: '',
       // datePickerDisable: false,

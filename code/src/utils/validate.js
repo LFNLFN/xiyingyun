@@ -22,3 +22,11 @@ export function isvalidPhoneNum(rule, value, callback) {
   }
   callback()
 }
+
+export function isvalidEmail(rule, value, callback) {
+  const regEmail = /^[\w.\-]+@(?:[a-z0-9]+(?:-[a-z0-9]+)*\.)+[a-z]{2,3}$/
+  if (regEmail.test(value)) {
+    callback()
+  }
+  callback(new Error('邮箱格式不正确'))
+}
