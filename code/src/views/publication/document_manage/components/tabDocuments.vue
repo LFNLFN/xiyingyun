@@ -5,13 +5,16 @@
         <h3 class="title-text">{{ curTabName }}</h3>
         <el-tree
           ref="typetree"
-          :data="typeTreeData"
+          :data="documentTreeData"
           :props="typeTreeProp"
           node-key="id"
-          class="type-tree">
+          class="type-tree"
+          @node-click="getNodesMsg"
+        >
           <span
             slot-scope="{ node, data }"
-            class="custom-tree-node">
+            class="custom-tree-node"
+          >
             <span>
               {{ data.name }}
             </span>
@@ -20,7 +23,7 @@
                 <span class="el-icon-s-tools tree-icon-btn" />
                 <el-dropdown-menu slot="dropdown">
                   <template v-if="data.level === 0">
-                    <el-dropdown-item command="addBuilding">新增子级</el-dropdown-item>
+                    <el-dropdown-item command="addDocType">新增子级</el-dropdown-item>
                   </template>
                   <template v-else-if="data.level === 1">
                     <el-dropdown-item command="addChild">新增子级</el-dropdown-item>
@@ -35,13 +38,23 @@
       </el-aside>
       <el-main>
         <div class="header">
-          <h3 class="title-text">文档列表</h3>
+          <div class="flex-layout">
+            <h3 class="title-text">文档列表</h3>
+            <el-select v-if="curTabName==='项目文档'" v-model="selectedProject" placeholder="请选择项目">
+              <el-option
+                v-for="item in projectOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </div>
           <div class="btn-wrap">
             <el-button type="primary" size="small">新增</el-button>
           </div>
         </div>
         <el-table
-          :data="docuentTableData"
+          :data="documentTableData"
           size="small"
           class="no-border-gary-head" >
           <el-table-column prop="name" label="文档名称" />
@@ -70,42 +83,56 @@
 </template>
 <script>
 export default {
+  props: {
+    documentTreeData: {
+      type: Array,
+      required: true
+    }
+  },
   data() {
     return {
       curTabName: '企业文档',
-      typeTreeData: [
-        {
-          name: '企业文档',
-          level: 0,
-          children: [
-            {
-              level: 1,
-              name: '集团文档'
-            },
-            {
-              level: 1,
-              name: '区域文档'
-            }
-          ]
-        }
-      ],
       typeTreeProp: {
         label: 'name',
         children: 'children'
       },
-      docuentTableData: [
-        {
-          name: '房地产信息化系统使用指引'
-        },
-        {
-          name: '实测实量数据同步指引'
-        }
+      documentTableData: [
+        // {
+        //   name: '房地产信息化系统使用指引'
+        // },
+        // {
+        //   name: '实测实量数据同步指引'
+        // }
       ],
       pageIndex: 0,
-      pageTotal: 10
+      pageTotal: 10,
+      currentTreeNodeObj: {},
+      selectedProject: null,
+      projectOptions: []
     }
   },
   methods: {
+    getNodesMsg(obj, node, component) {
+      console.log(obj, node, component)
+      this.currentTreeNodeObj = obj
+      if (obj.level !== 0) {
+        if (obj.children) {
+          this.documentTableData = obj.children
+        } else {
+          this.documentTableData = []
+          this.documentTableData[0] = obj
+        }
+      }
+    },
+    addDocType(data) {
+      // console.log(data, 11);
+      const params = {
+        'type': 0,
+        'name': '一、通用类美标文件',
+        'parentId': '6d9f1637276da567568168a9acbfeee0'
+      }
+      this.$emit('add-doc-type', params)
+    },
     resetDataProperty(obj) {
       const _keys = Object.keys(obj)
       _keys.forEach(key => {
@@ -113,7 +140,7 @@ export default {
       })
     },
     handleDropdown(order, data) {
-      console.log('order', order)
+      this[order](data)
     },
     pageChangeHandle(page) {
       this.pageIndex = page
@@ -177,6 +204,14 @@ export default {
       background: #daecfe;
       border-radius: 5px;
     }
+  }
+}
+.flex-layout {
+  width: 70%;
+  @include flex-layout(flex-start, center, null, null);
+  & > * {
+    min-width: 4em;
+    margin-right: 1em
   }
 }
 </style>

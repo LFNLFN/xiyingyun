@@ -135,16 +135,16 @@
           </el-form-item>
           <el-row style="width: 100%">
             <el-form-item prop="estateProjectDetailEntity.aerialView" label="鸟瞰图上传(建议不超过50M)">
-            <el-upload
-              v-loading="isUploadAerialview"
-              :http-request="uploadAerialview"
-              :show-file-list="false"
-              class="avatar-uploader"
-              action="">
-              <img v-if="stageFormData.estateProjectDetailEntity.aerialView" :src="GetOssImgFullPath(stageFormData.estateProjectDetailEntity.aerialView)" class="avatar">
-              <i v-else class="el-icon-plus avatar-uploader-icon" />
-            </el-upload>
-          </el-form-item>
+              <el-upload
+                v-loading="isUploadAerialview"
+                :http-request="uploadAerialview"
+                :show-file-list="false"
+                class="avatar-uploader"
+                action="">
+                <img v-if="stageFormData.estateProjectDetailEntity.aerialView" :src="GetOssImgFullPath(stageFormData.estateProjectDetailEntity.aerialView)" class="avatar">
+                <i v-else class="el-icon-plus avatar-uploader-icon" />
+              </el-upload>
+            </el-form-item>
           </el-row>
         </el-form>
       </el-main>
@@ -209,17 +209,17 @@ export default {
   data() {
     const validCityFunc = (rule, val, callback) => { // 验证项目所在城市是否输入
       if (val === '') {
-          callback(new Error('请选择城市'))
-        } else {
-          callback()
-        }
+        callback(new Error('请选择城市'))
+      } else {
+        callback()
+      }
     }
     const validCityAreaView = (rule, val, callback) => { // 验证项目鸟瞰图是否输入
       if (val === '') {
-          callback(new Error('请选择鸟瞰图'))
-        } else {
-          callback()
-        }
+        callback(new Error('请选择鸟瞰图'))
+      } else {
+        callback()
+      }
     }
     return {
       // ----------- 添加项目分期表单数据 -----------

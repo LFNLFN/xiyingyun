@@ -334,6 +334,22 @@ export const asyncRouterMap = [
       }
     ]
   },
+  // 考勤管理界面
+  {
+    path: '/att_log',
+    name: 'attLog',
+    component: Layout,
+    meta: { title: '首页', icon: '' },
+    menuType: 'public',
+    children: [
+      {
+        path: 'att_log',
+        name: 'attLogIndex',
+        meta: { title: '考勤管理', icon: '' },
+        component: () => import('@/views/att_log/att_log')
+      }
+    ]
+  },
   // 基础资料页面
   {
     path: '/base_data',
