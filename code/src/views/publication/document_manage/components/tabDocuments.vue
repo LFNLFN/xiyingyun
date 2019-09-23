@@ -2,7 +2,39 @@
   <div class="main-content">
     <el-container>
       <el-aside width="none">
-        <h3 class="title-text">{{ curTabName }}</h3>
+        <div class="tree-header flex-layout-tree">
+          <h3 class="title-text">{{ curTabName }}</h3>
+          <div class="drowdown-wrap" slot-scope="{ node, data }">
+            <el-dropdown @command="(order) => handleDropdown(order, data)">
+              <span class="el-dropdown-link">
+                <i class="el-icon-s-tools el-icon--right"/>
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item command="addDocType">新增文档分类</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </div>
+          
+
+          <span
+            slot-scope="{ node, data }"
+            class="custom-tree-node"
+          >
+            <el-dropdown size="small" @command="(order) => handleDropdown(order, data)">
+              <span class="el-icon-s-tools tree-icon-btn"/>
+              <el-dropdown-menu slot="dropdown">
+                <template v-if="data.level === 0">
+                  <el-dropdown-item command="addDocType">新增子级</el-dropdown-item>
+                </template>
+                <template v-else-if="data.level === 1">
+                  <el-dropdown-item command="addChild">新增子级</el-dropdown-item>
+                  <el-dropdown-item command="editChild">编辑</el-dropdown-item>
+                  <el-dropdown-item command="delete">删除</el-dropdown-item>
+                </template>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </span>
+        </div>
         <el-tree
           ref="typetree"
           :data="documentTreeData"
@@ -23,7 +55,7 @@
                 <span class="el-icon-s-tools tree-icon-btn" />
                 <el-dropdown-menu slot="dropdown">
                   <template v-if="data.level === 0">
-                    <el-dropdown-item command="addDocType">新增子级</el-dropdown-item>
+                    <!-- <el-dropdown-item command="addDocType">新增子级</el-dropdown-item> -->
                   </template>
                   <template v-else-if="data.level === 1">
                     <el-dropdown-item command="addChild">新增子级</el-dropdown-item>
@@ -45,8 +77,7 @@
                 v-for="item in projectOptions"
                 :key="item.value"
                 :label="item.label"
-                :value="item.value">
-              </el-option>
+                :value="item.value"/>
             </el-select>
           </div>
           <div class="btn-wrap">
@@ -108,7 +139,8 @@ export default {
       pageTotal: 10,
       currentTreeNodeObj: {},
       selectedProject: null,
-      projectOptions: []
+      projectOptions: [],
+      addingTypeName: '新增测试分类'
     }
   },
   methods: {
@@ -126,12 +158,20 @@ export default {
     },
     addDocType(data) {
       // console.log(data, 11);
-      const params = {
-        'type': 0,
-        'name': '一、通用类美标文件',
-        'parentId': '6d9f1637276da567568168a9acbfeee0'
-      }
-      this.$emit('add-doc-type', params)
+      this.$prompt('请输入分类名', '', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+        // inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+        // inputErrorMessage: '邮箱格式不正确'
+      }).then(() => {
+        const addingTypeName = this.addingTypeName
+        const params = {
+          'type': 0,
+          'name': addingTypeName,
+          'parentId': data.id
+        }
+        this.$emit('add-doc-type', params)
+      }).catch((err) => { console.log(err) })
     },
     resetDataProperty(obj) {
       const _keys = Object.keys(obj)
@@ -213,5 +253,8 @@ export default {
     min-width: 4em;
     margin-right: 1em
   }
+}
+.flex-layout-tree {
+  @include flex-layout(space-between, center, null, null);
 }
 </style>

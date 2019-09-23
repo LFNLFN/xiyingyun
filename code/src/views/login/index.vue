@@ -121,7 +121,7 @@ export default {
             this.$RemoveLocalStorage('loginSave') // 清除本地存储的账号数据
           }
           this.loading = true
-          // 调用store里面的登录函数
+          // 调用store里面的登录函数（这里只传入登录账号和密码）
           this.$store.dispatch('Login', this.loginForm).then(() => {
             // 登录成功后，返回token，跳转页面
             this.loading = false

@@ -115,6 +115,7 @@ export default {
       message: '地图正在加载中...',
       duration: 0
     })
+    // 加载项目数据
     this.getProjectFunc().then((proejctList) => {
       const cityProjects = {}
       const cityIdList = []

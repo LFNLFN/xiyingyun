@@ -8,8 +8,8 @@
         <el-form-item label="机构名称" prop="name">
           <el-input v-model="addSuppForm.name" size="small" placeholder="请输入机构名称" />
         </el-form-item>
-        <el-form-item label="机构全称" prop="fullName">
-          <el-input v-model="addSuppForm.fullName" size="small" placeholder="请输入机构全称" />
+        <el-form-item label="机构简称" prop="fullName">
+          <el-input v-model="addSuppForm.fullName" size="small" placeholder="请输入机构简称" />
         </el-form-item>
         <el-form-item label="负责人" prop="official">
           <el-input v-model="addSuppForm.official" size="small" placeholder="请输入负责人姓名" />

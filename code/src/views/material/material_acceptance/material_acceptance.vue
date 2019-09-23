@@ -3,6 +3,7 @@
   <el-container class="global-container">
     <el-main>
       <el-form
+        ref="filterForm"
         :model="filterFormData"
         :inline="true"
         label-position="right"
@@ -10,7 +11,7 @@
         class="filter-form">
         <el-row :gutter="20">
           <el-col :span="8">
-            <el-form-item label="区域公司">
+            <el-form-item prop="orgId" label="区域公司">
               <el-select
                 v-model="filterFormData.orgId"
                 size="small">
@@ -23,7 +24,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="项目名称">
+            <el-form-item prop="projectId" label="项目名称">
               <el-select
                 v-model="filterFormData.projectId"
                 size="small">
@@ -37,7 +38,7 @@
           </el-col>
           <template v-if="fullFilterForm">
             <el-col :span="8">
-              <el-form-item label="材料类型">
+              <el-form-item prop="typeId" label="材料类型">
                 <el-cascader
                   v-model="filterFormData.typeId"
                   :clearabled="true"
@@ -48,7 +49,7 @@
               </el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item label="材料状态">
+              <el-form-item prop="status" label="材料状态">
                 <el-select v-model="filterFormData.status" size="small" placeholder="全部">
                   <el-option
                     v-for="item in materialStatus"
@@ -59,12 +60,12 @@
               </el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item label="批次名称">
+              <el-form-item prop="batchName" label="批次名称">
                 <el-input v-model="filterFormData.batchName" size="small" placeholder="请输入批次名称"/>
               </el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item label="使用部位">
+              <el-form-item prop="part" label="使用部位">
                 <el-input v-model="filterFormData.part" size="small" placeholder="请输入使用部位"/>
               </el-form-item>
             </el-col>
@@ -85,7 +86,7 @@
           <el-col :span="8">
             <el-form-item class="btn-item">
               <el-button type="primary" size="mini" @click="getMaterialDatas">查询</el-button>
-              <el-button size="mini">重置</el-button>
+              <el-button size="mini" @click="resetForm()">重置</el-button>
               <el-button
                 size="mini"
                 class="no-border form-ctrl-btn"
@@ -168,7 +169,8 @@ export default {
         status: '',
         part: '',
         startDate: '',
-        endDate: ''
+        endDate: '',
+        timeSelected: ''
       },
       timeSelected: [], // 保存选择的时间数据
       areaCompanys: [], // 保存区域公司数据
@@ -337,6 +339,11 @@ export default {
     pageSizeChangeHandle(page) {
       this.pageSize = page
       this.getMaterialDatas()
+    },
+    // 重置表单
+    resetForm() {
+      this.$refs.filterForm.resetFields()
+      this.timeSelected = []
     }
   }
 }

@@ -104,7 +104,8 @@ export const asyncRouterMap = [
       {
         path: 'check_problems',
         name: 'checkProblem',
-        meta: { title: '检查问题', icon: '' },
+        // meta: { title: '检查问题', icon: '' }, 旧名
+        meta: { title: '日常检查', icon: '' },
         component: () => import('@/views/quality/check_problems/check_problems')
       },
       {

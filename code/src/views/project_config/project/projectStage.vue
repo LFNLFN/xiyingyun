@@ -362,18 +362,29 @@ export default {
       // 编辑项目分期，加载表单数据
       const curProject = searchArrByKeyVal(this.projectDetails, 'id', projectId)
       if (curProject) {
-        this.stageLoading = true
+        // this.stageLoading = true
         const parentId = curProject.parentId
+        console.log(JSON.parse(JSON.stringify(curProject['estateProjectDetailEntity'])),99)
         const _keys = Object.keys(curProject)
+        console.log(_keys,88)
         const parentProject = searchArrByKeyVal(this.projectList, 'id', parentId)
         // 加载所属公司
         if (parentProject) {
           this.belongCompany = parentProject.name
         }
         // 加载表单数据
-        _keys.forEach(key => {
-          this.stageFormData[key] = curProject[key]
-        })
+        console.log(this.stageFormData,77)
+        // _keys.forEach(key => {
+        //   this.stageFormData[key] = curProject[key]
+        // })
+        this.stageFormData['address'] = curProject['address']
+        this.stageFormData['code'] = curProject['code']
+        //  this.stageFormData['estateProjectDetailEntity'] = JSON.parse(JSON.stringify(curProject['estateProjectDetailEntity']))
+        this.stageFormData['name'] = curProject['name']
+        this.stageFormData['orgId'] = curProject['orgId']
+        this.stageFormData['parentId'] = curProject['parentId']
+        this.stageFormData['status'] = curProject['status']
+        this.stageFormData['type'] = curProject['type']
         // 加载下拉选择框数据
         const _selectDictKey = Object.keys(this.selectDectionary)
         const whiteList = ['provinceData', 'districtData', 'cityData']

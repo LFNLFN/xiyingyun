@@ -20,14 +20,15 @@ export default {
     // 获取楼栋数据
     getBuildingDataFunc(visible) {
       if (visible || this.buildingDatas.length === 0) {
-        const projectId = this.filterFormData.projectId
-        const curProject = this.projectDetailDatas.find(item => item.id === projectId)
-        const projectIdList = Array.of(projectId)
-        if (curProject.section.length > 0) {
+        const projectId = this.filterFormData.projectId // 找出当前的项目id
+        const curProject = this.projectDetailDatas.find(item => item.id === projectId) // 找出当前的项目对象
+        const projectIdList = Array.of(projectId) // 创建一个包含当前项目id的数组
+        if (curProject.section.length > 0) { // 猜测：如果包含子项目，把子项目的id也塞入数组
           curProject.section.forEach(item => {
             projectIdList.push(item.id)
           })
         }
+        // 组织参数
         const params = {
           'terms[0].column': 'projectId$IN',
           'terms[0].value': projectIdList.join()
@@ -40,6 +41,7 @@ export default {
     },
     // 获取问题分类
     getProblemTypeFunc(visible) {
+      this.getBuildingDataFunc(true)
       if (!visible || this.problemTypeList.length > 0) return
       const params = {
         'terms[0].column': 'parentId',
@@ -52,6 +54,7 @@ export default {
     },
     // 选择问题分类后马上加载检查项
     problemTypeCheckedHandle(val) {
+      this.getBuildingDataFunc(true)
       this.loadingcheckItems = true
       getCheckItems(val).then(resp => {
         const _data = resp.result[0].children
@@ -64,6 +67,7 @@ export default {
     // 获取检查项
     getCheckItemsFunc(visible) {
       if (!visible || this.checkItems.length > 0) return
+      this.getBuildingDataFunc(true)
       if (this.filterFormData.problemType === null) {
         Message({
           type: 'warning',
@@ -90,6 +94,7 @@ export default {
     // 获取整改单位
     getParticipantFunc(visible) {
       if (!visible || this.amendOrganizations.length > 0) return
+      this.getBuildingDataFunc(true)
       const projectId = this.filterFormData.projectId
       getParticipant(projectId).then(resp => {
         this.$set(this, 'amendOrganizations', resp.result)
@@ -98,6 +103,7 @@ export default {
     // 获取创建单位
     getCreatedOrganFunc(visible) {
       if (!visible || this.createdOrganizations.length > 0) return
+      this.getBuildingDataFunc(true)
       const projectId = this.filterFormData.projectId
       getCreatedOrgan(projectId).then(resp => {
         this.$set(this, 'createdOrganizations', resp.result)
@@ -105,6 +111,7 @@ export default {
     },
     getCreatedMembersFunc(visible) {
       if (!visible || this.createdMembers.length > 0) return
+      this.getBuildingDataFunc(true)
       const projectId = this.filterFormData.projectId
       getCreatedMembers(projectId).then(resp => {
         this.$set(this, 'createdMembers', resp.result)

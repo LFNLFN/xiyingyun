@@ -63,7 +63,7 @@
                   @visible-change="(visiable) => getCheckItemsFunc(visiable)" />
               </el-form-item>
             </el-col>
-            <el-col :span="8">
+            <!-- <el-col :span="8">
               <el-form-item label="检查批次:">
                 <el-select
                   v-model="filterFormData.name"
@@ -75,10 +75,10 @@
                     :value="item.id" />
                 </el-select>
               </el-form-item>
-            </el-col>
+            </el-col> -->
             <el-col :span="8">
               <el-form-item prop="unitId" label="楼栋:">
-                <el-select
+                <!-- <el-select
                   :loading="buildingDatas.length === 0"
                   v-model="filterFormData.unitId"
                   size="small"
@@ -88,7 +88,16 @@
                     :key="idx"
                     :value="item.id"
                     :label="item.name" />
-                </el-select>
+                </el-select> -->
+                <el-checkbox-group v-model="filterFormData.unitIdArr" v-if="buildingDatas.length>0">
+                  <el-checkbox 
+                    v-for="(item, idx) in buildingDatas"
+                    :key="idx"
+                    :value="item.id"
+                    :label="item.name">
+                  </el-checkbox>
+                </el-checkbox-group>
+                <span v-else>请先选择项目</span>
               </el-form-item>
             </el-col>
             <el-col :span="8">
@@ -233,7 +242,8 @@ export default {
         projectId: '',
         problemType: null,
         checkSettingId: '',
-        unitId: '',
+        // unitId: '',
+        unitIdArr: [],
         dutyOrgId: '',
         createTime: [],
         creatorId: '',
