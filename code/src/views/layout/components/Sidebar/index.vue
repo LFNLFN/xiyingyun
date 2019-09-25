@@ -1,5 +1,14 @@
 <template>
   <el-scrollbar wrap-class="scrollbar-wrapper">
+    <!-- <img
+      v-show="$store.state.app.sidebar.opened"
+      src="../../../../assets/logo_images/seeingCloudLogo.png"
+      alt=""
+      id="sidebar-pic-open"
+    > -->
+    <!-- <h3 v-show="$store.state.app.sidebar.opened" id="sidebar-pic-open">Seeing Cloud</h3> -->
+    111111
+    <!-- <img v-show="!$store.state.app.sidebar.opened" src="../../../../assets/home-page-pic/mini-logo.png" alt="" id="sidebar-pic-close"> -->
     <el-menu
       :default-active="defaultActive"
       :collapse="isCollapse"
@@ -8,43 +17,64 @@
       :active-text-color="variables.menuActiveText"
       :collapse-transition="false"
       mode="vertical"
-      @select="handleOpen" >
+      @select="handleOpen"
+    >
       <template>
-        <sidebar-item v-for="route in homeRoutes" :key="route.path" :item="route" :base-path="route.path"/>
+        <sidebar-item
+          v-for="route in homeRoutes"
+          :key="route.path"
+          :item="route"
+          :base-path="route.path"
+        />
       </template>
       <template>
-        <div class="divide-wrap">
-          <span class="divide-line" />
-          <div class="divide-text">
-            <!-- <span class="el-icon-bottom" /> -->
-            工程管理
-            <!-- <span class="el-icon-bottom" /> -->
-          </div>
-        </div>
-        <sidebar-item v-for="route in projectRoutes" :key="route.path" :item="route" :base-path="route.path"/>
+        <!-- <div class="divide-wrap"> -->
+        <!-- <span class="divide-line" /> -->
+        <!-- <div class="divide-text"> -->
+        <!-- <span class="el-icon-bottom" /> -->
+        <!-- 工程管理 -->
+        <!-- <span class="el-icon-bottom" /> -->
+        <!-- </div> -->
+        <!-- </div> -->
+        <sidebar-item
+          v-for="route in projectRoutes"
+          :key="route.path"
+          :item="route"
+          :base-path="route.path"
+        />
       </template>
       <template>
-        <div class="divide-wrap">
-          <span class="divide-line" />
-          <div class="divide-text">
-            <!-- <span class="el-icon-bottom" /> -->
-            公共业务管理
-            <!-- <span class="el-icon-bottom" /> -->
-          </div>
-        </div>
-        <sidebar-item v-for="route in publicRoutes" :key="route.path" :item="route" :base-path="route.path"/>
+        <!-- <div class="divide-wrap"> -->
+        <!-- <span class="divide-line" /> -->
+        <!-- <div class="divide-text"> -->
+        <!-- <span class="el-icon-bottom" /> -->
+        <!-- 公共业务管理 -->
+        <!-- <span class="el-icon-bottom" /> -->
+        <!-- </div> -->
+        <!-- </div> -->
+        <sidebar-item
+          v-for="route in publicRoutes"
+          :key="route.path"
+          :item="route"
+          :base-path="route.path"
+        />
       </template>
       <template>
-        <sidebar-item v-for="route in otherRouters" :key="route.path" :item="route" :base-path="route.path"/>
+        <sidebar-item
+          v-for="route in otherRouters"
+          :key="route.path"
+          :item="route"
+          :base-path="route.path"
+        />
       </template>
     </el-menu>
   </el-scrollbar>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-import variables from '@/styles/variables.scss'
-import SidebarItem from './SidebarItem'
+import { mapGetters } from "vuex";
+import variables from "@/styles/variables.scss";
+import SidebarItem from "./SidebarItem";
 
 export default {
   components: { SidebarItem },
@@ -56,43 +86,41 @@ export default {
       publicRoutes: [],
       otherRouters: [],
       typeRouterIndex: {
-        'home': 'homeRoutes',
-        'project': 'projectRoutes',
-        'public': 'publicRoutes'
+        home: "homeRoutes",
+        project: "projectRoutes",
+        public: "publicRoutes"
       }
-    }
+    };
   },
   computed: {
-    ...mapGetters([
-      'sidebar'
-    ]),
+    ...mapGetters(["sidebar"]),
     routes() {
-      return this.$router.options.routes
+      return this.$router.options.routes;
     },
     variables() {
-      return variables
+      return variables;
     },
     isCollapse() {
-      return !this.sidebar.opened
+      return !this.sidebar.opened;
     }
   },
   created() {
-    const routes = this.$router.options.routes
+    const routes = this.$router.options.routes;
     routes.forEach(item => {
       if (item.menuType) {
-        const index = this.typeRouterIndex[item.menuType]
-        this[index].push(item)
+        const index = this.typeRouterIndex[item.menuType];
+        this[index].push(item);
       } else {
-        this.otherRouters.push(item)
+        this.otherRouters.push(item);
       }
-    })
+    });
   },
   methods: {
     handleOpen(index, indexPath) {
-      this.defaultActive = index
+      this.defaultActive = index;
     }
   }
-}
+};
 </script>
 <style ref="stylesheet/scss" lang="scss" scoped>
 @import "src/styles/mixin.scss";
@@ -102,10 +130,11 @@ export default {
   width: 100%;
   height: 45px;
   text-align: center;
-  padding:0 10px;
+  padding: 0 10px;
   background: $menuBg;
   position: relative;
-  .divide-text, .divide-line {
+  .divide-text,
+  .divide-line {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -124,5 +153,17 @@ export default {
     border-top: 1px dashed $menuText;
     position: absolute;
   }
+}
+
+#sidebar-pic-open {
+  box-sizing: border-box;
+  padding-right: 10px;
+  width: 300px;
+  background-color: #fff;
+}
+#sidebar-pic-close {
+  box-sizing: border-box;
+  width: 36px;
+  padding: 2px;
 }
 </style>

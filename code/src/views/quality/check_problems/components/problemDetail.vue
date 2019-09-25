@@ -172,6 +172,7 @@ export default {
         this.dutyOrgData = this.problemDetailData.dutyOrgEntity || {}
         this.dutyPersonData = this.problemDetailData.dutyPersonEntity || {}
         this.checkPersonData = this.problemDetailData.checkPersonEntity || {}
+        this.problemDetailData.replyEntityList.reverse() // 问题追踪要倒序
         loading.close()
       })
     },

@@ -28,7 +28,7 @@
           <el-table-column prop="official" width="150" label="负责人" align="center"/>
           <el-table-column width="120" label="操作" align="center">
             <template slot-scope="scope">
-              <el-button size="mini" type="primary" class="post-table-btn" @click.stop="unBindParticipant(scope.row)">删除</el-button>
+              <el-button size="mini" type="primary" class="post-table-btn" @click.stop="unBindParticipant(scope.row)">移除</el-button>
             </template>
           </el-table-column>
         </el-table>

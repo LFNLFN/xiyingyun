@@ -12,11 +12,11 @@
         <div class="base-info">
           <div class="base-info-item">
             <span class="title-text">公司名称：</span>
-            <span>{{ curParticipantData.fullName }}</span>
+            <span>{{ curParticipantData.name }}</span>
           </div>
           <div class="base-info-item">
             <span class="title-text">公司简称：</span>
-            <span>{{ curParticipantData.name }}</span>
+            <span>{{ curParticipantData.fullName }}</span>
           </div>
           <div class="base-info-item">
             <span class="title-text">负责人：</span>

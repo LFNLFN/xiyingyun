@@ -19,20 +19,6 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="8">
-            <el-form-item prop="unitId" label="楼栋">
-              <el-select
-                v-model="filterFormData.unitId"
-                size="small"
-                @visible-change="(visiable) => getBuildingDataFunc(visiable)">
-                <el-option
-                  v-for="(item, idx) in buildingDatas"
-                  :key="idx"
-                  :label="item.name"
-                  :value="item.id" />
-              </el-select>
-            </el-form-item>
-          </el-col>
           <template v-if="fullFilterForm">
             <el-col :span="8">
               <el-form-item prop="status" label="验收状态">
@@ -74,6 +60,29 @@
               </el-form-item>
             </el-col>
           </template>
+          <el-col :span="24">
+            <el-form-item prop="unitId" label="楼栋">
+              <!-- <el-select
+                v-model="filterFormData.unitId"
+                size="small"
+                @visible-change="(visiable) => getBuildingDataFunc(visiable)">
+                <el-option
+                  v-for="(item, idx) in buildingDatas"
+                  :key="idx"
+                  :label="item.name"
+                  :value="item.id" />
+              </el-select> -->
+              <el-checkbox-group v-model="filterFormData.unitId" v-if="buildingDatas.length>0">
+                <el-checkbox 
+                  v-for="(item, idx) in buildingDatas"
+                  :key="idx"
+                  :value="item.id"
+                  :label="item.name">
+                </el-checkbox>
+              </el-checkbox-group>
+              <span v-else>暂无数据</span>
+            </el-form-item>
+          </el-col>
           <el-col :span="8">
             <el-form-item class="operate-wrap">
               <el-button type="primary" size="mini" @click="getProcessAcceptFunc">查询</el-button>
@@ -144,7 +153,7 @@ export default {
     return {
       filterFormData: {
         projectId: '',
-        unitId: '',
+        unitId: [],
         status: null,
         acceptItemId: '',
         applyDate: ''
@@ -173,13 +182,17 @@ export default {
   watch: {
     'filterFormData.projectId': function(newVal, oldVal) {
       this.$set(this, 'buildingDatas', [])
+      this.getBuildingDataFunc(true)
     }
   },
   created() {
+    // 获取项目详情
     this.getProjectFunc().then((data) => {
       const _projectId = data[0].id
       this.filterFormData.projectId = _projectId
-      this.getProcessAcceptFunc()
+      this.getProcessAcceptFunc() // 获取主表格数据
+    }).catch(err => {
+      console.log(err)
     })
   },
   methods: {
@@ -199,6 +212,10 @@ export default {
               params[`terms[${paramIndex}].termType`] = termType[idx]
               paramIndex++
             })
+          } else if(key === 'unitId' && Array.isArray(_data)) {
+            params[`terms[${paramIndex}].column`] = key
+            params[`terms[${paramIndex}].value`] = _data.join()
+            paramIndex++
           } else {
             params[`terms[${paramIndex}].column`] = key
             params[`terms[${paramIndex}].value`] = _data
@@ -214,12 +231,25 @@ export default {
         const data = resp.result
         this.pageTotal = data.total
         this.pageIndex = data.pageIndex + 1
-        this.acceptTableData = data.data
+        this.acceptTableData = data.data // 表格数据
       })
     },
     // 获取楼栋数据
     getBuildingDataFunc(visible) {
       if (visible && this.buildingDatas.length === 0) {
+        const message = this.$message({
+          message: '数据加载中',
+          duration: 0
+        })
+        if (!this.filterFormData.projectId) { // 因为需要项目的id作为参数进行请求，所以要先选择项目名称
+          this.$message({
+            type: 'error',
+            message: '请先选择项目名称',
+            showClose: true
+          })
+          message.close()
+          return false
+        }
         const projectId = this.filterFormData.projectId
         const curProject = this.projectDetailDatas.find(item => item.id === projectId)
         const projectIdList = Array.of(projectId)
@@ -230,11 +260,14 @@ export default {
         }
         const params = {
           'terms[0].column': 'projectId$IN',
-          'terms[0].value': projectIdList.join()
+          'terms[0].value': projectIdList.join() // 一个大项目包含很多分期，所以是一个id数组
         }
         getBuliding(params).then(resp => {
           const buildingList = resp.result
-          this.$set(this, 'buildingDatas', buildingList)
+          this.$set(this, 'buildingDatas', buildingList) // 写入下拉框中
+          message.close()
+        }).catch(err => {
+          message.close()
         })
       }
     },

@@ -98,6 +98,7 @@ export default {
     }
   },
   created() {
+    // 获取项目数据
     this.getProjectFunc().then((data) => {
       const tabName = this.showTabName
       const _obj = {

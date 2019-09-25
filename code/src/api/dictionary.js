@@ -25,6 +25,15 @@ export function getDictionaryItem(params) {
   })
 }
 
+// 获取省市区结构
+export function getLocationStructure(params) {
+  return request({
+    url: '/estate-dict-item/dict/city',
+    method: 'get',
+    params: params
+  })
+}
+
 // 新增数据字典item
 export function addDictionaryItem(data) {
   return request({

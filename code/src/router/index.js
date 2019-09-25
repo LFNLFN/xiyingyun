@@ -62,7 +62,7 @@ export const asyncRouterMap = [
       {
         path: 'index',
         name: 'homeIndex',
-        meta: { title: '首页', icon: '' },
+        meta: { title: '首页', icon: 'home' },
         component: () => import('@/views/home/index')
       }
     ]
@@ -74,13 +74,13 @@ export const asyncRouterMap = [
     name: 'dataScreen',
     component: Layout,
     redirect: '/data_screen/index',
-    meta: { title: '统计数据大屏', icon: '' },
+    meta: { title: '统计数据大屏', icon: 'dataScreen' },
     menuType: 'home',
     children: [
       {
         path: 'index',
         name: 'dataScreenIndex',
-        meta: { title: '统计数据大屏', icon: '' },
+        meta: { title: '统计数据大屏', icon: 'dataScreen' },
         component: () => import('@/views/data_screen/index')
       }
     ]
@@ -92,7 +92,7 @@ export const asyncRouterMap = [
     component: Layout,
     redirect: '/quality/process_acceptance',
     name: 'quality',
-    meta: { title: '质量管理', icon: '' },
+    meta: { title: '质量管理', icon: 'quality' },
     menuType: 'project',
     children: [
       {
@@ -165,7 +165,7 @@ export const asyncRouterMap = [
     redirect: '/material/material_acceptance',
     name: 'material',
     alwaysShow: true,
-    meta: { title: '材料管理', icon: '' },
+    meta: { title: '材料管理', icon: 'material' },
     menuType: 'project',
     children: [
       {
@@ -188,7 +188,7 @@ export const asyncRouterMap = [
     component: Layout,
     redirect: '/publication/publication_manage',
     name: 'publication',
-    meta: { title: '企业发文', icon: '' },
+    meta: { title: '企业发文', icon: 'publication' },
     menuType: 'project',
     children: [
       {
@@ -226,7 +226,7 @@ export const asyncRouterMap = [
     component: Layout,
     redirect: '/statistics/statistics_report',
     name: 'statistics',
-    meta: { title: '统计分析', icon: '' },
+    meta: { title: '统计分析', icon: 'statistics' },
     menuType: 'project',
     alwaysShow: true,
     children: [
@@ -270,7 +270,7 @@ export const asyncRouterMap = [
     component: Layout,
     redirect: '/project_config/project',
     name: 'projectConfig',
-    meta: { title: '项目设置', icon: '' },
+    meta: { title: '项目设置', icon: 'projectConfig' },
     menuType: 'public',
     children: [
       {
@@ -340,13 +340,13 @@ export const asyncRouterMap = [
     path: '/att_log',
     name: 'attLog',
     component: Layout,
-    meta: { title: '首页', icon: '' },
+    meta: { title: '首页', icon: 'attLog' },
     menuType: 'public',
     children: [
       {
         path: 'att_log',
         name: 'attLogIndex',
-        meta: { title: '考勤管理', icon: '' },
+        meta: { title: '考勤管理', icon: 'attLog' },
         component: () => import('@/views/att_log/att_log')
       }
     ]
@@ -357,7 +357,7 @@ export const asyncRouterMap = [
     component: Layout,
     name: 'baseData',
     redirect: '/base_data/suppliers',
-    meta: { title: '基础资料', icon: '' },
+    meta: { title: '基础资料', icon: 'baseData' },
     menuType: 'public',
     children: [
       {
@@ -429,7 +429,7 @@ export const asyncRouterMap = [
     component: Layout,
     name: 'user',
     redirect: '/user/user_set',
-    meta: { title: '我的', icon: '' },
+    meta: { title: '我的', icon: 'user' },
     menuType: 'public',
     children: [
       // {
@@ -464,13 +464,13 @@ export const asyncRouterMap = [
     name: 'websiteInfo',
     component: Layout,
     redirect: '/website_info/index',
-    meta: { title: '首页', icon: '' },
+    meta: { title: '网站信息', icon: 'websiteInfo' },
     menuType: 'public',
     children: [
       {
         path: 'index',
         name: 'websiteInfoIndex',
-        meta: { title: '网站信息', icon: '' },
+        meta: { title: '网站信息', icon: 'websiteInfo' },
         component: () => import('@/views/website_info/index')
       }
     ]

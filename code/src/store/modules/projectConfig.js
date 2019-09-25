@@ -79,6 +79,11 @@ const projectConfig = {
       const key = _obj.dataKey
       const params = _obj.params
       return new Promise((reslove, reject) => {
+        // -应急修复
+        if (key==='districtData' && state[key].length > 0) {
+          state[key] = []
+        }
+        // 应急修复-
         if (state[key] === undefined || state[key].length === 0) {
           getDictionaryItem(params).then(resp => {
             const data = resp.result

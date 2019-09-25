@@ -77,30 +77,6 @@
               </el-form-item>
             </el-col> -->
             <el-col :span="8">
-              <el-form-item prop="unitId" label="楼栋:">
-                <!-- <el-select
-                  :loading="buildingDatas.length === 0"
-                  v-model="filterFormData.unitId"
-                  size="small"
-                  @visible-change="(visiable) => getBuildingDataFunc(visiable)">
-                  <el-option
-                    v-for="(item, idx) in buildingDatas"
-                    :key="idx"
-                    :value="item.id"
-                    :label="item.name" />
-                </el-select> -->
-                <el-checkbox-group v-model="filterFormData.unitIdArr" v-if="buildingDatas.length>0">
-                  <el-checkbox 
-                    v-for="(item, idx) in buildingDatas"
-                    :key="idx"
-                    :value="item.id"
-                    :label="item.name">
-                  </el-checkbox>
-                </el-checkbox-group>
-                <span v-else>请先选择项目</span>
-              </el-form-item>
-            </el-col>
-            <el-col :span="8">
               <el-form-item prop="dutyOrgId" label="整改单位:">
                 <el-select
                   :loading="amendOrganizations.length === 0"
@@ -159,6 +135,30 @@
               </el-form-item>
             </el-col>
           </template>
+          <el-col :span="24">
+              <el-form-item prop="unitId" label="楼栋:">
+                <!-- <el-select
+                  :loading="buildingDatas.length === 0"
+                  v-model="filterFormData.unitId"
+                  size="small"
+                  @visible-change="(visiable) => getBuildingDataFunc(visiable)">
+                  <el-option
+                    v-for="(item, idx) in buildingDatas"
+                    :key="idx"
+                    :value="item.id"
+                    :label="item.name" />
+                </el-select> -->
+                <el-checkbox-group v-model="filterFormData.unitId" v-if="buildingDatas.length>0">
+                  <el-checkbox 
+                    v-for="(item, idx) in buildingDatas"
+                    :key="idx"
+                    :value="item.id"
+                    :label="item.name">
+                  </el-checkbox>
+                </el-checkbox-group>
+                <span v-else>暂无数据</span>
+              </el-form-item>
+            </el-col>
           <el-col :span="8">
             <el-form-item class="btn-wrap">
               <el-button type="primary" size="mini" @click="getCheckProblemsFunc">查询</el-button>
@@ -242,8 +242,7 @@ export default {
         projectId: '',
         problemType: null,
         checkSettingId: '',
-        // unitId: '',
-        unitIdArr: [],
+        unitId: [],
         dutyOrgId: '',
         createTime: [],
         creatorId: '',
@@ -281,6 +280,10 @@ export default {
         this.filterFormData.projectId = newVal[0].id
         this.getCheckProblemsFunc()
       }
+    },
+    'filterFormData.projectId': function(newVal, oldVal) {
+      this.$set(this, 'buildingDatas', [])
+      this.getBuildingDataFunc(true)
     },
     searchProblemsKey: function(newVal) {
       if (newVal === '') {
@@ -348,6 +351,10 @@ export default {
               params[`terms[${paramIndex}].termType`] = termType[idx]
               paramIndex++
             })
+          } else if(key === 'unitId' && Array.isArray(_data)) {
+            params[`terms[${paramIndex}].column`] = key
+            params[`terms[${paramIndex}].value`] = _data.join()
+            paramIndex++
           } else {
             params[`terms[${paramIndex}].column`] = key
             params[`terms[${paramIndex}].value`] = _data

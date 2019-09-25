@@ -325,7 +325,7 @@ export default {
       }
     },
     // 通过城市ID获取区县数据或省数据
-    citySelected: function(newVal, oldVal) {
+    citySelected: async function(newVal, oldVal) {
       if (newVal !== '' && newVal !== oldVal) {
         this.selectDectionary.districtData['parentId'] = newVal
         this.districtData = []
@@ -335,13 +335,15 @@ export default {
     // 编辑项目分期时，获取所有城市数据再进行处理
     'stageFormData.estateProjectDetailEntity.cityId': function(newVal) {
       const eventType = this.$route.query.eventType
-      if (this.districtData.length === 0 && eventType === 'edit') {
+      // if (this.districtData.length === 0 && eventType === 'edit') {
+      if (this.districtData.length === 0 || eventType === 'edit') {
         const params = {
           'terms[0].column': 'dictId',
           'terms[0].value': 'city'
         }
-        this.getDictionaryItemFunc({ params, dataKey: '' }).then(resp => {
-          this.handleAllCityData(resp, newVal)
+        this.getDictionaryItemFunc({ params, dataKey: 'districtData' }).then(async resp => {
+          // this.handleAllCityData(resp, newVal)
+          this.handleAllCityDataNew(resp, newVal)
           this.stageLoading = false
         })
       }
@@ -364,22 +366,38 @@ export default {
       if (curProject) {
         // this.stageLoading = true
         const parentId = curProject.parentId
-        console.log(JSON.parse(JSON.stringify(curProject['estateProjectDetailEntity'])),99)
         const _keys = Object.keys(curProject)
-        console.log(_keys,88)
         const parentProject = searchArrByKeyVal(this.projectList, 'id', parentId)
         // 加载所属公司
         if (parentProject) {
           this.belongCompany = parentProject.name
         }
         // 加载表单数据
-        console.log(this.stageFormData,77)
         // _keys.forEach(key => {
-        //   this.stageFormData[key] = curProject[key]
+        //   // this.stageFormData[key] = curProject[key]
+        //   this.$set(this.stageFormData, key, curProject[key])
         // })
         this.stageFormData['address'] = curProject['address']
         this.stageFormData['code'] = curProject['code']
-        //  this.stageFormData['estateProjectDetailEntity'] = JSON.parse(JSON.stringify(curProject['estateProjectDetailEntity']))
+
+        // -应急处理
+        // this.$set(this.stageFormData, 'estateProjectDetailEntity', curProject['estateProjectDetailEntity'])
+        // this.stageFormData['estateProjectDetailEntity'] = JSON.parse(JSON.stringify(curProject['estateProjectDetailEntity']))
+        // let copyCurProject = JSON.parse(JSON.stringify(curProject))
+        this.stageFormData['estateProjectDetailEntity'].aerialView = curProject['estateProjectDetailEntity'].aerialView
+        // this.stageFormData['estateProjectDetailEntity'].cityId = curProject['estateProjectDetailEntity'].cityId
+        this.stageFormData['estateProjectDetailEntity'].cityId = '101e4f9c7ad04ed0a1c314def2d5e0d2'
+        this.stageFormData['estateProjectDetailEntity'].constructionArea = curProject['estateProjectDetailEntity'].constructionArea
+        this.stageFormData['estateProjectDetailEntity'].constructionStage = curProject['estateProjectDetailEntity'].constructionStage
+        this.stageFormData['estateProjectDetailEntity'].deliveryType = curProject['estateProjectDetailEntity'].deliveryType
+        this.stageFormData['estateProjectDetailEntity'].houseTypeEntityList = curProject['estateProjectDetailEntity'].houseTypeEntityList
+        this.stageFormData['estateProjectDetailEntity'].id = curProject['estateProjectDetailEntity'].id
+        this.stageFormData['estateProjectDetailEntity'].projectId = curProject['estateProjectDetailEntity'].projectId
+        this.stageFormData['estateProjectDetailEntity'].projectIdProperty = curProject['estateProjectDetailEntity'].projectIdProperty
+        this.stageFormData['estateProjectDetailEntity'].typeId = curProject['estateProjectDetailEntity'].typeId
+        // this.handleAllCityDataNew(null, this.stageFormData['estateProjectDetailEntity'].cityId)
+        // 应急处理-
+
         this.stageFormData['name'] = curProject['name']
         this.stageFormData['orgId'] = curProject['orgId']
         this.stageFormData['parentId'] = curProject['parentId']
@@ -412,20 +430,23 @@ export default {
     // 处理所有城市数据
     handleAllCityData(datas, tergetDistrictId) {
       const beHandleData = []
+      return
+      datas = datas.slice(0,10)
+      // datas 每一项相当于一个地名（省市区都算一个）的数据
       datas.forEach(val => {
-        if (val.parentId === '-1') {
+        if (val.parentId === '-1') { // parentId=-1那就是一个省级地名
           // 处理省
-          this.allCityData.push(val)
-          this.provinceData.push(val)
-          this.allCityIndex[val.id] = []
+          this.allCityData.push(val) // 存储一个城市所属地方链条数据
+          this.provinceData.push(val) // 一个只储存省级地名的数组
+          this.allCityIndex[val.id] = [] // 为这个省级地名预留一个数组，index是省级地名的id
         } else {
-          const keys = Object.keys(this.allCityIndex)
-          const proviIndex = keys.indexOf(val.parentId)
+          const keys = Object.keys(this.allCityIndex) // 返回省对象id数组
+          const proviIndex = keys.indexOf(val.parentId) // 找出对应的省id
           if (proviIndex >= 0) {
             // 处理市
-            const curProvi = this.allCityData[proviIndex]
-            curProvi.children ? curProvi.children.push(val) : curProvi['children'] = Array.of(val)
-            this.allCityIndex[keys[proviIndex]].push(val.id)
+            const curProvi = this.allCityData[proviIndex] // 找出所属省份对象
+            curProvi.children ? curProvi.children.push(val) : curProvi['children'] = Array.of(val) // 把城市数据放入省份对象children数组之中
+            this.allCityIndex[keys[proviIndex]].push(val.id) // 在为省级地名预留的数组中添加一个市id
           } else {
             // 处理区县
             if (keys.length) {
@@ -450,6 +471,31 @@ export default {
       })
       if (beHandleData.length > 0) {
         this.handleAllCityData(beHandleData, tergetDistrictId)
+      }
+    },
+    // 用于地点初始化
+    handleAllCityDataNew(datas, tergetDistrictId) {
+      for (let index = 0; index < datas.length; index++) {
+        const element = datas[index];
+        if (element.parentId != '-1') { // parentId=-1那就是一个省级地名
+          continue
+        } else {
+          this.provinceData.push(element) // 一个只储存省级地名的数组
+        }
+      }
+      for (let index = 0; index < datas.length; index++) {
+        const element = datas[index];
+        if ('101e4f9c7ad04ed0a1c314def2d5e0d2'==element.id) {
+          this.citySelected = element.parentId
+          break
+        }
+      }
+      for (let index = 0; index < datas.length; index++) {
+        const element = datas[index];
+        if (this.citySelected==element.id) {
+          this.provinceSelected = element.parentId
+          break
+        }
       }
     },
     // 获取下拉框数据

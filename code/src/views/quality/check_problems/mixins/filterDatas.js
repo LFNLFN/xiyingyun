@@ -20,10 +20,14 @@ export default {
     // 获取楼栋数据
     getBuildingDataFunc(visible) {
       if (visible || this.buildingDatas.length === 0) {
-        const projectId = this.filterFormData.projectId // 找出当前的项目id
-        const curProject = this.projectDetailDatas.find(item => item.id === projectId) // 找出当前的项目对象
-        const projectIdList = Array.of(projectId) // 创建一个包含当前项目id的数组
-        if (curProject.section.length > 0) { // 猜测：如果包含子项目，把子项目的id也塞入数组
+        const message = this.$message({
+          message: '数据加载中',
+          duration: 0
+        })
+        const projectId = this.filterFormData.projectId
+        const curProject = this.projectDetailDatas.find(item => item.id === projectId)
+        const projectIdList = Array.of(projectId)
+        if (curProject.section.length > 0) {
           curProject.section.forEach(item => {
             projectIdList.push(item.id)
           })
@@ -36,6 +40,9 @@ export default {
         getBuliding(params).then(resp => {
           const buildingList = resp.result
           this.$set(this, 'buildingDatas', buildingList)
+          message.close()
+        }).catch(err => {
+          message.close()
         })
       }
     },

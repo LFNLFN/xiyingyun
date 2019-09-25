@@ -22,7 +22,8 @@ export default {
                   id: stage.id, // 项目id
                   parentName: project.name,
                   parentId: stage.parentId,
-                  name: `${project.name}--${stage.name}`,
+                  // name: `${project.name}--${stage.name}`,
+                  name: stage.name,
                   section: stage.childrenWithDetail || [],
                   source: stage,
                   parent: project
