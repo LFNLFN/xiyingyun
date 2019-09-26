@@ -136,7 +136,8 @@ export default {
             allUnitData: this.allUnitData,
             unitFormData: this.buildFormData,
             isNextAddUnit: true,
-            isBuildRoom: this.buildRoomsChecked
+            isBuildRoom: this.buildRoomsChecked,
+            isStandard: 1// 是否为标准层
           }
           this.saveUnitFormData(_obj)
           this.toEditBuildingData()

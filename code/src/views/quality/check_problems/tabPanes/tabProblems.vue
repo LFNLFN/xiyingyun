@@ -34,6 +34,27 @@
               </el-select>
             </el-form-item>
           </el-col>
+          <el-col :span="8">
+            <el-form-item prop="unitId" label="楼栋:">
+              <!-- <el-select
+                :loading="buildingDatas.length === 0"
+                v-model="filterFormData.unitId"
+                size="small"
+                @visible-change="(visiable) => getBuildingDataFunc(visiable)">
+                <el-option
+                  v-for="(item, idx) in buildingDatas"
+                  :key="idx"
+                  :value="item.id"
+                  :label="item.name" />
+              </el-select> -->
+              <el-cascader
+                v-model="filterFormData.unitId"
+                :options="buildingDatas"
+                :props="{ multiple: true }"
+                clearable>
+              </el-cascader>
+            </el-form-item>
+          </el-col>
           <template v-if="fullFilterForm">
             <el-col :span="8">
               <el-form-item prop="problemType" label="分类:">
@@ -135,30 +156,6 @@
               </el-form-item>
             </el-col>
           </template>
-          <el-col :span="24">
-              <el-form-item prop="unitId" label="楼栋:">
-                <!-- <el-select
-                  :loading="buildingDatas.length === 0"
-                  v-model="filterFormData.unitId"
-                  size="small"
-                  @visible-change="(visiable) => getBuildingDataFunc(visiable)">
-                  <el-option
-                    v-for="(item, idx) in buildingDatas"
-                    :key="idx"
-                    :value="item.id"
-                    :label="item.name" />
-                </el-select> -->
-                <el-checkbox-group v-model="filterFormData.unitId" v-if="buildingDatas.length>0">
-                  <el-checkbox 
-                    v-for="(item, idx) in buildingDatas"
-                    :key="idx"
-                    :value="item.id"
-                    :label="item.name">
-                  </el-checkbox>
-                </el-checkbox-group>
-                <span v-else>暂无数据</span>
-              </el-form-item>
-            </el-col>
           <el-col :span="8">
             <el-form-item class="btn-wrap">
               <el-button type="primary" size="mini" @click="getCheckProblemsFunc">查询</el-button>
@@ -419,6 +416,7 @@ export default {
     // 重置表单
     resetForm() {
       this.$refs.filterForm.resetFields()
+      this.filterFormData.projectId = this.projectDetailDatas[0].id
     },
     // 换页处理
     pageChangeHandle(page) {

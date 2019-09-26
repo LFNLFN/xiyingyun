@@ -33,7 +33,9 @@
             </div>
             <div class="info-item">
               <label>所属公司: </label>
-              <div class="info">{{ measureDetailData.orgName }}</div>
+              <el-tooltip effect="dark" :content="measureDetailData.orgName" placement="top-start">
+                <div class="info">{{ measureDetailData.orgName }}</div>
+              </el-tooltip>
             </div>
             <div class="info-item">
               <label>实测时间: </label>
@@ -56,6 +58,14 @@
               <el-col :span="8">爆点数：{{ item. burstPoint }}</el-col>
               <el-col :span="8">及格率：{{ `${item.passingRate}%` }}</el-col>
             </el-row>
+          </div>
+        </div>
+        <div v-if="measureDetailData.image" style="padding: 0 30px">
+          <!-- <div>原位标识图和备注</div> -->
+          <div class="photo-list">
+            <img :src="GetOssImgFullPath(item)" alt="" 
+            v-for="(item) in measureDetailData.image.split(',')" :key="item"
+            @click="showPhotoZoom(measureDetailData.image)">
           </div>
         </div>
       </div>
@@ -103,6 +113,17 @@ export default {
       }).catch(() => {
         this.isLoading = false
       })
+    },
+    // 查看图片操作
+    showPhotoZoom(datas) {
+      const imageDataList = []
+      const dataList = datas.split(',')
+      dataList.forEach(item => {
+        imageDataList.push({
+          imgSrc: item
+        })
+      })
+      this.$emit('toPhotosZoom', imageDataList)
     },
     closeBox() {
       this.$emit('update:isMeasureDetailShow', false)
@@ -153,6 +174,16 @@ export default {
       color: #000;
       margin: 5px 0 15px 0;
     }
+  }
+}
+.photo-list {
+  margin: 10px 0 0 0;
+  padding: 1px;
+  @include flex-layout(flex-start, center, null, wrap);
+  img {
+    max-width: 120px;
+    max-height: 120px;
+    cursor: pointer;
   }
 }
 </style>

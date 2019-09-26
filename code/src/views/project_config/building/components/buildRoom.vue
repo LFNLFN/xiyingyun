@@ -27,7 +27,7 @@
           </ul>
           <ul v-show="addRoomCompelete" class="rooms-list">
             <li class="list-header">
-              <span class="floor-text">单元</span>
+              <span class="floor-text">房间</span>
             </li>
             <li
               v-for="(item, idx) in floorData"

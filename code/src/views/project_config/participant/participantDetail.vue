@@ -12,11 +12,11 @@
         <div class="base-info">
           <div class="base-info-item">
             <span class="title-text">公司名称：</span>
-            <span>{{ curParticipantData.name }}</span>
+            <span>{{ curParticipantData.fullName }}</span>
           </div>
           <div class="base-info-item">
             <span class="title-text">公司简称：</span>
-            <span>{{ curParticipantData.fullName }}</span>
+            <span>{{ curParticipantData.name }}</span>
           </div>
           <div class="base-info-item">
             <span class="title-text">负责人：</span>
@@ -106,6 +106,7 @@ export default {
       }
       const participantId = this.$route.query.participantId
       getBindtMemebers(this.projectId, participantId).then(resp => {
+        this.bindedMemberIds = []
         this.membersTableData = resp.result
         this.membersTableData.forEach(item => {
           this.bindedMemberIds.push(item.id)
@@ -114,7 +115,7 @@ export default {
       })
     },
     // 添加参建方操作处理
-    addMembersHandle() {
+    async addMembersHandle() {
       const _obj = {
         memberSeleted: this.bindedMemberIds
       }

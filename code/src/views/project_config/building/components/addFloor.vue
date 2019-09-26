@@ -69,7 +69,8 @@ export default {
             name: this.floorFormData.name,
             parentId: '-1',
             level: 1,
-            sortIndex: curSortIndex
+            sortIndex: curSortIndex,
+            isStandard: 0// 是否为标准层 1yes 0no
           }
           console.log('_addData', _addData)
           addRoom(_addData).then(resp => {

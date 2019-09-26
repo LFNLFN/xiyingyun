@@ -72,15 +72,12 @@
                   :label="item.name"
                   :value="item.id" />
               </el-select> -->
-              <el-checkbox-group v-model="filterFormData.unitId" v-if="buildingDatas.length>0">
-                <el-checkbox 
-                  v-for="(item, idx) in buildingDatas"
-                  :key="idx"
-                  :value="item.id"
-                  :label="item.name">
-                </el-checkbox>
-              </el-checkbox-group>
-              <span v-else>暂无数据</span>
+              <el-cascader
+                v-model="filterFormData.unitId"
+                :options="buildingDatas"
+                :props="{ multiple: true }"
+                clearable>
+              </el-cascader>
             </el-form-item>
           </el-col>
           <el-col :span="8">
@@ -263,7 +260,15 @@ export default {
           'terms[0].value': projectIdList.join() // 一个大项目包含很多分期，所以是一个id数组
         }
         getBuliding(params).then(resp => {
-          const buildingList = resp.result
+          let buildingList = resp.result
+          let tmpArr = []
+          buildingList.forEach((e,i,s) => {
+            tmpArr[i] = {
+              label: e.name,
+              value: e.id
+            }
+          })
+          buildingList = tmpArr
           this.$set(this, 'buildingDatas', buildingList) // 写入下拉框中
           message.close()
         }).catch(err => {

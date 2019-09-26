@@ -129,12 +129,17 @@
     <measureDetail
       v-show="isMeasureDetailShow"
       ref="measureDetailCom"
-      :is-measure-detail-show.sync="isMeasureDetailShow" />
+      :is-measure-detail-show.sync="isMeasureDetailShow"
+      @toPhotosZoom="toPhotosZoomHandle" />
     <addMeasure
       v-show="isAddMeasureShow"
       ref="addMeasureCom"
       :is-add-measure-show.sync="isAddMeasureShow"
       @refreshMeasure="getMeasureDatasFunc" />
+      <photosZoom
+      v-show="isPhotosZoomShow"
+      ref="photosZoomCom"
+      :is-photos-zoom-show.sync="isPhotosZoomShow" />
   </el-container>
 </template>
 <script>
@@ -142,10 +147,11 @@ import personTypeData from '@/mixins/personTypeData'
 import getProjectMixin from '@/mixins/getProjectStage'
 import MeasureDetail from '@/views/quality/measure/components/measureDetail'
 import AddMeasure from '@/views/quality/measure/components/addMeasure'
+import PhotosZoom from '@/components/PhotosZoom'
 import { getBuliding } from '@/api/project_config/building'
 import { getMeasureDatas, getMeasuerItems } from '@/api/quality/measure'
 export default {
-  components: { MeasureDetail, AddMeasure },
+  components: { MeasureDetail, AddMeasure, PhotosZoom },
   mixins: [getProjectMixin, personTypeData],
   data() {
     return {
@@ -165,7 +171,8 @@ export default {
       pageTotal: 10,
       isMeasureDetailShow: false,
       isAddMeasureShow: false,
-      isLoading: false
+      isLoading: false,
+      isPhotosZoomShow: false,
     }
   },
   created() {
@@ -297,7 +304,15 @@ export default {
     },
     resetForm() {
       this.$refs.filterForm.resetFields()
-    }
+    },
+    // 展示图片查看组件
+    toPhotosZoomHandle(imgDatas) {
+      const _obj = {
+        photoList: imgDatas
+      }
+      this.$refs.photosZoomCom.resetDataProperty(_obj)
+      this.isPhotosZoomShow = true
+    },
   }
 }
 </script>

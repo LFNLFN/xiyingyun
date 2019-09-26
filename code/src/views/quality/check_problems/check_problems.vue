@@ -100,6 +100,7 @@ export default {
   created() {
     // 获取项目数据
     this.getProjectFunc().then((data) => {
+      this.projectDetailDatas = data
       const tabName = this.showTabName
       const _obj = {
         curTabStatus: this.tabStatusData[tabName],

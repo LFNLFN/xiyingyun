@@ -38,7 +38,15 @@ export default {
           'terms[0].value': projectIdList.join()
         }
         getBuliding(params).then(resp => {
-          const buildingList = resp.result
+          let buildingList = resp.result
+          let tmpArr = []
+          buildingList.forEach((e,i,s) => {
+            tmpArr[i] = {
+              label: e.name,
+              value: e.id
+            }
+          })
+          buildingList = tmpArr
           this.$set(this, 'buildingDatas', buildingList)
           message.close()
         }).catch(err => {
