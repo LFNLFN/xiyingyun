@@ -3,7 +3,7 @@
     <el-aside v-loading="roleTreeLoading" width="250px" class="roles-tree-wrap">
       <div class="header">
         <span>角色列表</span>
-        <el-button type="primary" circle size="small" class="el-icon-plus add-roles-btn" @click="addRolesBoxCtrl"/>
+        <el-button type="primary" circle size="small" class="el-icon-plus add-roles-btn" @click="addRolesBoxCtrl('add')"/>
       </div>
       <el-tree
         ref="rolesTree"
@@ -106,7 +106,10 @@ export default {
       clearRoles: 'CLEAR_PER_ROLES'
     }),
     // 添加角色组件显隐控制
-    addRolesBoxCtrl() {
+    addRolesBoxCtrl(eventType) {
+      if (eventType) {
+        this.addOrEditRole = eventType
+      }
       this.isAddRolesShow = !this.isAddRolesShow
     },
     // 分页查询控制
@@ -194,7 +197,7 @@ export default {
           this.addRolesBoxCtrl()
           break
         case 'edit':
-          this.editRoleData = data
+          this.editRoleData = Object.assign({}, data)
           this.addOrEditRole = order
           this.addRolesBoxCtrl()
           break

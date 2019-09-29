@@ -56,9 +56,10 @@ export default {
     }
   },
   watch: {
+    // 该职位的人员数据
     positionData: function(newVal) {
-      if (newVal.positionId) {
-        this.getMembersFunc(newVal.positionId)
+      if (newVal.positionId) { // 传入职位的id，拿到具体人员的数据
+        this.getMembersFunc(newVal.positionId) // memberData 拿到具体人员的数据
       }
     }
   },

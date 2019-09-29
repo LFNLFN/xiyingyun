@@ -128,7 +128,8 @@ export default {
     addPlanHandle() {
       const _obj = {
         projectsData: this.projectStageList,
-        projectSelected: this.projectSelected
+        projectSelected: this.projectSelected,
+        isAddOrEdit: 'add'
       }
       this.$refs.addPlanCom.resetDataProperty(_obj)
       this.isAddPlanShow = true

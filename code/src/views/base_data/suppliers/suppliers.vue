@@ -243,6 +243,10 @@ export default {
           break
         case 'addMember':
           this.isAddMemberShow = !this.isAddMemberShow
+          // 新增后自动刷新列表
+          let initData = Object.assign({}, this.postMembersPostData)
+          this.postMemberCtrl()
+          this.postMemberCtrl(initData)
           break
         case 'pullMember':
           this.isPullMemberShow = !this.isPullMemberShow
@@ -352,7 +356,7 @@ export default {
           </span>
         )
       }
-    }
+    },
   }
 }
 </script>

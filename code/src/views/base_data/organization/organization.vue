@@ -300,6 +300,9 @@ export default {
           this.getOrganTree()
         } else if (boxType === 'position') {
           this.getPositionFunc(this.$refs.organTree.getCurrentNode())
+        } else if (boxType === 'addMember') {
+          this.getPositionFunc(this.$refs.organTree.getCurrentNode())
+          this.getOrganTree()
         }
       }
     },

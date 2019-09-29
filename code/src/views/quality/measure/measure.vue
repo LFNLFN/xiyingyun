@@ -57,6 +57,8 @@
               <el-form-item prop="createTime" label="创建日期">
                 <el-date-picker
                   v-model="filterFormData.createTime"
+                  value-format="yyyy-MM-dd HH:mm:ss"
+                  :default-time="['00:00:00', '23:59:59']"
                   type="daterange"
                   size="small"
                   start-placeholder="开始日期"

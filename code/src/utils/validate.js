@@ -17,7 +17,7 @@ export function isExternal(path) {
 }
 
 export function isvalidPhoneNum(rule, value, callback) {
-  if (value.length < 11) {
+  if (!new RegExp(/^1[3|4|5|6|7|8]\d{9}$/).test(value)) {
     callback(new Error('手机号格式不正确'))
   }
   callback()

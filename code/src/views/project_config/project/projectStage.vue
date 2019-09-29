@@ -1,4 +1,5 @@
 <template>
+  <!-- 新增项目分期页面 -->
   <footerBarContainer v-loading="stageLoading" @cancelHandle="cancelHandle" @confirmHandle="submitHandle">
     <template slot="main-content">
       <el-main class="stage-info-watp">
@@ -244,15 +245,15 @@ export default {
       stageFormRules: {
         name: [{ required: true, trigger: 'blur', message: '项目名称不能为空' }],
         code: [{ required: true, trigger: 'blur', message: '项目编码不能为空' }],
-        address: [{ required: true, trigger: 'blur', message: '项目地址不能为空' }],
+        // address: [{ required: true, trigger: 'blur', message: '项目地址不能为空' }],
         status: [{ required: true, trigger: 'change', message: '请选择状态' }],
         estateProjectDetailEntity: {
-          cityId: [{ required: true, trigger: 'blur', validator: validCityFunc }],
+          cityId: [{ required: true, trigger: 'change', validator: validCityFunc }],
           typeId: [{ required: true, trigger: 'change', message: '请选择项目状态' }],
-          constructionArea: [{ required: true, trigger: 'blur', message: '请输入建筑面积' }],
-          deliveryType: [{ required: true, trigger: 'change', message: '请选择项目状态' }],
-          constructionStage: [{ required: true, trigger: 'change', message: '请选择施工阶段' }],
-          aerialView: [{ required: true, trigger: 'change', validator: validCityAreaView }]
+          // constructionArea: [{ required: true, trigger: 'blur', message: '请输入建筑面积' }],
+          // deliveryType: [{ required: true, trigger: 'change', message: '请选择项目状态' }],
+          // constructionStage: [{ required: true, trigger: 'change', message: '请选择施工阶段' }],
+          // aerialView: [{ required: true, trigger: 'change', validator: validCityAreaView }]
         }
       },
       // ------------------ 添加户型的表单数据 -------------------
@@ -306,7 +307,8 @@ export default {
       // ----------- 状态数据 -------------------
       stageLoading: false,
       selectLoading: false,
-      isUploadAerialview: false
+      isUploadAerialview: false,
+      isAddingHouseType: false
     }
   },
   computed: {
@@ -424,7 +426,10 @@ export default {
     // 处理表格行的样式
     tableRowClassHandle({ row, rowIndex }) {
       if (row.virtual) {
+        this.isAddingHouseType = true
         return 'add-house-type-row'
+      } else {
+        this.isAddingHouseType = false
       }
     },
     // 处理所有城市数据
@@ -519,6 +524,8 @@ export default {
     },
     // 显示添加户型填写表单
     addHouseTypeCtrl() {
+      // houseTypeData 户型数据
+      // lastData 返回元素的virtual属性为true的元素集合
       const lastData = this.houseTypeData.filter(type => {
         if (type.virtual) {
           return true
@@ -566,6 +573,15 @@ export default {
     },
     // 编辑户型数据
     editHouseTypeHandle(data) {
+      if (this.isAddingHouseType) {
+        this.$message({
+          message: '请先完成或取消新增户型填写',
+          duration: 0,
+          showClose: true
+        })
+        return false
+      }
+      // data是每一行的数据，this.houseTypeForm是表格里的输入框
       const _keys = Object.keys(this.houseTypeForm)
       _keys.forEach(key => {
         this.houseTypeForm[key] = data[key]

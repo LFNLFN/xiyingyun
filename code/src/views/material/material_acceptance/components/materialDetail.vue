@@ -80,7 +80,7 @@
                 </div>
               </div>
             </div>
-            <AcceptRecord :record-list="acceptRecordData" />
+            <AcceptRecord :record-list="acceptRecordData" @toPhotosZoom="toPhotosZoomHandle($event)"/>
             <!-- <div class="accept-record-wrap">
               <div class="header">验收记录</div>
               <ul class="record-list">
@@ -107,7 +107,7 @@
         </el-tab-pane>
         <el-tab-pane label="材料送检" name="materialTest">
           <div class="material-test-wrap">
-            <AcceptRecord :record-list="testRecordData" />
+            <AcceptRecord :record-list="testRecordData" @toPhotosZoom="toPhotosZoomHandle($event)"/>
           </div>
         </el-tab-pane>
       </el-tabs>
@@ -210,6 +210,9 @@ export default {
     },
     closeBoxHandle() {
       this.$emit('update:isMaterialDetailShow', false)
+    },
+    toPhotosZoomHandle(data) {
+      this.$emit('toPhotosZoom', data)
     }
   }
 }

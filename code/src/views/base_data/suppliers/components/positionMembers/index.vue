@@ -1,4 +1,5 @@
 <template>
+  <!-- row-click 之后出现的侧边栏 -->
   <LeftSlidePopup :show="boxShow" width="680px" @leaveOver="leaveHandle">
     <el-container slot="main-content" class="container">
       <el-header height="50px" class="header-wrap">
