@@ -233,6 +233,7 @@ export default {
     },
     // 控制弹窗组件显隐
     boxCtrl(boxType) {
+      let initData
       switch (boxType) {
         case 'supplier':
           this.isAddSuppShow = !this.isAddSuppShow
@@ -244,7 +245,7 @@ export default {
         case 'addMember':
           this.isAddMemberShow = !this.isAddMemberShow
           // 新增后自动刷新列表
-          let initData = Object.assign({}, this.postMembersPostData)
+          initData = Object.assign({}, this.postMembersPostData)
           this.postMemberCtrl()
           this.postMemberCtrl(initData)
           break
@@ -356,7 +357,7 @@ export default {
           </span>
         )
       }
-    },
+    }
   }
 }
 </script>

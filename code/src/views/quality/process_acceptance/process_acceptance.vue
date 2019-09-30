@@ -76,8 +76,7 @@
                 v-model="filterFormData.unitId"
                 :options="buildingDatas"
                 :props="{ multiple: true }"
-                clearable>
-              </el-cascader>
+                clearable />
             </el-form-item>
           </el-col>
           <el-col :span="8">
@@ -209,7 +208,7 @@ export default {
               params[`terms[${paramIndex}].termType`] = termType[idx]
               paramIndex++
             })
-          } else if(key === 'unitId' && Array.isArray(_data)) {
+          } else if (key === 'unitId' && Array.isArray(_data)) {
             params[`terms[${paramIndex}].column`] = key
             params[`terms[${paramIndex}].value`] = _data.join()
             paramIndex++
@@ -261,8 +260,8 @@ export default {
         }
         getBuliding(params).then(resp => {
           let buildingList = resp.result
-          let tmpArr = []
-          buildingList.forEach((e,i,s) => {
+          const tmpArr = []
+          buildingList.forEach((e, i, s) => {
             tmpArr[i] = {
               label: e.name,
               value: e.id
@@ -271,7 +270,8 @@ export default {
           buildingList = tmpArr
           this.$set(this, 'buildingDatas', buildingList) // 写入下拉框中
           message.close()
-        }).catch(err => {
+        }).catch(error => {
+          console.log(error)
           message.close()
         })
       }

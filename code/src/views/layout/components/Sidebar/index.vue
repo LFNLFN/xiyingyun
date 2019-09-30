@@ -72,9 +72,9 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import variables from "@/styles/variables.scss";
-import SidebarItem from "./SidebarItem";
+import { mapGetters } from 'vuex'
+import variables from '@/styles/variables.scss'
+import SidebarItem from './SidebarItem'
 
 export default {
   components: { SidebarItem },
@@ -86,41 +86,41 @@ export default {
       publicRoutes: [],
       otherRouters: [],
       typeRouterIndex: {
-        home: "homeRoutes",
-        project: "projectRoutes",
-        public: "publicRoutes"
+        home: 'homeRoutes',
+        project: 'projectRoutes',
+        public: 'publicRoutes'
       }
-    };
+    }
   },
   computed: {
-    ...mapGetters(["sidebar"]),
+    ...mapGetters(['sidebar']),
     routes() {
-      return this.$router.options.routes;
+      return this.$router.options.routes
     },
     variables() {
-      return variables;
+      return variables
     },
     isCollapse() {
-      return !this.sidebar.opened;
+      return !this.sidebar.opened
     }
   },
   created() {
-    const routes = this.$router.options.routes;
+    const routes = this.$router.options.routes
     routes.forEach(item => {
       if (item.menuType) {
-        const index = this.typeRouterIndex[item.menuType];
-        this[index].push(item);
+        const index = this.typeRouterIndex[item.menuType]
+        this[index].push(item)
       } else {
-        this.otherRouters.push(item);
+        this.otherRouters.push(item)
       }
-    });
+    })
   },
   methods: {
     handleOpen(index, indexPath) {
-      this.defaultActive = index;
+      this.defaultActive = index
     }
   }
-};
+}
 </script>
 <style ref="stylesheet/scss" lang="scss" scoped>
 @import "src/styles/mixin.scss";

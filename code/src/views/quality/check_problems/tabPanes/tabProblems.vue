@@ -51,8 +51,7 @@
                 v-model="filterFormData.unitId"
                 :options="buildingDatas"
                 :props="{ multiple: true }"
-                clearable>
-              </el-cascader>
+                clearable />
             </el-form-item>
           </el-col>
           <template v-if="fullFilterForm">
@@ -348,7 +347,7 @@ export default {
               params[`terms[${paramIndex}].termType`] = termType[idx]
               paramIndex++
             })
-          } else if(key === 'unitId' && Array.isArray(_data)) {
+          } else if (key === 'unitId' && Array.isArray(_data)) {
             params[`terms[${paramIndex}].column`] = key
             params[`terms[${paramIndex}].value`] = _data.join()
             paramIndex++

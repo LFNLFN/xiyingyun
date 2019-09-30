@@ -39,8 +39,8 @@ export default {
         }
         getBuliding(params).then(resp => {
           let buildingList = resp.result
-          let tmpArr = []
-          buildingList.forEach((e,i,s) => {
+          const tmpArr = []
+          buildingList.forEach((e, i, s) => {
             tmpArr[i] = {
               label: e.name,
               value: e.id
@@ -50,6 +50,7 @@ export default {
           this.$set(this, 'buildingDatas', buildingList)
           message.close()
         }).catch(err => {
+          console.log(err)
           message.close()
         })
       }

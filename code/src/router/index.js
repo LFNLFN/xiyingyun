@@ -182,6 +182,30 @@ export const asyncRouterMap = [
       // }
     ]
   },
+  // 进度管理
+  {
+    path: '/progress',
+    component: Layout,
+    redirect: '/progress/progress_plan',
+    name: 'progress',
+    alwaysShow: true,
+    meta: { title: '进度管理', icon: 'process' },
+    menuType: 'project',
+    children: [
+      {
+        path: 'progress_plan',
+        name: 'progressPlan',
+        meta: { title: '进度计划', icon: '' },
+        component: () => import('@/views/progress/progress_plan/progress_plan')
+      },
+      {
+        path: 'progress_report',
+        name: 'progressReport',
+        meta: { title: '进度上报', icon: '' },
+        component: () => import('@/views/progress/progress_report/progress_report')
+      }
+    ]
+  },
   // 企业发文
   {
     path: '/publication',

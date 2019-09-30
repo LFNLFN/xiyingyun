@@ -4,7 +4,7 @@
       <el-aside width="none">
         <div class="tree-header flex-layout-tree">
           <h3 class="title-text">{{ curTabName }}</h3>
-          <div class="drowdown-wrap" slot-scope="{ node, data }">
+          <div slot-scope="{ node, data }" class="drowdown-wrap">
             <el-dropdown @command="(order) => handleDropdown(order, data)">
               <span class="el-dropdown-link">
                 <i class="el-icon-s-tools el-icon--right"/>
@@ -14,7 +14,6 @@
               </el-dropdown-menu>
             </el-dropdown>
           </div>
-          
 
           <span
             slot-scope="{ node, data }"

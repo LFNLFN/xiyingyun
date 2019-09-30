@@ -436,7 +436,7 @@ export default {
     handleAllCityData(datas, tergetDistrictId) {
       const beHandleData = []
       return
-      datas = datas.slice(0,10)
+      datas = datas.slice(0, 10)
       // datas 每一项相当于一个地名（省市区都算一个）的数据
       datas.forEach(val => {
         if (val.parentId === '-1') { // parentId=-1那就是一个省级地名
@@ -481,7 +481,7 @@ export default {
     // 用于地点初始化
     handleAllCityDataNew(datas, tergetDistrictId) {
       for (let index = 0; index < datas.length; index++) {
-        const element = datas[index];
+        const element = datas[index]
         if (element.parentId != '-1') { // parentId=-1那就是一个省级地名
           continue
         } else {
@@ -489,15 +489,15 @@ export default {
         }
       }
       for (let index = 0; index < datas.length; index++) {
-        const element = datas[index];
-        if ('101e4f9c7ad04ed0a1c314def2d5e0d2'==element.id) {
+        const element = datas[index]
+        if (element.id == '101e4f9c7ad04ed0a1c314def2d5e0d2') {
           this.citySelected = element.parentId
           break
         }
       }
       for (let index = 0; index < datas.length; index++) {
-        const element = datas[index];
-        if (this.citySelected==element.id) {
+        const element = datas[index]
+        if (this.citySelected == element.id) {
           this.provinceSelected = element.parentId
           break
         }

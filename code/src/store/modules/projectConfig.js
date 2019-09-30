@@ -20,7 +20,7 @@ const projectConfig = {
       roomsData: [],
       status: 'addBuild',
       isNextAddUnit: false,
-      isBuildRooms: true,
+      isBuildRooms: true
     }, // 保存添加单元以及房间所需的数据
     /* --------- 参建方管理相关数据 ------------ */
     projectParticipants: []
@@ -80,7 +80,7 @@ const projectConfig = {
       const params = _obj.params
       return new Promise((reslove, reject) => {
         // -应急修复
-        if (key==='districtData' && state[key].length > 0) {
+        if (key === 'districtData' && state[key].length > 0) {
           state[key] = []
         }
         // 应急修复-

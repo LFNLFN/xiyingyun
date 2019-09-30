@@ -18,7 +18,7 @@ const getters = {
   // 项目配置相关数据
   projectList: state => getFromlocalStorage(state, 'projectConfig', 'projectList'),
   projectDetails: state => getFromlocalStorage(state, 'projectConfig', 'projectDetails'),
-  addUnitAndRoomsData: state => state.projectConfig.addUnitAndRoomsData,
+  addUnitAndRoomsData: state => state.projectConfig.addUnitAndRoomsData
   // 质量管理相关数据
   // 地点数据管理
   // projectDetails: state => getFromlocalStorage(state, 'location', 'allCityData')
