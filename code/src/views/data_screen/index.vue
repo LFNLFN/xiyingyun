@@ -3,7 +3,7 @@
     :class="{'is-full-screen': fullScreen}"
     class="iframe-container">
     <iframe
-      src="https://datav.aliyuncs.com/share/04d53a8317b1838f9b6726f91bf58bbc"
+      src="https://datav.aliyuncs.com/share/097a1140fe341ae27a998b5e7cc6f30d"
       scrolling="auto"
       frameborder="0"
       class="frame" />

@@ -249,7 +249,7 @@ export default {
         status: [{ required: true, trigger: 'change', message: '请选择状态' }],
         estateProjectDetailEntity: {
           cityId: [{ required: true, trigger: 'change', validator: validCityFunc }],
-          typeId: [{ required: true, trigger: 'change', message: '请选择项目状态' }],
+          typeId: [{ required: true, trigger: 'change', message: '请选择项目状态' }]
           // constructionArea: [{ required: true, trigger: 'blur', message: '请输入建筑面积' }],
           // deliveryType: [{ required: true, trigger: 'change', message: '请选择项目状态' }],
           // constructionStage: [{ required: true, trigger: 'change', message: '请选择施工阶段' }],

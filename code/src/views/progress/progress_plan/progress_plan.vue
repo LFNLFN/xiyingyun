@@ -53,6 +53,9 @@
           prop="name"
           label="计划名称" />
         <el-table-column
+          prop="unitNames"
+          label="楼栋" />
+        <el-table-column
           prop="acceptItemName"
           label="工序项" />
         <el-table-column
@@ -82,54 +85,33 @@
         @current-change="pageChangeHandle"
         @size-change="pageSizeChangeHandle"/>
     </el-main>
-    <progressDetail
-      v-show="isMeasureDetailShow"
-      ref="measureDetailCom"
-      :is-measure-detail-show.sync="isMeasureDetailShow"
-      @toPhotosZoom="toPhotosZoomHandle" />
-    <addProgress
-      v-show="isAddMeasureShow"
-      ref="addMeasureCom"
-      :is-add-measure-show.sync="isAddMeasureShow"
-      @refreshMeasure="getProgressPlansFunc" />
-    <photosZoom
-      v-show="isPhotosZoomShow"
-      ref="photosZoomCom"
-      :is-photos-zoom-show.sync="isPhotosZoomShow" />
   </el-container>
 </template>
 <script>
 import personTypeData from '@/mixins/personTypeData'
 import getProjectMixin from '@/mixins/getProjectStage'
-import ProgressDetail from '@/views/progress/progress_plan/components/progressDetail'
 import AddProgress from '@/views/progress/progress_plan/components/addProgress'
-import PhotosZoom from '@/components/PhotosZoom'
 import { getProgressPlans, getProgressItems } from '@/api/progress/index.js'
 export default {
-  components: { ProgressDetail, AddProgress, PhotosZoom },
+  components: { AddProgress },
   mixins: [getProjectMixin, personTypeData],
   data() {
     return {
       filterFormData: {
         projectId: '',
-        createTime: [],
         acceptItemId: '',
-        type: null
       },
       processItemDatas: [], // 保存所有工序项
       progressTableData: [], // 保存加载的进度计划数据
       pageIndex: 0,
       pageSize: 10,
       pageTotal: 10,
-      isMeasureDetailShow: false,
-      isAddMeasureShow: false,
-      isLoading: false,
-      isPhotosZoomShow: false
+      isLoading: false
     }
   },
   created() {
     this.getProjectFunc().then((data) => {
-      this.filterFormData.projectId = data[0].id
+      // this.filterFormData.projectId = data[0].id
       // 初始化数据
       this.initData().then(() => {
         this.isLoading = false
@@ -198,41 +180,25 @@ export default {
         this.$set(this, 'processItemDatas', itemDatas)
       })
     },
-    // 新增实测实量处理
+    // 新增进度计划处理
     addProgressHandle() {
-      const _obj = {
-        measureItemDatas: this.measureItemDatas,
-        projectDetailDatas: this.projectDetailDatas
-      }
-      this.$refs.addMeasureCom.resetDataProperty(_obj)
-      this.isAddMeasureShow = true
+      this.$router.push({ name: 'addProgress', params: { filterProjectId: this.filterFormData.projectId } })
     },
     // 展示实测实量详情处理
     showProgressDetail(row) {
-      const _obj = {
-        measureData: row
-      }
-      this.$refs.measureDetailCom.resetDataProperty(_obj)
-      this.isMeasureDetailShow = true
+      this.$router.push({ name: 'addProgress', params: { planId: row.id, projectId: row.projectId }})
     },
     pageChangeHandle(page) {
       this.pageIndex = page
-      this.getMeasureDatasFunc()
+      this.getProgressPlansFunc()
     },
     pageSizeChangeHandle(val) {
       this.pageSize = val
-      this.getMeasureDatasFunc()
+      this.getProgressPlansFunc()
     },
     resetForm() {
+      this.filterFormData.projectId = ''
       this.$refs.filterForm.resetFields()
-    },
-    // 展示图片查看组件
-    toPhotosZoomHandle(imgDatas) {
-      const _obj = {
-        photoList: imgDatas
-      }
-      this.$refs.photosZoomCom.resetDataProperty(_obj)
-      this.isPhotosZoomShow = true
     }
   }
 }

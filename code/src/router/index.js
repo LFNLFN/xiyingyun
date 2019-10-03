@@ -196,7 +196,22 @@ export const asyncRouterMap = [
         path: 'progress_plan',
         name: 'progressPlan',
         meta: { title: '进度计划', icon: '' },
-        component: () => import('@/views/progress/progress_plan/progress_plan')
+        redirect: '/progress/progress_plan/index',
+        component: () => import('@/views/progress/progress_plan/index'),
+        children: [
+          {
+            path: 'index',
+            name: 'progress_plan',
+            hidden: true,
+            component: () => import('@/views/progress/progress_plan/progress_plan')
+          },
+          {
+            path: 'addProgress',
+            name: 'addProgress',
+            hidden: true,
+            component: () => import('@/views/progress/progress_plan/components/addProgress.vue')
+          }
+        ]
       },
       {
         path: 'progress_report',
