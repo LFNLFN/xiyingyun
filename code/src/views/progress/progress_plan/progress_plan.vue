@@ -1,5 +1,5 @@
 <template>
-  <!-- 实测实量页面 -->
+  <!-- 进度计划页面 -->
   <el-container class="global-container">
     <el-main v-loading="isLoading">
       <el-form
@@ -184,7 +184,7 @@ export default {
     addProgressHandle() {
       this.$router.push({ name: 'addProgress', params: { filterProjectId: this.filterFormData.projectId } })
     },
-    // 展示实测实量详情处理
+    // 展示进度计划详情处理
     showProgressDetail(row) {
       this.$router.push({ name: 'addProgress', params: { planId: row.id, projectId: row.projectId }})
     },

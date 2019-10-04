@@ -1,5 +1,5 @@
 <template>
-  <!-- 实测实量页面 -->
+  <!-- 进度上报页面 -->
   <el-container class="global-container">
     <el-main v-loading="isLoading">
       <el-form
@@ -19,10 +19,21 @@
               </el-select>
             </el-form-item>
           </el-col>
+          <el-col :span="8">
+            <el-form-item prop="settingId" label="工序项">
+              <el-select v-model="filterFormData.settingId" size="small">
+                <el-option
+                  v-for="item in processItemDatas"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id" />
+              </el-select>
+            </el-form-item>
+          </el-col>
           <template v-if="fullFilterForm">
             <el-col :span="8">
-              <el-form-item prop="unitId" label="楼栋">
-                <el-select v-model="filterFormData.unitId" size="small">
+              <el-form-item prop="unitIds" label="楼栋">
+                <el-select v-model="filterFormData.unitIds" size="small" multiple>
                   <el-option
                     v-for="item in buildingDatas"
                     :key="item.id"
@@ -32,10 +43,10 @@
               </el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item prop="type" label="类型">
-                <el-select v-model="filterFormData.type" size="small">
+              <el-form-item prop="status" label="状态">
+                <el-select v-model="filterFormData.status" size="small">
                   <el-option
-                    v-for="(item, idx) in personType"
+                    v-for="(item, idx) in progressReportStatus"
                     :key="idx"
                     :label="item.name"
                     :value="item.id" />
@@ -43,33 +54,22 @@
               </el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item prop="checkItemId" label="实测实量项">
-                <el-select v-model="filterFormData.checkItemId" size="small">
-                  <el-option
-                    v-for="item in measureItemDatas"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id" />
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :span="8">
-              <el-form-item prop="createTime" label="创建日期">
+              <el-form-item prop="reportDate" label="上报日期">
                 <el-date-picker
-                  v-model="filterFormData.createTime"
-                  :default-time="['00:00:00', '23:59:59']"
-                  value-format="yyyy-MM-dd HH:mm:ss"
+                  v-model="filterFormData.reportDate"
                   type="daterange"
                   size="small"
                   start-placeholder="开始日期"
                   end-placeholder="结束日期"
+                  format="yyyy-MM-dd"
+                  value-format="yyyy-MM-dd"
                   class="date-select" />
               </el-form-item>
             </el-col>
           </template>
           <el-col :span="8">
             <el-form-item class="operate-wrap">
-              <el-button type="primary" size="mini" @click="getMeasureDatasFunc">查询</el-button>
+              <el-button type="primary" size="mini" @click="getProgressReportsFunc">查询</el-button>
               <el-button size="mini" @click="resetForm">重置</el-button>
               <el-button
                 size="mini"
@@ -84,14 +84,17 @@
           </el-col>
         </el-row>
       </el-form>
-      <div class="add-btn-wrap">
-        <el-button type="primary" size="small" @click="addMeasureHandle">新增</el-button>
-      </div>
       <el-table
-        :data="measureTableData"
+        :data="progressTableData"
         size="small"
         class="no-border-gary-head"
-        @row-click="showMeasuerDetail" >
+        @row-click="showProgressDetail" >
+        <el-table-column prop="status" label="状态" >
+          <template slot-scope="scope">
+            <span :style="{ 'background': acceptStatusColors[Number(scope.row.status)] }" class="status-icon" />
+            <span>{{ scope.row.statusName }}</span>
+          </template>
+        </el-table-column>
         <el-table-column
           prop="projectName"
           label="项目名称" />
@@ -99,23 +102,18 @@
           prop="partName"
           label="部位" />
         <el-table-column
-          prop="checkItemName"
-          label="实测实量项" />
+          prop="settingName"
+          label="工序项" />
         <el-table-column
-          :formatter="measTypeFormatter"
-          label="类型"
+          prop="reportPersonName"
+          label="上报人"
           header-align="center"
           align="center" />
         <el-table-column
-          :formatter="measRateFormatter"
-          prop="passingRate"
-          label="合格率"
+          prop="reportDate"
+          label="上报日期"
           header-align="center"
           align="center" />
-        <el-table-column
-          prop="createTime"
-          label="报检日期"
-          header-align="center" />
       </el-table>
       <el-pagination
         :total="pageTotal"
@@ -128,58 +126,76 @@
         @current-change="pageChangeHandle"
         @size-change="pageSizeChangeHandle"/>
     </el-main>
-    <measureDetail
-      v-show="isMeasureDetailShow"
-      ref="measureDetailCom"
-      :is-measure-detail-show.sync="isMeasureDetailShow"
-      @toPhotosZoom="toPhotosZoomHandle" />
-    <addMeasure
-      v-show="isAddMeasureShow"
-      ref="addMeasureCom"
-      :is-add-measure-show.sync="isAddMeasureShow"
-      @refreshMeasure="getMeasureDatasFunc" />
-    <photosZoom
-      v-show="isPhotosZoomShow"
-      ref="photosZoomCom"
-      :is-photos-zoom-show.sync="isPhotosZoomShow" />
+    <reportDetail
+      v-show="isReportDetailShow"
+      ref="reportDetailCom"
+      :is-report-detail-show.sync="isReportDetailShow" />
   </el-container>
 </template>
 <script>
 import personTypeData from '@/mixins/personTypeData'
 import getProjectMixin from '@/mixins/getProjectStage'
-import MeasureDetail from '@/views/quality/measure/components/measureDetail'
-import AddMeasure from '@/views/quality/measure/components/addMeasure'
-import PhotosZoom from '@/components/PhotosZoom'
+import progressReportStatus from '@/mixins/progressReportStatus'
+import { getProgressReports, getProgressItems } from '@/api/progress/index.js'
 import { getBuliding } from '@/api/project_config/building'
-import { getMeasureDatas, getMeasuerItems } from '@/api/quality/measure'
+import { redStatus, greenStatus, orangeStatus, grayStatus } from '@/styles/variables.scss'
+import ReportDetail from '@/views/progress/progress_report/components/reportDetail'
+
 export default {
-  components: { MeasureDetail, AddMeasure, PhotosZoom },
-  mixins: [getProjectMixin, personTypeData],
+  components: { ReportDetail },
+  mixins: [getProjectMixin, personTypeData, progressReportStatus],
   data() {
     return {
+      fullFilterForm: false,
       filterFormData: {
         projectId: '',
-        createTime: [],
-        unitId: '',
-        checkItemId: '',
-        type: null
+        settingId: '',
+        unitIds: [],
+        status: '',
+        reportDate: ''
       },
-      fullFilterForm: false,
-      buildingDatas: [], // 保存所有楼栋数据
-      measureItemDatas: [], // 保存所有实测实量项
-      measureTableData: [], // 保存加载的实测实量数据
+      buildingDatas: [], // 保存所有楼栋
+      processItemDatas: [], // 保存所有工序项
+      progressTableData: [], // 保存加载的进度上报数据
       pageIndex: 0,
       pageSize: 10,
       pageTotal: 10,
-      isMeasureDetailShow: false,
-      isAddMeasureShow: false,
       isLoading: false,
-      isPhotosZoomShow: false
+      acceptStatusColors: [
+        redStatus,
+        orangeStatus,
+        greenStatus,
+        grayStatus
+      ], // 保存状态颜色数据
+      isReportDetailShow: false
+    }
+  },
+  watch: {
+    'filterFormData.projectId': async function(newVal) {
+      if (newVal !== '') {
+        // 重置工序项项数据
+        this.filterFormData.settingId = ''
+        this.$set(this, 'processItemDatas', [])
+        // 重新加载楼栋数据
+        this.filterFormData.unitId = []
+        this.$set(this, 'buildingDatas', [])
+
+        // 初始化数据
+        this.isLoading = true
+        await this.getProgressItemsFunc()
+        await this.getProgressBuildingFunc()
+        this.isLoading = false
+      }
+    },
+    'isReportDetailShow': async function(newVal) {
+      if (newVal === false) {
+        await this.getProgressReportsFunc()
+      }
     }
   },
   created() {
     this.getProjectFunc().then((data) => {
-      this.filterFormData.projectId = data[0].id
+      // this.filterFormData.projectId = data[0].id
       // 初始化数据
       this.initData().then(() => {
         this.isLoading = false
@@ -192,76 +208,38 @@ export default {
     // 初始化数据操作
     async initData() {
       this.isLoading = true
-      await this.getMeasureDatasFunc()
-      await this.getMeasuerItemsFunc()
-      await this.getMeasBuildingFunc()
+      await this.getProgressReportsFunc()
+      await this.getProgressItemsFunc()
+      await this.getProgressBuildingFunc()
     },
-    // 格式化实测实量类型数据
-    measTypeFormatter(row) {
-      const type = this.personType.find(item => {
-        return item.id === Number(row.type)
-      })
-      return type.name
-    },
-    // 格式化实测实量合格率
-    measRateFormatter(row) {
-      return `${row.passingRate}%`
-    },
-    // 获取实测实量数据
-    getMeasureDatasFunc() {
+    // 获取进度汇报数据
+    getProgressReportsFunc() {
       const message = this.$message({
-        message: '正在加载实测实量数据...',
+        message: '正在加载进度汇报数据...',
         duration: 0
       })
-      const params = {
-        'sorts[0].name': 'createTime',
-        'sorts[0].order': 'desc'
-      }
-      const _keys = Object.keys(this.filterFormData)
-      let paramIndex = 1
-      _keys.forEach((key) => {
-        const _data = this.filterFormData[key]
-        if (_data !== null && _data !== '') {
-          if (key === 'createTime' && Array.isArray(_data)) {
-            const termType = ['gte', 'lte']
-            _data.forEach((item, idx) => {
-              params[`terms[${paramIndex}].column`] = key
-              params[`terms[${paramIndex}].value`] = item
-              params[`terms[${paramIndex}].termType`] = termType[idx]
-              paramIndex++
-            })
-          } else {
-            params[`terms[${paramIndex}].column`] = key
-            params[`terms[${paramIndex}].value`] = _data
-            paramIndex++
-          }
-        }
-      })
+      const params = {}
       params['pageSize'] = this.pageSize
       params['pageIndex'] = this.pageIndex - 1
-      console.log('params', params)
-      getMeasureDatas(params).then(resp => {
-        console.log('getMeasureDatas resp', resp)
+
+      params['projectId'] = this.filterFormData.projectId
+      params['settingId'] = this.filterFormData.settingId
+      params['unitIds'] = this.filterFormData.unitIds.join(',')
+      params['status'] = this.filterFormData.status
+      params['beginReportDate'] = this.filterFormData.reportDate[0]
+      params['endReportDate'] = this.filterFormData.reportDate[1]
+
+      getProgressReports(params).then(resp => {
+        console.log('getProgressReports resp', resp)
         const _data = resp.result
-        this.$set(this, 'measureTableData', _data.data)
+        this.$set(this, 'progressTableData', _data.data)
         this.pageTotal = _data.total
-        this.pageIndex = _data.pageIndex + 1
+        this.pageIndex = _data.pageIndex
         message.close()
       })
     },
-    // 获取实测实量项数据
-    getMeasuerItemsFunc() {
-      const params = {
-        'terms[0].column': 'type',
-        'terms[0].value': 1
-      }
-      getMeasuerItems(params).then(resp => {
-        const itemDatas = resp.result.data
-        this.$set(this, 'measureItemDatas', itemDatas)
-      })
-    },
     // 获取楼栋数据
-    getMeasBuildingFunc() {
+    getProgressBuildingFunc() {
       const projectId = this.filterFormData.projectId
       const curProject = this.projectDetailDatas.find(item => item.id === projectId)
       const projectIdList = Array.of(projectId)
@@ -279,41 +257,33 @@ export default {
         this.$set(this, 'buildingDatas', buildingList)
       })
     },
-    // 新增实测实量处理
-    addMeasureHandle() {
-      const _obj = {
-        measureItemDatas: this.measureItemDatas,
-        projectDetailDatas: this.projectDetailDatas
+    // 获取工序项数据
+    getProgressItemsFunc() {
+      const params = {
+        'terms[0].column': 'type',
+        'terms[0].value': 1
       }
-      this.$refs.addMeasureCom.resetDataProperty(_obj)
-      this.isAddMeasureShow = true
+      getProgressItems(params).then(resp => {
+        const itemDatas = resp.result
+        this.$set(this, 'processItemDatas', itemDatas)
+      })
     },
-    // 展示实测实量详情处理
-    showMeasuerDetail(row) {
-      const _obj = {
-        measureData: row
-      }
-      this.$refs.measureDetailCom.resetDataProperty(_obj)
-      this.isMeasureDetailShow = true
+    // 展示进度上报详情处理
+    showProgressDetail(row) {
+      this.$refs['reportDetailCom'].resetDataProperty(row.id)
+      this.isReportDetailShow = true
     },
     pageChangeHandle(page) {
       this.pageIndex = page
-      this.getMeasureDatasFunc()
+      this.getProgressReportsFunc()
     },
     pageSizeChangeHandle(val) {
       this.pageSize = val
-      this.getMeasureDatasFunc()
+      this.getProgressReportsFunc()
     },
     resetForm() {
+      this.filterFormData.projectId = ''
       this.$refs.filterForm.resetFields()
-    },
-    // 展示图片查看组件
-    toPhotosZoomHandle(imgDatas) {
-      const _obj = {
-        photoList: imgDatas
-      }
-      this.$refs.photosZoomCom.resetDataProperty(_obj)
-      this.isPhotosZoomShow = true
     }
   }
 }
@@ -353,10 +323,21 @@ export default {
       padding: 20px 10px;
     }
     .el-table {
-      margin-top: 5px;
-      &/deep/ .el-table__body {
-        .el-table__row {
-          cursor: pointer;
+      margin-top: 35px;
+      &/deep/ .el-table__body tr {
+        cursor: pointer;
+      }
+      &/deep/ .status-icon {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        vertical-align: text-top;
+        border-radius: 15px;
+        margin-right: 3px;
+      }
+      & /deep/.nowrap-row {
+        .cell {
+          white-space: nowrap;
         }
       }
     }

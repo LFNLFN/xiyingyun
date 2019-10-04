@@ -41,3 +41,38 @@ export function getPlanDetail(planId) {
     method: 'get',
   })
 }
+
+// 进度进度汇报分页查询
+export function getProgressReports(params) {
+  return request({
+    url: '/scheduleReportMain/pageList',
+    method: 'get',
+    params: params
+  })
+}
+
+// 获取进度上报详情
+export function getReportDetail(reportId) {
+  return request({
+    url: `/scheduleReportMain/detail/${reportId}`,
+    method: 'get',
+  })
+}
+
+// 进度上报审批流程
+export function reportApproval(data) {
+  return request({
+    url: '/scheduleReportMain/approval',
+    method: 'post',
+    data: data
+  })
+}
+
+// 进度上报作废流程
+export function reportInvalid(data) {
+  return request({
+    url: '/scheduleReportMain/invalid',
+    method: 'delete',
+    data: data
+  })
+}

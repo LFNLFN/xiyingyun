@@ -13,13 +13,13 @@
     <el-main v-loading="isLoading">
       <el-form
         ref="progressForm"
+        :disabled="isDisabled"
         :model="formData"
         :rules="addProgressFormRules"
         :inline="true"
         label-position="left"
         label-width="150px"
         size="small"
-        :disabled="isDisabled"
         class="add-check-form" >
         <el-header>
           <h4>
@@ -140,9 +140,9 @@ export default {
         progressName: [{ required: true, trigger: 'change', message: '请填写计划名称' }],
         unitId: [{ required: true, trigger: 'change', message: '请选择楼栋' }],
         process: [{ required: true, trigger: 'change', message: '请选择工序项' }],
-        planCompleteDate: [{ type: 'date', required: true, trigger: 'change', message: '请选择计划完成日期' }],
+        planCompleteDate: [{ required: true, trigger: 'change', message: '请选择计划完成日期' }],
         mainResponsor: [{ required: true, trigger: 'change', message: '请选择计划第一责任人' }],
-        relatedResponsor: [{ required: true, trigger: 'change', message: '请选择相关责任人' }]
+        relatedResponsor: [{ required: false, trigger: 'change', message: '请选择相关责任人' }]
       },
       isDisabled: false
     }
@@ -255,6 +255,16 @@ export default {
       }
     },
     addProgressHandle() {
+      this.$refs['progressForm'].validate(valid => {
+        console.log(valid)
+        if (!valid) {
+          this.$message({
+            message: '请完整填写信息',
+            type: 'warning'
+          })
+          return false
+        }
+      })
       const personEntityList = []
       personEntityList.push({
         type: 0,
