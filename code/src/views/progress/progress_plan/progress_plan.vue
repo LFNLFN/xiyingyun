@@ -99,7 +99,7 @@ export default {
     return {
       filterFormData: {
         projectId: '',
-        acceptItemId: '',
+        acceptItemId: ''
       },
       processItemDatas: [], // 保存所有工序项
       progressTableData: [], // 保存加载的进度计划数据
@@ -182,7 +182,7 @@ export default {
     },
     // 新增进度计划处理
     addProgressHandle() {
-      this.$router.push({ name: 'addProgress', params: { filterProjectId: this.filterFormData.projectId } })
+      this.$router.push({ name: 'addProgress', params: { filterProjectId: this.filterFormData.projectId }})
     },
     // 展示进度计划详情处理
     showProgressDetail(row) {
