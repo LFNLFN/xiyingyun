@@ -379,14 +379,20 @@ export const asyncRouterMap = [
     path: '/att_log',
     name: 'attLog',
     component: Layout,
-    meta: { title: '首页', icon: 'attLog' },
+    meta: { title: '考勤管理', icon: 'attLog' },
     menuType: 'public',
     children: [
       {
-        path: 'att_log',
-        name: 'attLogIndex',
-        meta: { title: '考勤管理', icon: 'attLog' },
-        component: () => import('@/views/att_log/att_log')
+        path: 'att_log_detail',
+        name: 'attLogDetail',
+        meta: { title: '考勤管理详情', icon: '' },
+        component: () => import('@/views/att_log/att_log_detail')
+      },
+      {
+        path: 'att_log_result',
+        name: 'attLogResult',
+        meta: { title: '考勤管理结果', icon: '' },
+        component: () => import('@/views/att_log/att_log_result')
       }
     ]
   },

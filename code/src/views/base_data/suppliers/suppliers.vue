@@ -129,7 +129,8 @@ export default {
       isPostMembersShow: false,
       postMembersPostData: {}, // 查看岗位人员组件的岗位数据
       // 通用的传送到子组件的数据
-      eventType: 'add' // 事件类型，add：新增供应商，edit：编辑
+      eventType: 'add', // 事件类型，add：新增供应商，edit：编辑
+      isShow: false // 用于控制岗位人员侧边栏显示
     }
   },
   created() {
@@ -197,6 +198,16 @@ export default {
         this.$refs.suppTree.setCurrentKey(data.id)
       })
       this.postInfoLoading = true
+      if (this.isPostMembersShow===true) {
+        // this.postMemberCtrl()
+        if (this.isShow) {
+          this.postMemberCtrl()
+          this.isShow = false
+        } else {
+          this.postMemberCtrl()
+          this.isShow = true
+        }
+      }
       this.getPositionFunc(data)
     },
     // 增加人员组件的控制
@@ -221,7 +232,11 @@ export default {
       if (this.isPostMembersShow) {
         this.$set(this, 'postMembersPostData', {})
       }
-      this.isPostMembersShow = !this.isPostMembersShow
+      // this.isPostMembersShow = !this.isPostMembersShow
+      if (!this.isShow) {
+        this.isPostMembersShow = !this.isPostMembersShow
+      }
+      this.isShow = false
     },
     // 岗位人员信息组件处点击新增/添加人员按钮处理
     postMemberEmitEvent(event, data) {

@@ -185,7 +185,8 @@
                   <!-- 虚拟数据，渲染添加房间按钮 -->
                   <template v-else>
                     <div class="floor-item">
-                      <div class="add-rooms-item" @click="addRoomHandle(item)">添加房间</div>
+                      <div v-if="item.isStandard==0"></div>
+                      <div v-else class="add-rooms-item" @click="addRoomHandle(item)">添加房间</div>
                     </div>
                   </template>
                 </div>
@@ -198,7 +199,8 @@
                       @click="addRoomBatchHandle">批量添加</el-button>
                   </template>
                   <div class="floor-item">
-                    <div class="add-rooms-item" @click="addRoomHandle(item)">添加房间</div>
+                    <div v-if="item.isStandard==0"></div>
+                    <div v-else class="add-rooms-item" @click="addRoomHandle(item)">添加房间</div>
                   </div>
                 </div>
               </div>

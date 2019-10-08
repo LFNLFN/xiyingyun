@@ -34,6 +34,7 @@ export default {
   watch: {
     isBoxShow: function(newVal) {
       this.boxShow = newVal
+      console.log(newVal,999)
     }
   },
   methods: {
