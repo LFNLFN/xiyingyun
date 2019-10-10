@@ -4,45 +4,46 @@
     width="750px"
     title-text="实测实量详情"
     v-on="$listeners"
-    @closePopupsBox="closeBox">
+    @closePopupsBox="closeBox"
+  >
     <template slot="main-content">
       <div v-loading="isLoading">
         <div class="info-container">
           <div class="info-wrap">
             <div class="info-item">
-              <label>项目名称: </label>
+              <label>项目名称:</label>
               <div class="info">{{ measureDetailData.projectName }}</div>
             </div>
             <div class="info-item">
-              <label>实测实量项: </label>
+              <label>实测实量项:</label>
               <div class="info">{{ measureDetailData.checkItemName }}</div>
             </div>
             <div class="info-item">
-              <label>部位: </label>
+              <label>部位:</label>
               <div class="info">{{ measureDetailData.partName }}</div>
             </div>
             <div class="info-item">
-              <label>类型: </label>
+              <label>类型:</label>
               <div class="info">{{ measureDetailData.typeName }}</div>
             </div>
           </div>
           <div class="info-wrap">
             <div class="info-item">
-              <label>实测人: </label>
+              <label>实测人:</label>
               <div class="info">{{ measureDetailData.personName }}</div>
             </div>
             <div class="info-item">
-              <label>所属公司: </label>
+              <label>所属公司:</label>
               <el-tooltip :content="measureDetailData.orgName" effect="dark" placement="top-start">
                 <div class="info">{{ measureDetailData.orgName }}</div>
               </el-tooltip>
             </div>
             <div class="info-item">
-              <label>实测时间: </label>
+              <label>实测时间:</label>
               <div class="info">{{ measureDetailData.createTime }}</div>
             </div>
             <div class="info-item">
-              <label>合格率: </label>
+              <label>合格率:</label>
               <div class="info">{{ `${measureDetailData.passingRate}%` }}</div>
             </div>
           </div>
@@ -51,7 +52,8 @@
           <div
             v-for="item in measureDetailData.detailEntityList"
             :key="item.id"
-            class="measure-item-warp">
+            class="measure-item-warp"
+          >
             <p class="item-name">{{ item. detailCheckItemName }}</p>
             <el-row :gutter="10">
               <el-col :span="8">计算点数：{{ item. measuredCount }}</el-col>
@@ -60,15 +62,24 @@
             </el-row>
           </div>
         </div>
-        <div v-if="measureDetailData.image" style="padding: 0 30px">
-          <!-- <div>原位标识图和备注</div> -->
-          <div class="photo-list">
-            <img
-              v-for="(item) in measureDetailData.image.split(',')"
-              :src="GetOssImgFullPath(item)"
-              :key="item"
-              alt=""
-              @click="showPhotoZoom(measureDetailData.image)">
+        <div v-if="measureDetailData.image">
+          <div class="info-container">
+            <div class="info-wrap" style="width: 100%">
+              <div class="info-item">
+                <label style="width: 10em">原位标识图和备注:</label>
+                <!-- <div class="info">{{ measureDetailData.projectName }}</div> -->
+              </div>
+              <div class="photo-list">
+                <img
+                  v-for="(item) in measureDetailData.image.split(',')"
+                  :src="GetOssImgFullPath(item)"
+                  :key="item"
+                  alt=""
+                  @click="showPhotoZoom(measureDetailData.image)"
+                >
+              </div>
+              <p class="remark-wrap">{{ measureDetailData.content || '暂无内容' }}</p>
+            </div>
           </div>
         </div>
       </div>
@@ -79,9 +90,9 @@
   </publicPopups>
 </template>
 <script>
-import { isEmpty } from '@/utils/public'
-import { getMeasureDetail } from '@/api/quality/measure'
-import PublicPopups from '@/components/Pop-ups/PublicPopups'
+import { isEmpty } from "@/utils/public";
+import { getMeasureDetail } from "@/api/quality/measure";
+import PublicPopups from "@/components/Pop-ups/PublicPopups";
 export default {
   components: { PublicPopups },
   data() {
@@ -89,53 +100,55 @@ export default {
       measureData: {}, // 保存实测实量数据
       measureDetailData: {}, // 保存实测实量详情数据
       isLoading: false
-    }
+    };
   },
   watch: {
     measureData: function(newVal) {
       if (!isEmpty(newVal)) {
-        this.getDetailFunc()
+        this.getDetailFunc();
       }
     }
   },
   methods: {
     resetDataProperty(obj) {
-      const _keys = Object.keys(obj)
+      const _keys = Object.keys(obj);
       _keys.forEach(key => {
-        this.$set(this, key, obj[key])
-      })
+        this.$set(this, key, obj[key]);
+      });
     },
     getDetailFunc() {
-      const { projectId, unitId, partId, checkItemId } = this.measureData
-      const userType = String(this.measureData.type)
-      this.isLoading = true
-      getMeasureDetail(projectId, unitId, partId, checkItemId).then(resp => {
-        const _data = resp.result
-        this.measureDetailData = _data[userType]
-        this.isLoading = false
-      }).catch(() => {
-        this.isLoading = false
-      })
+      const { projectId, unitId, partId, checkItemId } = this.measureData;
+      const userType = String(this.measureData.type);
+      this.isLoading = true;
+      getMeasureDetail(projectId, unitId, partId, checkItemId)
+        .then(resp => {
+          const _data = resp.result;
+          this.measureDetailData = _data[userType];
+          this.isLoading = false;
+        })
+        .catch(() => {
+          this.isLoading = false;
+        });
     },
     // 查看图片操作
     showPhotoZoom(datas) {
-      const imageDataList = []
-      const dataList = datas.split(',')
+      const imageDataList = [];
+      const dataList = datas.split(",");
       dataList.forEach(item => {
         imageDataList.push({
           imgSrc: item
-        })
-      })
-      this.$emit('toPhotosZoom', imageDataList)
+        });
+      });
+      this.$emit("toPhotosZoom", imageDataList);
     },
     closeBox() {
-      this.$emit('update:isMeasureDetailShow', false)
+      this.$emit("update:isMeasureDetailShow", false);
     }
   }
-}
+};
 </script>
 <style ref="styleshheet/scss" lang="scss" scoped>
-@import 'src/styles/mixin.scss';
+@import "src/styles/mixin.scss";
 
 .info-container {
   margin-top: 30px;
@@ -188,5 +201,13 @@ export default {
     max-height: 120px;
     cursor: pointer;
   }
+}
+.remark-wrap {
+  padding: 10px;
+  border: 1px solid #dddee1;
+  border-radius: 5px;
+  margin: 10px 0;
+  font-size: 14px;
+  color: #80848f;
 }
 </style>
