@@ -4,7 +4,7 @@ import request from '@/utils/request'
 export function getProjectSelectorList() {
   return request({
     url: '/project/no-paging?terms[0].column=level&terms[0].value=2',
-    method: 'get',
+    method: 'get'
   })
 }
 
@@ -91,5 +91,14 @@ export function batchOperateAcc(order, ids) {
     url: url,
     method: 'put',
     data: JSON.stringify(ids)
+  })
+}
+
+// 获取考勤日志结果
+export function getAttLogResultList(paramObj) {
+  return request({
+    url: '/attLog/resultList',
+    method: 'post',
+    data: JSON.stringify(paramObj)
   })
 }
