@@ -19,8 +19,7 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <template v-if="fullFilterForm">
-            <el-col :span="8">
+          <el-col :span="8">
               <el-form-item prop="unitId" label="楼栋">
                 <el-select v-model="filterFormData.unitId" size="small">
                   <el-option
@@ -31,6 +30,7 @@
                 </el-select>
               </el-form-item>
             </el-col>
+          <template v-if="fullFilterForm">
             <el-col :span="8">
               <el-form-item prop="type" label="类型">
                 <el-select v-model="filterFormData.type" size="small">

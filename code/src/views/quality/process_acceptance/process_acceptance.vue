@@ -60,7 +60,7 @@
               </el-form-item>
             </el-col>
           </template>
-          <el-col :span="24">
+          <el-col :span="8">
             <el-form-item prop="unitId" label="楼栋">
               <!-- <el-select
                 v-model="filterFormData.unitId"
