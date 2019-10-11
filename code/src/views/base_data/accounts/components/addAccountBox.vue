@@ -13,7 +13,7 @@
         <el-form-item label="手机" prop="phone">
           <el-input v-model.number="addAccountForm.phone" />
         </el-form-item>
-        <el-form-item label="邮箱" prop="email">
+        <el-form-item label="邮箱">
           <el-input v-model="addAccountForm.email" />
         </el-form-item>
         <el-form-item label="角色" prop="roles">
