@@ -21,13 +21,18 @@
           </el-col>
           <el-col :span="8">
               <el-form-item prop="unitId" label="楼栋">
-                <el-select v-model="filterFormData.unitId" size="small">
+                <!-- <el-select v-model="filterFormData.unitId" size="small">
                   <el-option
                     v-for="item in buildingDatas"
                     :key="item.id"
                     :label="item.name"
                     :value="item.id" />
-                </el-select>
+                </el-select> -->
+                <el-cascader
+                  v-model="filterFormData.unitId"
+                  :options="buildingDatas"
+                  :props="{ multiple: true }"
+                  clearable></el-cascader>
               </el-form-item>
             </el-col>
           <template v-if="fullFilterForm">
@@ -160,7 +165,7 @@ export default {
       filterFormData: {
         projectId: '',
         createTime: [],
-        unitId: '',
+        unitId: [],
         checkItemId: '',
         type: null
       },
@@ -217,6 +222,7 @@ export default {
         'sorts[0].name': 'createTime',
         'sorts[0].order': 'desc'
       }
+      this.filterFormData.unitId = this.filterFormData.unitId.join(',')
       const _keys = Object.keys(this.filterFormData)
       let paramIndex = 1
       _keys.forEach((key) => {
@@ -230,6 +236,11 @@ export default {
               params[`terms[${paramIndex}].termType`] = termType[idx]
               paramIndex++
             })
+          } else if (key === 'unitId') {
+              params[`terms[${paramIndex}].column`] = 'unitId'
+              params[`terms[${paramIndex}].value`] = _data
+              params[`terms[${paramIndex}].termType`] = 'in'
+              paramIndex++
           } else {
             params[`terms[${paramIndex}].column`] = key
             params[`terms[${paramIndex}].value`] = _data
@@ -275,7 +286,12 @@ export default {
         'terms[0].value': projectIdList.join()
       }
       getBuliding(params).then(resp => {
+        resp.result.forEach((e, i, s) => {
+          e.label = e.name
+          e.value = e.id
+        })
         const buildingList = resp.result
+        console.log(buildingList)
         this.$set(this, 'buildingDatas', buildingList)
       })
     },

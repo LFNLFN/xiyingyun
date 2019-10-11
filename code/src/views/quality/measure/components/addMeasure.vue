@@ -83,6 +83,7 @@
               <el-input-number
                 v-model="scope.row.burstPoint"
                 :min="0"
+                :max="scope.row.measuredCount"
                 size="small" />
             </template>
           </el-table-column>
