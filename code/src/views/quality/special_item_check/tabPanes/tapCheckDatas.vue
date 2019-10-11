@@ -2,7 +2,7 @@
   <div class="main-content">
     <el-form ref="filterForm" :inline="true" :model="filterFormData" label-position="right" label-width="90px" class="filter-form">
       <el-row :gutter="10">
-        <el-col :span="6">
+        <el-col :span="8">
           <el-form-item label="所选区域" prop="orgId">
             <el-select v-model="filterFormData.orgId" size="small">
               <el-option
@@ -14,7 +14,7 @@
             </el-select>
           </el-form-item>
         </el-col>
-        <el-col :span="6">
+        <el-col :span="8">
           <el-form-item label="选择项目" prop="projectId">
             <el-select v-model="filterFormData.projectId" size="small">
               <el-option
@@ -26,27 +26,38 @@
             </el-select>
           </el-form-item>
         </el-col>
-        <el-col :span="9">
-          <el-form-item label="检查人:" prop="checkPersonName">
-            <el-input
-              v-model="filterFormData.checkPersonName"
-              size="small"
-              placeholder="请输入内容"
-              style="width: 200px"
-            />
-          </el-form-item>
-        </el-col>
-        <el-col :span="6">
+        <template v-if="fullFilterForm">
+          <el-col :span="8">
+            <el-form-item label="检查人:" prop="checkPersonName">
+              <el-input
+                v-model="filterFormData.checkPersonName"
+                size="small"
+                placeholder="请输入内容"
+                style="width: 200px"
+              />
+            </el-form-item>
+          </el-col>
+        </template>
+        <el-col :span="8">
           <el-form-item class="btn-wrap">
             <el-button type="primary" size="mini" @click="searchHandler">查询</el-button>
             <el-button size="mini" @click="resetForm()">重置</el-button>
+            <el-button
+              size="mini"
+              class="no-border form-ctrl-btn"
+              @click="fullFilterForm = !fullFilterForm">
+              {{ fullFilterForm ? '收缩' : '展开' }}
+              <span
+                :class="{'el-icon-arrow-up': fullFilterForm, 'el-icon-arrow-down': !fullFilterForm}"
+                class="btn-icon" />
+            </el-button>
           </el-form-item>
         </el-col>
       </el-row>
     </el-form>
-    <div class="operate-wrap">
+    <!-- <div class="operate-wrap">
       <el-button type="primary" size="small" @click="toAddSpecialItem">新增</el-button>
-    </div>
+    </div> -->
     <el-table :data="tableData" size="small" class="no-border-gary-head" @row-click="tableRowClick">
       <el-table-column label="项目名称" prop="projectName"/>
       <el-table-column label="检查批次名称" prop="name"/>
@@ -95,6 +106,7 @@ export default {
         orgId: '',
         checkPersonName: '',
       },
+      fullFilterForm: false,
       curTabStatus: null,
       tableData: [],
       pageIndex: 0,
@@ -268,7 +280,7 @@ export default {
     &/deep/ .el-form-item {
       width: 100%;
       white-space: nowrap;
-      margin: 15px 0 0 0;
+      margin: 15px 0 1em 0;
       .el-form-item__content {
         width: 100%;
       }
