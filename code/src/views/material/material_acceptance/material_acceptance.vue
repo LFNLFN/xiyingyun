@@ -104,7 +104,6 @@
         :data="materialTableData"
         :cell-class-name="setTableCellStyle"
         :header-cell-class-name="setTableCellStyle"
-        height="300"
         size="small"
         class="no-border-gary-head"
         @row-click="showMaterialDetail" >
