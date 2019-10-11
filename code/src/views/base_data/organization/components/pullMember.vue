@@ -9,7 +9,7 @@
             :key="idx"
             class="selected-member-item">
             {{ item.name }}
-            <i class="el-icon-close" />
+            <i class="el-icon-close" @click="cancelSelectedMember(item, idx)"/>
           </span>
         </div>
       </div>
@@ -190,6 +190,11 @@ export default {
           }
         })
       }
+    },
+    // 直接点击 X 取消已选择人员
+    cancelSelectedMember(row,index) {
+      this.selectedmemberList.splice(index, 1);
+      this.$refs['membersTable'].toggleRowSelection(row, false)
     },
     // 提交人员信息绑定岗位
     submitMember() {
