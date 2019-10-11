@@ -127,7 +127,7 @@ export default {
         pageSize: 10
       }
       getRolesPerson(data.id, param).then(resp => {
-        this.memberTableData = resp.result
+        this.memberTableData = resp.result.reverse() // 因为要升序
         if (resp.pageTotal) {
           this.pageTotal = resp.pageTotal
         } else {
