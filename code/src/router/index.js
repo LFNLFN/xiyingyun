@@ -111,6 +111,7 @@ export const asyncRouterMap = [
       {
         path: 'service_problem',
         name: 'serviceProblem',
+        hidden: true,
         meta: { title: '客服问题', icon: '' },
         component: () => import('@/views/quality/service_problem/service_problem')
       },
