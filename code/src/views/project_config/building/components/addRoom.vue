@@ -67,10 +67,11 @@ export default {
             const lastRoom = realRooms[realRooms.length - 1]
             const nextSortIndex = lastRoom.sortIndex + 1
             let curSortIndex
-            nextSortIndex < 10 ? curSortIndex = `0${nextSortIndex}` : nextSortIndex
+            curSortIndex = nextSortIndex < 10 ? `0${nextSortIndex}` : nextSortIndex
             _obj = {
               unitId: lastRoom.unitId,
-              name: `${val.sortIndex}${curSortIndex}`,
+              // name: `${val.sortIndex}${curSortIndex}`,
+              name: `${curSortIndex}`,
               parentId: lastRoom.parentId,
               level: 2,
               sortIndex: nextSortIndex
