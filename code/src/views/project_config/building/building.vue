@@ -363,7 +363,8 @@ export default {
         childrenWithDetail.forEach(item => {
           _treeData.push({
             id: item.id,
-            name: `${name}-${item.name}`,
+            // name: `${name}-${item.name}`,
+            name: `${item.name}`,
             level: treeLevel,
             projectData: item,
             children: []

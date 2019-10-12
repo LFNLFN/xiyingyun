@@ -29,7 +29,7 @@ router.beforeEach((to, from, next) => {
           next()
         }).catch(() => {
           // 当登录者是admin
-          if (store.getters.name === 'admin') {
+          if (store.getters.name === 'admin' || '石乐志') {
             // next({ path: '/home' })
             next()
           } else {

@@ -143,7 +143,7 @@ export default {
         for (let i = 1; i <= roomCount; i++) {
           let curIdx
           const floorId = item.id && item.id !== '' ? item.id : '-1'
-          i < 10 ? curIdx = `0${i}` : String(i)
+          curIdx = i < 10 ? `0${i}` : String(i)
           item.children.push({
             unitId: item.unitId,
             name: `${idx + 1}${curIdx}`,

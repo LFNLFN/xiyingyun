@@ -83,7 +83,8 @@ export default {
         if (stageList && stageList.length > 0) {
           stageList.forEach(stage => {
             this.projectStageList.push({
-              name: `${project.name}--${stage.name}`,
+              // name: `${project.name}--${stage.name}`,
+              name: `${stage.name}`,
               id: stage.id,
               stageDetail: stage.estateProjectDetailEntity
             })

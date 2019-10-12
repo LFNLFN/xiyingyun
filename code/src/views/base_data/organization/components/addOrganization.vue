@@ -5,11 +5,11 @@
         <el-form-item label="机构编码" prop="code">
           <el-input v-model="addOrganForm.code" placeholder="请输入机构名称" />
         </el-form-item>
-        <el-form-item label="机构名称" prop="name">
-          <el-input v-model="addOrganForm.name" placeholder="请输入机构名称" />
+        <el-form-item label="机构名称" prop="fullName">
+          <el-input v-model="addOrganForm.fullName" placeholder="请输入机构名称" />
         </el-form-item>
-        <el-form-item label="机构全称" prop="fullName">
-          <el-input v-model="addOrganForm.fullName" placeholder="请输入机构全称" />
+        <el-form-item label="机构简称" prop="name">
+          <el-input v-model="addOrganForm.name" placeholder="请输入机构简称" />
         </el-form-item>
         <el-form-item label="机构类型" prop="orgType">
           <el-select v-model="addOrganForm.orgType">
@@ -71,7 +71,7 @@ export default {
         orgType: ''
       },
       organFormRules: {
-        name: [{ required: true, trigger: 'blur', message: '机构名称不能为空' }],
+        fullName: [{ required: true, trigger: 'blur', message: '机构名称不能为空' }],
         orgType: [{ required: true, trigger: 'change', message: '机构类型不能为空' }]
       },
       isLoading: false,

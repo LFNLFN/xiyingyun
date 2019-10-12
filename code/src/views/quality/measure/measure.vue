@@ -222,7 +222,6 @@ export default {
         'sorts[0].name': 'createTime',
         'sorts[0].order': 'desc'
       }
-      this.filterFormData.unitId = this.filterFormData.unitId.join(',')
       const _keys = Object.keys(this.filterFormData)
       let paramIndex = 1
       _keys.forEach((key) => {
@@ -238,7 +237,7 @@ export default {
             })
           } else if (key === 'unitId') {
               params[`terms[${paramIndex}].column`] = 'unitId'
-              params[`terms[${paramIndex}].value`] = _data
+              params[`terms[${paramIndex}].value`] = _data.length===0 ? '' : _data.join(',')
               params[`terms[${paramIndex}].termType`] = 'in'
               paramIndex++
           } else {
@@ -258,6 +257,8 @@ export default {
         this.pageTotal = _data.total
         this.pageIndex = _data.pageIndex + 1
         message.close()
+      }).catch(err => {
+        this.$message.error('err')
       })
     },
     // 获取实测实量项数据
