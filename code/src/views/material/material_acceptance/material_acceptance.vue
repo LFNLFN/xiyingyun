@@ -246,13 +246,11 @@ export default {
       getOrganization: 'getOrganizationData'
     }),
     tableFormatter(row, column, cellValue, index) {
-      if (index === 9) {
-        console.log('column', column)
-        if (row.checkStatus) {
-          return '是'
-        } else {
-          return '否'
-        }
+      console.log('column', column)
+      if (row.checkStatus) {
+        return '是'
+      } else {
+        return '否'
       }
     },
     // 页面初始化
