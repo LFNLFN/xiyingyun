@@ -225,6 +225,7 @@ export default {
     return {
       // ----------- 添加项目分期表单数据 -----------
       stageFormData: {
+        projectId: '',
         parentId: '',
         type: 1,
         status: '',
@@ -358,6 +359,7 @@ export default {
       // 添加分期，获取父级项目ID以及所属公司
       const curProject = searchArrByKeyVal(this.projectList, 'id', projectId)
       this.stageFormData.parentId = projectId
+      this.stageFormData['projectId'] = curProject['estateProjectDetailEntity'].projectId
       this.stageFormData.orgId = curProject.orgId
       if (curProject) {
         this.belongCompany = curProject.name
@@ -401,6 +403,7 @@ export default {
         // 应急处理-
 
         this.stageFormData['name'] = curProject['name']
+        this.stageFormData['projectId'] = curProject['estateProjectDetailEntity'].projectId
         this.stageFormData['orgId'] = curProject['orgId']
         this.stageFormData['parentId'] = curProject['parentId']
         this.stageFormData['status'] = curProject['status']
@@ -555,7 +558,8 @@ export default {
       const _obj = {
         name: this.houseTypeForm.name,
         structure: this.houseTypeForm.structure,
-        constructionArea: this.houseTypeForm.constructionArea
+        constructionArea: this.houseTypeForm.constructionArea,
+        projectId: this.stageFormData.projectId
       }
       // 如果是table中的最后一行，则按新增数据处理，否则按编辑数据处理
       if (index === this.houseTypeData.length - 1) {
