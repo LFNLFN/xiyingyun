@@ -190,7 +190,7 @@
           </el-table>
           <el-button size="small" plain class="add-house-property-btn" @click="addHouseTypeCtrl">
             <i class="el-icon-plus" />
-            新增属性
+            新增户型
           </el-button>
         </div>
       </el-main>

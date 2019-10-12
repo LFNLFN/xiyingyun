@@ -144,24 +144,25 @@ import {
   getAttLogDetailList
 } from "@/api/att_log/att_log";
 // old code
-import { mapActions } from "vuex";
-import AddProject from "@/views/project_config/project/components/addProject";
-import { delProject } from "@/api/project_config/project";
+import { mapActions } from 'vuex'
+import AddProject from '@/views/project_config/project/components/addProject'
+import { delProject } from '@/api/project_config/project'
+import { formatDay, afterNowDay } from '@/utils/formatDate.js'
 export default {
   components: { AddProject },
   data() {
     return {
       projectSeletorList: [],
       detailListParam: {
-        checkDateFrom: '2019-08-24',
-        checkDateTo: '2019-09-02',
+        checkDateFrom: afterNowDay(-7),
+        checkDateTo: formatDay(new Date()),
         projectId: ''
       },
       attLogDetailTableData: [],
       // old code
       searchForm: {
         projectSelected: '',
-        checkTime: ['2019-08-24', '2019-09-02'],
+        checkTime: [afterNowDay(-7), formatDay(new Date())],
         // old code
         projectName: ''
       },
