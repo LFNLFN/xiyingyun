@@ -6,7 +6,8 @@
         class="main-wrap">
         <div
           v-for="(item, idx) in allPlanList"
-          :key="idx"
+          :key="idx.id"
+          v-show="item.type === type"
           class="plan-item">
           <div class="plan-info-wrap">
             <img :src="GetOssImgFullPath(item.imageUrl)" >
@@ -40,6 +41,7 @@ export default {
     return {
       projectId: '',
       setRoomDatas: [],
+      type: undefined,
       allPlanList: [],
       planCheckedData: {},
       isGetPlanLoading: false

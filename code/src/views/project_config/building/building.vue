@@ -99,7 +99,7 @@
                       type="primary"
                       size="mini"
                       class="column-set-btn"
-                      @click="setPlanBatchHandle(item, idx)">整列设置</el-button>
+                      @click="setPlanBatchHandle(item, idx, 3)">整列设置</el-button>
                   </template>
                   <div class="floor-item">
                     <div class="left-side">
@@ -148,7 +148,7 @@
                       type="primary"
                       size="mini"
                       class="column-set-btn"
-                      @click="setPlanBatchHandle(child, cidx)">整列设置</el-button>
+                      @click="setPlanBatchHandle(child, cidx, 4)">整列设置</el-button>
                   </template>
                   <!-- 非虚拟数据，渲染房间信息 -->
                   <template v-if="!child.isVirtual">
@@ -604,7 +604,7 @@ export default {
       this.isSetPlanShow = true
     },
     // 批量设置平面图处理
-    setPlanBatchHandle(data, index) {
+    setPlanBatchHandle(data, index, type) {
       let _setPlanDatas = []
       if (data.parentId === '-1' && index === 0) {
         _setPlanDatas = this.floorsRoomsData
@@ -615,7 +615,8 @@ export default {
       }
       const _obj = {
         projectId: this.curUnitData.projectId,
-        setRoomDatas: _setPlanDatas
+        setRoomDatas: _setPlanDatas,
+        type // 标记是楼层平面图还是楼栋平面图
       }
       this.$refs.setPlanCom.resetDataProperty(_obj)
       this.isSetPlanShow = true
