@@ -1,16 +1,27 @@
 <template>
   <el-container class="container global-container">
     <el-main v-loading="isLoading">
-      <el-form ref="userInfoForm" v-model="userInfoForm">
-        <el-form-item label="头像">
+      <el-form ref="userInfoForm" :model="userInfoForm" :rules="userInfoFormRules">
+        <el-form-item label="头像" prop="photo">
           <template slot-scope="scope">
-            <el-upload
+            <!-- <el-upload
               :show-file-list="false"
               action="https://jsonplaceholder.typicode.com/posts/"
               class="avatar-uploader">
               <img :src="imageUrl" class="avatar-img">
               <i class="el-icon-edit avatar-edit-icon"/>
-            </el-upload>
+            </el-upload> -->
+            <div class="upload-wrap">
+              <el-upload
+                :http-request="uploadAvatar"
+                :show-file-list="false"
+                class="avatar-uploader"
+                action="">
+                <!-- <img :src="GetOssImgFullPath('9682d46c2353a1bfa3105263e5ff7375.jpg' || imageUrl)" alt="暂无头像"> -->
+                <img :src="GetOssImgFullPath(imageUrl)" alt="暂无头像">
+                <!-- <i class="el-icon-plus" /> -->
+              </el-upload>
+            </div>
           </template>
         </el-form-item>
         <el-form-item label="登录账号" prop="personUser.username">
@@ -47,7 +58,7 @@
     </el-main>
     <footer class="footer">
       <div class="btn-warp">
-        <el-button type="primary">保存</el-button>
+        <el-button type="primary" @click="editAccountInfoFunc">保存</el-button>
       </div>
     </footer>
     <resetUserPassword
@@ -62,12 +73,15 @@
 import ResetUserPassword from '@/views/user/user_set/components/ResetUserPassword'
 import ChangePhoneNum from '@/views/user/user_set/components/ChangePhoneNum'
 import { getUserInfo } from '@/api/user/userSet'
+import { uploadImg } from '@/utils/manageOSS'
+import { editAccountInfo } from '@/api/base_data/accounts'
 export default {
   components: { ResetUserPassword, ChangePhoneNum },
   data() {
     return {
       userInfoForm: {
         name: '',
+        photo: '',
         phone: '',
         sex: '',
         email: '',
@@ -79,14 +93,25 @@ export default {
       imageUrl: this.$store.getters.avatar,
       isLoading: true,
       isResetPswShow: false,
-      isChangePhoneShow: false
+      isChangePhoneShow: false,
+      isUploadAvatar: false,
+      userInfoFormRules: {
+        name: [{ required: true, trigger: 'change', message: '不能为空' }],
+        photo: [{ required: true, trigger: 'change', message: '不能为空' }],
+        phone: [{ required: true, trigger: 'change', message: '不能为空' }],
+        sex: [{ required: true, trigger: 'change', message: '不能为空' }],
+        email: [{ required: true, trigger: 'change', message: '不能为空' }],
+        // birthday: [{ required: true, trigger: 'change', message: '不能为空' }],
+        'personUser.username': [{ required: true, trigger: 'change', message: '不能为空' }],
+      }
     }
   },
   created() {
     getUserInfo().then(resp => {
-      this.isLoading = false
-      console.log('resp', resp)
+      this.$store.commit('SET_AVATAR', resp.result.photo)
       this.userInfoForm = resp.result
+      this.imageUrl = this.userInfoForm.photo
+      this.isLoading = false
     })
   },
   methods: {
@@ -95,6 +120,30 @@ export default {
     },
     changePhoneBoxCtrl() {
       this.isChangePhoneShow = !this.isChangePhoneShow
+    },
+    // 上传头像
+    uploadAvatar({ file }) {
+      this.isUploadAvatar = true
+      uploadImg(file, 'user_avatar').then(resp => {
+        this.imageUrl = this.userInfoForm.photo = resp.url
+        this.isUploadAvatar = false
+      }).catch(err => {
+        console.log('err:' + err)
+      })
+    },
+    // 保存编辑后的用户信息
+    editAccountInfoFunc() {
+      const personId = this.$store.getters.userAllInfo.id
+      editAccountInfo(personId, this.userInfoForm).then(resp => {
+        this.$message.success('操作成功')
+      })
+      // this.$refs.userInfoForm.validate(valid => {
+      //   if (valid) {
+      //     // this.isFormLoading = true
+      //   } else {
+      //     this.$message.error('请正确填写表格')
+      //   }
+      // })
     }
   }
 }
@@ -188,5 +237,11 @@ export default {
       margin-right: 30px;
     }
   }
+}
+.upload-wrap {
+  img {
+      width: 135px;
+      line-height: 18px;
+    }
 }
 </style>
