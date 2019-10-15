@@ -17,8 +17,8 @@
       <span class="user-permission">{{ name }}</span>
     </div>
     <el-dropdown-menu slot="dropdown">
-      <el-dropdown-item>修改密码</el-dropdown-item>
-      <el-dropdown-item>基本信息</el-dropdown-item>
+      <!-- <el-dropdown-item>修改密码</el-dropdown-item> -->
+      <el-dropdown-item @click.native="$router.push({ path: '/user/user_set' })">基本信息</el-dropdown-item>
       <el-dropdown-item @click.native="logOutHandle">退出登录</el-dropdown-item>
     </el-dropdown-menu>
   </el-dropdown>
@@ -77,5 +77,6 @@ export default {
 .user-img {
   width: 33px;
   margin: 0 .5em;
+  border-radius: 50%;
 }
 </style>
