@@ -131,7 +131,7 @@ export default {
       .el-form-item {
         @include flex-layout(center, center, null, nowrap);
         &/deep/.el-form-item__label {
-          width: 90px;
+          width: 100px;
           text-align: left;
         }
         .el-input {
