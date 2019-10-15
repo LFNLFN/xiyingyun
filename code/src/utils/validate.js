@@ -6,10 +6,11 @@ export function isvalidUsername(rule, value, callback) {
 }
 
 export function isvalidPassword(rule, value, callback) {
-  if (value.length < 5) {
-    callback(new Error('密码不能少于5位'))
+  if (value === '') {
+    callback(new Error('请输入密码'));
+  } else {
+    callback();
   }
-  callback()
 }
 
 export function isExternal(path) {

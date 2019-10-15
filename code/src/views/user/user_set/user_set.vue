@@ -63,6 +63,7 @@
     </footer>
     <resetUserPassword
       v-show="isResetPswShow"
+      @closeBox="isResetPswShow = false"
       :is-reset-psw-show.sync="isResetPswShow"/>
     <changePhoneNum
       v-show="isChangePhoneShow"
@@ -94,7 +95,6 @@ export default {
       isLoading: true,
       isResetPswShow: false,
       isChangePhoneShow: false,
-      isUploadAvatar: false,
       userInfoFormRules: {
         name: [{ required: true, trigger: 'change', message: '不能为空' }],
         photo: [{ required: true, trigger: 'change', message: '不能为空' }],
@@ -110,7 +110,7 @@ export default {
     getUserInfo().then(resp => {
       this.$store.commit('SET_AVATAR', resp.result.photo)
       this.userInfoForm = resp.result
-      this.imageUrl = this.userInfoForm.photo
+      this.imageUrl = this.userInfoForm.photo || ''
       this.isLoading = false
     })
   },
@@ -123,18 +123,24 @@ export default {
     },
     // 上传头像
     uploadAvatar({ file }) {
-      this.isUploadAvatar = true
+      const msg = this.$message({
+        type: 'info',
+        message: '头像上传中',
+        duration: 0
+      })
       uploadImg(file, 'user_avatar').then(resp => {
         this.imageUrl = this.userInfoForm.photo = resp.url
-        this.isUploadAvatar = false
+        msg.close()
       }).catch(err => {
-        console.log('err:' + err)
+        msg.close()
+        this.$message.error('操作失败，请重试')
       })
     },
     // 保存编辑后的用户信息
     editAccountInfoFunc() {
       const personId = this.$store.getters.userAllInfo.id
       editAccountInfo(personId, this.userInfoForm).then(resp => {
+        this.$store.commit('SET_AVATAR', this.userInfoForm.photo)
         this.$message.success('操作成功')
       })
       // this.$refs.userInfoForm.validate(valid => {
