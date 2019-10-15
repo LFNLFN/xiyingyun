@@ -338,8 +338,13 @@ export default {
     // 编辑项目分期时，获取所有城市数据再进行处理
     'stageFormData.estateProjectDetailEntity.cityId': function(newVal) {
       const eventType = this.$route.query.eventType
-      // if (this.districtData.length === 0 && eventType === 'edit') {
-      if (this.districtData.length === 0 || eventType === 'edit') {
+      if (this.districtData.length === 0 && eventType === 'edit') {
+        const msg = this.$message({
+          type: 'info',
+          message: '数据加载中',
+          duration: 0
+        })
+        this.stageLoading = true
         const params = {
           'terms[0].column': 'dictId',
           'terms[0].value': 'city'
@@ -347,7 +352,13 @@ export default {
         this.getDictionaryItemFunc({ params, dataKey: 'districtData' }).then(async resp => {
           // this.handleAllCityData(resp, newVal)
           this.handleAllCityDataNew(resp, newVal)
+          msg.close()
           this.stageLoading = false
+        }).catch(err => {
+          msg.close()
+          this.stageLoading = false
+          this.$message.error('数据加载失败，请重试')
+          console.log(err)
         })
       }
     }
@@ -385,12 +396,9 @@ export default {
         this.stageFormData['code'] = curProject['code']
 
         // -应急处理
-        // this.$set(this.stageFormData, 'estateProjectDetailEntity', curProject['estateProjectDetailEntity'])
-        // this.stageFormData['estateProjectDetailEntity'] = JSON.parse(JSON.stringify(curProject['estateProjectDetailEntity']))
-        // let copyCurProject = JSON.parse(JSON.stringify(curProject))
         this.stageFormData['estateProjectDetailEntity'].aerialView = curProject['estateProjectDetailEntity'].aerialView
-        // this.stageFormData['estateProjectDetailEntity'].cityId = curProject['estateProjectDetailEntity'].cityId
-        this.stageFormData['estateProjectDetailEntity'].cityId = '101e4f9c7ad04ed0a1c314def2d5e0d2'
+        this.stageFormData['estateProjectDetailEntity'].cityId = curProject['estateProjectDetailEntity'].cityId
+        // this.stageFormData['estateProjectDetailEntity'].cityId = '101e4f9c7ad04ed0a1c314def2d5e0d2'
         this.stageFormData['estateProjectDetailEntity'].constructionArea = curProject['estateProjectDetailEntity'].constructionArea
         this.stageFormData['estateProjectDetailEntity'].constructionStage = curProject['estateProjectDetailEntity'].constructionStage
         this.stageFormData['estateProjectDetailEntity'].deliveryType = curProject['estateProjectDetailEntity'].deliveryType
@@ -482,44 +490,45 @@ export default {
       }
     },
     // 用于地点初始化
-    handleAllCityDataNew(datas, tergetDistrictId) {
+    handleAllCityDataNew(datas, tergetDistrictId) { // datas是3000多条的地方数据
       for (let index = 0; index < datas.length; index++) {
         const element = datas[index]
         if (element.parentId != '-1') { // parentId=-1那就是一个省级地名
           continue
         } else {
-          this.provinceData.push(element) // 一个只储存省级地名的数组
+          this.provinceData.push(element) // 获取包含所有省的数组
         }
       }
       for (let index = 0; index < datas.length; index++) {
         const element = datas[index]
-        if (element.id == '101e4f9c7ad04ed0a1c314def2d5e0d2') {
-          this.citySelected = element.parentId
+        // if (element.id == '101e4f9c7ad04ed0a1c314def2d5e0d2') {
+        if (element.id == tergetDistrictId) {
+          this.citySelected = element.parentId // 填充对应的城市
           break
         }
       }
       for (let index = 0; index < datas.length; index++) {
         const element = datas[index]
-        if (this.citySelected == element.id) {
+        if (this.citySelected == element.id) { // 遍历找出城市对应的省份
           this.provinceSelected = element.parentId
           break
         }
       }
     },
     // 获取下拉框数据
-    getSelectData(visiable, dataKey) {
-      if (visiable && this[dataKey].length === 0) {
+    getSelectData(visiable, dataKey) { // true of false, 一个this的属性（一个数组）
+      if (visiable && this[dataKey].length === 0) { // true 而且对应数组为空数组的时候
         this.selectLoading = true
-        const paramsObj = this.selectDectionary[dataKey]
-        const _keys = Object.keys(paramsObj)
+        const paramsObj = this.selectDectionary[dataKey] // this.selectDectionary 包含了省市区数据对象的一个大对象
+        const _keys = Object.keys(paramsObj) // 获取大对象里面的一个小对象的所有key值
         const params = {}
-        _keys.forEach((key, idx) => {
+        _keys.forEach((key, idx) => { // 把小对象的key和value都作为params对象的值，组装一个请求的参数对象
           if (paramsObj[key] !== '') {
             params[`terms[${idx}].column`] = key
             params[`terms[${idx}].value`] = paramsObj[key]
           }
         })
-        this.getDictionaryItemFunc({ params, dataKey }).then(resp => {
+        this.getDictionaryItemFunc({ params, dataKey }).then(resp => { // 请求返回小对象的数据
           this[dataKey] = resp
           this.selectLoading = false
         })
