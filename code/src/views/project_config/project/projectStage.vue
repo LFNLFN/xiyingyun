@@ -241,7 +241,8 @@ export default {
           deliveryType: '',
           aerialView: '',
           houseTypeEntityList: []
-        }
+        },
+        path: null
       },
       stageFormRules: {
         name: [{ required: true, trigger: 'blur', message: '项目名称不能为空' }],
@@ -388,34 +389,12 @@ export default {
           this.belongCompany = parentProject.name
         }
         // 加载表单数据
-        // _keys.forEach(key => {
-        //   // this.stageFormData[key] = curProject[key]
-        //   this.$set(this.stageFormData, key, curProject[key])
-        // })
-        this.stageFormData['address'] = curProject['address']
-        this.stageFormData['code'] = curProject['code']
+        _keys.forEach(key => {
+          this.stageFormData[key] = curProject[key]
+        })
 
-        // -应急处理
-        this.stageFormData['estateProjectDetailEntity'].aerialView = curProject['estateProjectDetailEntity'].aerialView
-        this.stageFormData['estateProjectDetailEntity'].cityId = curProject['estateProjectDetailEntity'].cityId
         // this.stageFormData['estateProjectDetailEntity'].cityId = '101e4f9c7ad04ed0a1c314def2d5e0d2'
-        this.stageFormData['estateProjectDetailEntity'].constructionArea = curProject['estateProjectDetailEntity'].constructionArea
-        this.stageFormData['estateProjectDetailEntity'].constructionStage = curProject['estateProjectDetailEntity'].constructionStage
-        this.stageFormData['estateProjectDetailEntity'].deliveryType = curProject['estateProjectDetailEntity'].deliveryType
-        this.stageFormData['estateProjectDetailEntity'].houseTypeEntityList = curProject['estateProjectDetailEntity'].houseTypeEntityList
-        this.stageFormData['estateProjectDetailEntity'].id = curProject['estateProjectDetailEntity'].id
-        this.stageFormData['estateProjectDetailEntity'].projectId = curProject['estateProjectDetailEntity'].projectId
-        this.stageFormData['estateProjectDetailEntity'].projectIdProperty = curProject['estateProjectDetailEntity'].projectIdProperty
-        this.stageFormData['estateProjectDetailEntity'].typeId = curProject['estateProjectDetailEntity'].typeId
-        // this.handleAllCityDataNew(null, this.stageFormData['estateProjectDetailEntity'].cityId)
-        // 应急处理-
 
-        this.stageFormData['name'] = curProject['name']
-        this.stageFormData['projectId'] = curProject['estateProjectDetailEntity'].projectId
-        this.stageFormData['orgId'] = curProject['orgId']
-        this.stageFormData['parentId'] = curProject['parentId']
-        this.stageFormData['status'] = curProject['status']
-        this.stageFormData['type'] = curProject['type']
         // 加载下拉选择框数据
         const _selectDictKey = Object.keys(this.selectDectionary)
         const whiteList = ['provinceData', 'districtData', 'cityData']
