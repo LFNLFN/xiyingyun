@@ -1,28 +1,32 @@
 <template>
   <div class="login-container">
+    <div>
+      <h3 class="title">鸿宝装饰工程管理平台</h3>
+      <h5 class="title-second">Hongbao Decoration Engineering Management Platform</h5>
+    </div>
     <el-form
       ref="loginForm"
       :model="loginForm"
       :rules="loginRules"
       class="login-form"
       auto-complete="on"
-      label-position="left">
-      <h3 class="title">房地产数据企业服务系统</h3>
-      <h5 class="title-second">Estate Enterprise Data Service System</h5>
+      label-position="left"
+    >
       <el-form-item prop="username" class="login-item">
         <span class="svg-container">
-          <svg-icon icon-class="user" />
+          <svg-icon icon-class="user"/>
         </span>
         <el-input
           v-model="loginForm.username"
           name="username"
           type="text"
           auto-complete="off"
-          placeholder="请输入用户名称" />
+          placeholder="请输入用户名称"
+        />
       </el-form-item>
       <el-form-item prop="password" class="login-item">
         <span class="svg-container">
-          <svg-icon icon-class="password" />
+          <svg-icon icon-class="password"/>
         </span>
         <el-input
           :type="pwdType"
@@ -30,9 +34,10 @@
           name="password"
           auto-complete="new-password"
           placeholder="请输入登录密码"
-          @keyup.enter.native="handleLogin" />
+          @keyup.enter.native="handleLogin"
+        />
         <span class="show-pwd" @click="showPwd">
-          <svg-icon :icon-class="pwdType === 'password' ? 'eye' : 'eye-open'" />
+          <svg-icon :icon-class="pwdType === 'password' ? 'eye' : 'eye-open'"/>
         </span>
       </el-form-item>
       <el-form-item class="no-lineheight">
@@ -40,68 +45,75 @@
         <!-- <el-button class="no-border forget-pwd-btn">忘记密码</el-button> -->
       </el-form-item>
       <el-form-item>
-        <el-button :loading="loading" type="primary" style="width:100%;" @click.native.prevent="handleLogin">
-          登录
-        </el-button>
+        <el-button
+          :loading="loading"
+          type="primary"
+          style="width:100%;"
+          @click.native.prevent="handleLogin"
+        >登录</el-button>
       </el-form-item>
     </el-form>
   </div>
 </template>
 <script>
-import { isvalidUsername } from '@/utils/validate'
-import { Encrypt, Decrypt } from '@/utils/secret'
+import { isvalidUsername } from "@/utils/validate";
+import { Encrypt, Decrypt } from "@/utils/secret";
 export default {
-  name: 'Login',
+  name: "Login",
   data() {
     // 用户密码验证规则
     const validatePass = (rule, value, callback) => {
       if (value.length < 5) {
-        callback(new Error('密码不能小于8位'))
+        callback(new Error("密码不能小于5位"));
       } else {
-        callback()
+        callback();
       }
-      callback()
-    }
+      callback();
+    };
     return {
       loginForm: {
-        username: '',
-        password: ''
+        username: "",
+        password: ""
       },
       loginRules: {
-        username: [{ required: true, trigger: 'blur', validator: isvalidUsername }],
-        password: [{ required: true, trigger: 'blur', validator: validatePass }]
+        username: [
+          { required: true, trigger: "blur", validator: isvalidUsername }
+        ],
+        password: [{ required: true, trigger: "blur", validator: validatePass }]
       },
       isRememberPwd: false,
       loading: false,
-      pwdType: 'password',
+      pwdType: "password",
       redirect: undefined
-    }
+    };
   },
   watch: {
     $route: {
       handler: function(route) {
-        this.redirect = route.query && route.query.redirect
+        this.redirect = route.query && route.query.redirect;
       },
       immediate: true
     }
   },
   created() {
     // 检查localStorage是否保存有用户名密码
-    const __info = this.$GetLocalStorage('loginSave')
-    if (__info && __info !== '') {
-      const loginTime = __info.loginTime
-      const __infoObj = JSON.parse(Decrypt(__info.loginInfo, Date.parse(loginTime)))
-      this.loginForm.username = __infoObj.username
-      this.loginForm.password = __infoObj.password
-      this.isRememberPwd = true
+    const __info = this.$GetLocalStorage("loginSave");
+    if (__info && __info !== "") {
+      const loginTime = __info.loginTime;
+      const __infoObj = JSON.parse(
+        Decrypt(__info.loginInfo, Date.parse(loginTime))
+      );
+      this.loginForm.username = __infoObj.username;
+      this.loginForm.password = __infoObj.password;
+      this.isRememberPwd = true;
     }
   },
   methods: {
     showPwd() {
-      if (this.pwdType === 'password') {
-        this.pwdType = ''
+      if (this.pwdType === "password") {
+        this.pwdType = "";
       } else {
-        this.pwdType = 'password'
+        this.pwdType = "password";
       }
     },
     handleLogin() {
@@ -109,45 +121,51 @@ export default {
         if (valid) {
           if (this.isRememberPwd) {
             // 记住密码处理
-            const now = new Date()
-            const EncryptStr = Encrypt(JSON.stringify(this.loginForm), now.getTime())
+            const now = new Date();
+            const EncryptStr = Encrypt(
+              JSON.stringify(this.loginForm),
+              now.getTime()
+            );
             const _saveObj = {
               loginInfo: EncryptStr,
               loginTime: now
-            }
-            this.$SetLocalStorage('loginSave', _saveObj)
+            };
+            this.$SetLocalStorage("loginSave", _saveObj);
           } else {
             // 取消记住密码处理
-            this.$RemoveLocalStorage('loginSave') // 清除本地存储的账号数据
+            this.$RemoveLocalStorage("loginSave"); // 清除本地存储的账号数据
           }
-          this.loading = true
+          this.loading = true;
           // 调用store里面的登录函数（这里只传入登录账号和密码）
-          this.$store.dispatch('Login', this.loginForm).then(() => {
-            // 登录成功后，返回token，跳转页面
-            this.loading = false
-            this.$router.push({ path: this.redirect || '/' })
-            // 加载地点数据
-            this.$store.dispatch('getAllCityData')
-          }).catch(() => {
-            this.loading = false
-          })
+          this.$store
+            .dispatch("Login", this.loginForm)
+            .then(() => {
+              // 登录成功后，返回token，跳转页面
+              this.loading = false;
+              this.$router.push({ path: this.redirect || "/" });
+              // 加载地点数据
+              this.$store.dispatch("getAllCityData");
+            })
+            .catch(() => {
+              this.loading = false;
+            });
         } else {
-          console.log('error submit!!')
-          return false
+          console.log("error submit!!");
+          return false;
         }
-      })
+      });
     }
   }
-}
+};
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-@import 'src/styles/mixin.scss';
+@import "src/styles/mixin.scss";
 
-$bg:#2d3a4b;
-$dark_gray:#889aa4;
-$font_blue:#2b85e4;
-$light_while:#fff;
+$bg: #2d3a4b;
+$dark_gray: #889aa4;
+$font_blue: #2b85e4;
+$light_while: #fff;
 .login-container {
   position: fixed;
   height: 100%;
@@ -155,7 +173,7 @@ $light_while:#fff;
   // background: url(../../assets/login_images/login_bg.jpg) no-repeat;
   background: #f1f2f6;
   background-size: 100% 100%;
-  @include flex-layout(center, center, null, null);
+  @include flex-layout(center, center, column, null);
   .login-form {
     width: 520px;
     padding: 35px 35px 15px 35px;
@@ -224,7 +242,7 @@ $light_while:#fff;
     font-size: 20px;
     font-weight: 400;
     color: $font_blue;
-    margin: 0px auto 30px auto;
+    margin: 0px auto 0px auto;
     text-align: center;
     font-weight: bold;
   }
