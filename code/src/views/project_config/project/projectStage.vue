@@ -47,9 +47,10 @@
                 v-model="provinceSelected"
                 :loading="selectLoading"
                 size="small"
-                clearable
                 placeholder="省"
-                @visible-change="(visiable) => getSelectData(visiable, 'provinceData')">
+                @change="clearProvince"
+              >
+                <!-- @visible-change="(visiable) => getSelectData(visiable, 'provinceData')" -->
                 <el-option
                   v-for="(item, idx) in provinceData"
                   :key="idx"
@@ -60,8 +61,9 @@
               <el-select
                 v-model="citySelected"
                 :loading="selectLoading"
+                :disabled="!provinceSelected"
                 size="small"
-                clearable
+                @change="clearCity"
                 placeholder="市">
                 <!-- @visible-change="(visiable) => getSelectData(visiable, 'cityData')"> -->
                 <el-option
@@ -74,8 +76,8 @@
               <el-select
                 v-model="stageFormData.estateProjectDetailEntity.cityId"
                 :loading="selectLoading"
+                :disabled="!citySelected"
                 size="small"
-                clearable
                 placeholder="区">
                 <!-- @visible-change="(visiable) => getSelectData(visiable, 'districtData')"> -->
                 <el-option
@@ -210,7 +212,7 @@ export default {
   data() {
     const validCityFunc = (rule, val, callback) => { // 验证项目所在城市是否输入
       if (val === '') {
-        callback(new Error('请选择城市'))
+        callback(new Error('请完整填写地址'))
       } else {
         callback()
       }
@@ -329,7 +331,7 @@ export default {
       }
     },
     // 通过城市ID获取区县数据或省数据
-    citySelected: async function(newVal, oldVal) {
+    citySelected: function(newVal, oldVal) {
       if (newVal !== '' && newVal !== oldVal) {
         this.selectDectionary.districtData['parentId'] = newVal
         this.districtData = []
@@ -340,12 +342,6 @@ export default {
     'stageFormData.estateProjectDetailEntity.cityId': function(newVal) {
       const eventType = this.$route.query.eventType
       if (this.districtData.length === 0 && eventType === 'edit') {
-        const msg = this.$message({
-          type: 'info',
-          message: '数据加载中',
-          duration: 0
-        })
-        this.stageLoading = true
         const params = {
           'terms[0].column': 'dictId',
           'terms[0].value': 'city'
@@ -353,10 +349,8 @@ export default {
         this.getDictionaryItemFunc({ params, dataKey: 'districtData' }).then(async resp => {
           // this.handleAllCityData(resp, newVal)
           this.handleAllCityDataNew(resp, newVal)
-          msg.close()
           this.stageLoading = false
         }).catch(err => {
-          msg.close()
           this.stageLoading = false
           this.$message.error('数据加载失败，请重试')
           console.log(err)
@@ -377,6 +371,12 @@ export default {
         this.belongCompany = curProject.name
       }
     } else if (eventType === 'edit') {
+      const msg = this.$message({
+        type: 'info',
+        message: '数据加载中',
+        duration: 0
+      })
+      this.stageLoading = true
       // 编辑项目分期，加载表单数据
       const curProject = searchArrByKeyVal(this.projectDetails, 'id', projectId)
       if (curProject) {
@@ -406,6 +406,21 @@ export default {
         })
         // 加载户型数据
         this.houseTypeData = curProject.estateProjectDetailEntity.houseTypeEntityList || []
+        // 初始化加载省份数组，不需重复请求
+        const params = {
+          'terms[0].column': 'dictId',
+          'terms[0].value': 'city'
+        }
+        this.getDictionaryItemFunc({ params, dataKey: 'districtData' }).then(async resp => {
+          this.getProvinceArr(resp)
+          this.stageLoading = false
+          msg.close()
+        }).catch(err => {
+          this.stageLoading = false
+          this.$message.error('数据加载失败，请重试')
+          console.log(err)
+          msg.close()
+        })
       }
     }
   },
@@ -470,14 +485,18 @@ export default {
     },
     // 用于地点初始化
     handleAllCityDataNew(datas, tergetDistrictId) { // datas是3000多条的地方数据
-      for (let index = 0; index < datas.length; index++) {
-        const element = datas[index]
-        if (element.parentId != '-1') { // parentId=-1那就是一个省级地名
-          continue
-        } else {
-          this.provinceData.push(element) // 获取包含所有省的数组
-        }
-      }
+      // let provinceArr = [] 
+      // for (let index = 0; index < datas.length; index++) {
+      //   const element = datas[index]
+      //   if (element.parentId != '-1') { // parentId=-1那就是一个省级地名
+      //     continue
+      //   } else {
+      //     provinceArr.push(element) // 获取包含所有省的数组
+      //   }
+      // }
+      // if (this.provinceData.length<1) { // 不必重新请求省份
+      //   this.provinceData = provinceArr
+      // }
       for (let index = 0; index < datas.length; index++) {
         const element = datas[index]
         // if (element.id == '101e4f9c7ad04ed0a1c314def2d5e0d2') {
@@ -494,10 +513,27 @@ export default {
         }
       }
     },
+    getProvinceArr(datas) {
+      let provinceArr = [] 
+      for (let index = 0; index < datas.length; index++) {
+        const element = datas[index]
+        if (element.parentId != '-1') { // parentId=-1那就是一个省级地名
+          continue
+        } else {
+          provinceArr.push(element) // 获取包含所有省的数组
+        }
+      }
+      this.provinceData = provinceArr
+    },
     // 获取下拉框数据
     getSelectData(visiable, dataKey) { // true of false, 一个this的属性（一个数组）
       if (visiable && this[dataKey].length === 0) { // true 而且对应数组为空数组的时候
-        this.selectLoading = true
+        // this.selectLoading = true
+        const msg = this.$message({
+          message: '数据加载中',
+          type: 'info',
+          duration: 0
+        })
         const paramsObj = this.selectDectionary[dataKey] // this.selectDectionary 包含了省市区数据对象的一个大对象
         const _keys = Object.keys(paramsObj) // 获取大对象里面的一个小对象的所有key值
         const params = {}
@@ -509,7 +545,12 @@ export default {
         })
         this.getDictionaryItemFunc({ params, dataKey }).then(resp => { // 请求返回小对象的数据
           this[dataKey] = resp
-          this.selectLoading = false
+          // this.selectLoading = false
+          msg.close()
+        }).catch(err => {
+          console.log(err)
+          this.$message.error('数据请求失败，请重试')
+          msg.close()
         })
       }
     },
@@ -640,6 +681,14 @@ export default {
       } else {
         this.$router.go(-1)
       }
+    },
+    // 地址更改时的清空交互
+    clearProvince() {
+      this.citySelected = '';
+      this.stageFormData.estateProjectDetailEntity.cityId = ''
+    },
+    clearCity() {
+      this.stageFormData.estateProjectDetailEntity.cityId = ''
     }
   }
 }
