@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import { getRoles } from '@/api/base_data/permission.js'
+import { getRolesInSup } from '@/api/base_data/permission.js'
 import { getRolesInOrg } from '@/api/base_data/organization.js'
 import { getOrganization } from '@/api/base_data/organization.js'
 // import { Message } from 'element-ui'
@@ -28,11 +29,27 @@ const baseData = {
     }
   },
   actions: {
-    // 在供应商管理中，获取角色
-    getPerRoles({ commit, state }, { paramObj, orgType }) {
+    // 在账号管理中获取角色
+    getPerRoles({ commit, state }) {
       return new Promise((resolve, reject) => {
-        if (state.permissionRoles.length === 0) {
-          getRoles(paramObj, orgType).then(resp => {
+        if (true || state.permissionRoles.length === 0) { // 这个判断条件目前来说没有意义，但以后不知道，所以保留下来
+          getRoles({}).then(resp => {
+            const data = resp.result.data
+            commit('SET_PER_ROLES', data)
+            resolve(data)
+          }).catch(() => {
+            reject()
+          })
+        } else {
+          resolve(state.permissionRoles)
+        }
+      })
+    },
+    // 在供应商管理中，获取角色
+    getPerRolesInSup({ commit, state }, { paramObj, orgType }) {
+      return new Promise((resolve, reject) => {
+        if (true || state.permissionRoles.length === 0) {
+          getRolesInSup(paramObj, orgType).then(resp => {
             const data = resp.result
             commit('SET_PER_ROLES', data)
             resolve(data)
@@ -47,7 +64,7 @@ const baseData = {
     // 在组织架构中获取角色
     getPerRolesInOrganization({ commit, state }, paramObj) {
       return new Promise((resolve, reject) => {
-        if (state.permissionRoles.length === 0) {
+        if (true || state.permissionRoles.length === 0) {
           getRolesInOrg(paramObj).then(resp => {
             const data = resp.result
             commit('SET_PER_ROLES', data)

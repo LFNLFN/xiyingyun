@@ -97,12 +97,12 @@ export default {
     }
   },
   created() {
-    this.getPerRoles({paramObj: {}, orgType: this.orgType}).then(resp => {
+    this.getPerRolesInSup({paramObj: {}, orgType: this.orgType}).then(resp => {
       this.permissionRoles = resp;
     });
   },
   methods: {
-    ...mapActions(["getPerRoles"]),
+    ...mapActions(["getPerRolesInSup"]),
     // 发送添加员工请求
     addAccountSubmit() {
       this.$refs.addMemberForm.validate(vaild => {

@@ -1,7 +1,16 @@
 import request from '@/utils/request'
 
-// 获取角色列表
-export function getRoles(paramsObj, orgType) {
+// 账号管理页面中获取角色列表
+export function getRoles(paramsObj) {
+  return request({
+    url: `/role`,
+    method: 'get',
+    parmas: paramsObj
+  })
+}
+
+// 在供应商页面中获取角色列表
+export function getRolesInSup(paramsObj, orgType) {
   return request({
     url: `/role/orgType/${orgType}`,
     method: 'get',

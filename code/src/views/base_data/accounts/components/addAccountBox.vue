@@ -1,5 +1,5 @@
 <template>
-  <publicPopups title-text="重置密码" v-on="$listeners" @closePopupsBox="closeBox" @formConfirm="addAccountSubmit">
+  <publicPopups title-text="新增账号" v-on="$listeners" @closePopupsBox="closeBox" @formConfirm="addAccountSubmit">
     <template slot="main-content">
       <el-form
         v-loading="addAccountLoading"
@@ -90,7 +90,8 @@ export default {
       addAccountRules: {
         name: [{ required: true, trigger: 'blur', validator: isvalidUsername }],
         phone: [{ required: true, trigger: 'blur', validator: isvalidPhoneNum }],
-        email: [{ required: true, trigger: 'blur', validator: isvalidEmail }]
+        email: [{ required: true, trigger: 'blur', validator: isvalidEmail }],
+        roles: [{ required: true, trigger: 'change', message: '不能为空' }]
       },
       // expireDateRadio: '',
       // datePickerDisable: false,
