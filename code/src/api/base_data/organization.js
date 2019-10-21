@@ -124,3 +124,12 @@ export function gerPersonsByPost(id) {
     method: 'get'
   })
 }
+
+// 获取角色列表
+export function getRolesInOrg(paramsObj) {
+  return request({
+    url: `/role/companyRoles`,
+    method: 'get',
+    parmas: paramsObj
+  })
+}

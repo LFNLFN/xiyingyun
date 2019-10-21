@@ -1,9 +1,9 @@
 import request from '@/utils/request'
 
 // 获取角色列表
-export function getRoles(paramsObj) {
+export function getRoles(paramsObj, orgType) {
   return request({
-    url: '/role',
+    url: `/role/orgType/${orgType}`,
     method: 'get',
     parmas: paramsObj
   })
@@ -22,7 +22,7 @@ export function editRoles(paramsObj) {
 // 新增角色
 export function addRoles(paramsObj) {
   return request({
-    url: '/role',
+    url: '/role/custom',
     method: 'post',
     data: JSON.stringify(paramsObj)
   })

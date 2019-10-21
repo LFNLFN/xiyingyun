@@ -24,7 +24,7 @@ export function editSuppliers(id, datas) {
 // 新增供应商
 export function addSuppliers(datas) {
   return request({
-    url: '/organizational',
+    url: '/organizational/supplier',
     method: 'post',
     data: JSON.stringify(datas)
   })

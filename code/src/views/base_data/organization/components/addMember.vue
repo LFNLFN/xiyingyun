@@ -83,13 +83,13 @@ export default {
     }
   },
   created() {
-    this.getPerRoles().then(resp => {
+    this.getPerRolesInOrganization({}).then(resp => {
       this.permissionRoles = resp
     })
   },
   methods: {
     ...mapActions([
-      'getPerRoles'
+      'getPerRolesInOrganization'
     ]),
     // 发送添加员工请求
     addAccountSubmit() {

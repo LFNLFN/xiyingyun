@@ -69,8 +69,9 @@
       :event-type="eventType"
       @submitComplete="submitComplete"/>
     <addMember
-      v-show="isAddMemberShow"
+      v-if="isAddMemberShow"
       :position-data="addMemberPostData"
+      :org-type="orgType"
       @submitComplete="submitComplete"/>
     <PullMember
       v-show="isPullMemberShow"
@@ -122,6 +123,7 @@ export default {
       // 新增人员相关
       isAddMemberShow: false,
       addMemberPostData: {}, // 新增人员的岗位信息
+      orgType: '',
       // 添加人员相关
       isPullMemberShow: false,
       pullMemberPostData: {}, // 添加人员的岗位信息
@@ -208,6 +210,7 @@ export default {
           this.isShow = true
         }
       }
+      this.orgType = data.orgType
       this.getPositionFunc(data)
     },
     // 增加人员组件的控制

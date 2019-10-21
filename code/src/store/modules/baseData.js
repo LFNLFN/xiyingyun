@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import { getRoles } from '@/api/base_data/permission.js'
+import { getRolesInOrg } from '@/api/base_data/organization.js'
 import { getOrganization } from '@/api/base_data/organization.js'
 // import { Message } from 'element-ui'
 
@@ -27,12 +28,28 @@ const baseData = {
     }
   },
   actions: {
-    // 获取角色
-    getPerRoles({ commit, state }) {
+    // 在供应商管理中，获取角色
+    getPerRoles({ commit, state }, { paramObj, orgType }) {
       return new Promise((resolve, reject) => {
         if (state.permissionRoles.length === 0) {
-          getRoles({}).then(resp => {
-            const data = resp.result.data
+          getRoles(paramObj, orgType).then(resp => {
+            const data = resp.result
+            commit('SET_PER_ROLES', data)
+            resolve(data)
+          }).catch(() => {
+            reject()
+          })
+        } else {
+          resolve(state.permissionRoles)
+        }
+      })
+    },
+    // 在组织架构中获取角色
+    getPerRolesInOrganization({ commit, state }, paramObj) {
+      return new Promise((resolve, reject) => {
+        if (state.permissionRoles.length === 0) {
+          getRolesInOrg(paramObj).then(resp => {
+            const data = resp.result
             commit('SET_PER_ROLES', data)
             resolve(data)
           }).catch(() => {
