@@ -46,28 +46,48 @@ export const asyncRouterMap = [
   {
     path: '/',
     component: Layout,
-    redirect: '/home',
+    // redirect: '/home',
+    redirect: '/website_info',
     hidden: true
   },
-  /* ------------------- 首页 ------------------ */
+  /* ------------------- 系统设置 ------------------ */
   // 首页
-  {
-    path: '/home',
-    name: 'home',
+  // {
+  //   path: '/home',
+  //   name: 'home',
+  //   component: Layout,
+  //   redirect: '/home/index',
+  //   meta: { title: '首页', icon: 'home' },
+  //   menuType: 'public',
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       name: 'homeIndex',
+  //       meta: { title: '首页', icon: 'home' },
+  //       component: () => import('@/views/home/index')
+  //     }
+  //   ]
+  // },
+   // 网站信息(首页)
+   {
+    path: '/website_info',
+    name: 'websiteInfo',
     component: Layout,
-    redirect: '/home/index',
-    meta: { title: '首页', icon: '' },
+    redirect: '/website_info/index',
+    // meta: { title: '网站信息', icon: 'websiteInfo' },
+    meta: { title: '首页', icon: 'home' },
+    // menuType: 'public',
     menuType: 'home',
     children: [
       {
         path: 'index',
-        name: 'homeIndex',
+        name: 'websiteInfoIndex',
+        // meta: { title: '网站信息', icon: 'websiteInfo' },
         meta: { title: '首页', icon: 'home' },
-        component: () => import('@/views/home/index')
+        component: () => import('@/views/website_info/index')
       }
     ]
   },
-  /* ------------------- 统计数据大屏 ------------------ */
   // 首页
   {
     path: '/data_screen',
@@ -75,7 +95,7 @@ export const asyncRouterMap = [
     component: Layout,
     redirect: '/data_screen/index',
     meta: { title: '统计数据大屏', icon: 'dataScreen' },
-    menuType: 'home',
+    menuType: 'project',
     children: [
       {
         path: 'index',
@@ -85,7 +105,232 @@ export const asyncRouterMap = [
       }
     ]
   },
+  // 项目设置界面
+  {
+    path: '/project_config',
+    component: Layout,
+    redirect: '/project_config/project',
+    name: 'projectConfig',
+    meta: { title: '项目设置', icon: 'projectConfig' },
+    menuType: 'public',
+    children: [
+      {
+        path: 'project',
+        name: 'project',
+        redirect: '/project_config/project/index',
+        meta: { title: '项目管理', icon: '' },
+        component: () => import('@/views/project_config/project/index'),
+        children: [
+          {
+            path: 'index',
+            component: () => import('@/views/project_config/project/project'),
+            name: 'projectIndex',
+            hidden: true
+          },
+          {
+            path: 'projectStage',
+            component: () => import('@/views/project_config/project/projectStage'),
+            name: 'ProjectStage',
+            hidden: true
+          },
+          {
+            path: 'stageSection',
+            component: () => import('@/views/project_config/project/stageSection'),
+            name: 'stageSection',
+            hidden: true
+          }
+        ]
+      },
+      {
+        path: 'building',
+        name: 'Building',
+        meta: { title: '楼栋管理', icon: '' },
+        component: () => import('@/views/project_config/building/building')
+      },
+      {
+        path: 'plan',
+        name: 'Plan',
+        meta: { title: '平面图管理', icon: '' },
+        component: () => import('@/views/project_config/plan/plan')
+      },
+      // 班组管理界面
+      {
+        path: 'teamManagementIndex',
+        redirect: 'teamManagementIndex/teamManagement',
+        name: 'teamManagement',
+        hidden: true,
+        meta: { title: '班组管理', icon: '' },
+        component: () => import('@/views/team_management/index'),
+        children: [
+          {
+            path: 'teamManagement',
+            component: () => import('@/views/team_management/team_management'),
+            name: 'teamManagement',
+            hidden: true
+          },
+          {
+            path: 'teamStage',
+            component: () => import('@/views/team_management/components/teamStage'),
+            name: 'teamStage',
+            hidden: true
+          }
+        ]
+      },
+      {
+        path: 'participant',
+        name: 'Participant',
+        meta: { title: '参建方管理', icon: '' },
+        redirect: '/project_config/participant/index',
+        component: () => import('@/views/project_config/participant/index'),
+        children: [
+          {
+            path: 'index',
+            component: () => import('@/views/project_config/participant/participant'),
+            name: 'participant',
+            hidden: true
+          },
+          {
+            path: 'participantDetail',
+            component: () => import('@/views/project_config/participant/participantDetail'),
+            name: 'participantDetail',
+            hidden: true
+          }
+        ]
+      }
+    ]
+  },
+  // 基础资料（改名为系统设置）
+  {
+    path: '/base_data',
+    component: Layout,
+    name: 'baseData',
+    redirect: '/base_data/suppliers',
+    meta: { title: '系统设置', icon: 'baseData' },
+    menuType: 'public',
+    children: [
+      {
+        path: 'organization',
+        name: 'organization',
+        // meta: { title: '组织架构', icon: '' },
+        meta: { title: '企业架构', icon: '' },
+        component: () => import('@/views/base_data/organization/organization')
+      },
+      {
+        path: 'accounts',
+        name: 'accounts',
+        // meta: { title: '账号管理', icon: '' },
+        meta: { title: '人员管理', icon: '' },
+        component: () => import('@/views/base_data/accounts/accounts')
+      },
+      {
+        path: 'permission',
+        name: 'permission',
+        meta: { title: '权限管理', icon: '' },
+        component: () => import('@/views/base_data/permission/permission')
+      },
+      {
+        path: 'suppliers',
+        name: 'suppliers',
+        // redirect: '/base_data/suppliers/index',
+        meta: { title: '供应商管理', icon: '' },
+        component: () => import('@/views/base_data/suppliers/suppliers')
+        // children: [
+        //   {
+        //     path: 'index',
+        //     name: 'suppliersIndex',
+        //     hidden: true,
+        //     component: () => import('@/views/base_data/suppliers/suppliers')
+        //   },
+        //   {
+        //     path: 'details',
+        //     name: 'suppliersDetails',
+        //     hidden: true,
+        //     component: () => import('@/views/base_data/suppliers/details'),
+        //     meta: { title: '员工信息', icon: '' }
+        //   }
+        // ]
+      },
+      {
+        path: 'params_config',
+        name: 'paramsConfig',
+        redirect: '/base_data/params_config/index',
+        meta: { title: '参数设置', icon: '' },
+        hidden: true,
+        component: () => import('@/views/base_data/params_config/index'),
+        children: [
+          {
+            path: 'index',
+            name: 'paramsConfigIndex',
+            hidden: true,
+            component: () => import('@/views/base_data/params_config/index')
+          }
+        ]
+      },
+      {
+        path: 'check_items',
+        name: 'checkItems',
+        meta: { title: '检查项配置', icon: '' },
+        hidden: true,
+        component: () => import('@/views/base_data/check_items/check_items')
+      }
+    ]
+  },
+  // 用户设置界面
+  {
+    path: '/user',
+    component: Layout,
+    name: 'user',
+    redirect: '/user/user_set',
+    meta: { title: '我的', icon: 'user' },
+    hidden: true,
+    menuType: 'public',
+    children: [
+      // {
+      //   path: 'security',
+      //   name: 'security',
+      //   meta: { title: '安全设置', icon: '' },
+      //   component: () => import('@/views/user/security/security')
+      // },
+      {
+        path: 'user_set',
+        name: 'userSet',
+        meta: { title: '个人设置', icon: '' },
+        component: () => import('@/views/user/user_set/user_set')
+      },
+      {
+        path: 'my_company',
+        name: 'myCompany',
+        meta: { title: '我的公司', icon: '' },
+        component: () => import('@/views/user/my_company')
+      },
+      {
+        path: 'quit_apply',
+        name: 'quitApply',
+        meta: { title: '退出申请', icon: '' },
+        component: () => import('@/views/user/quit_apply')
+      }
+    ]
+  },
   /* ------------------- 工程管理 ------------------ */
+  // 网站信息(首页)
+  // {
+  //   path: '/website_info',
+  //   name: 'websiteInfo',
+  //   component: Layout,
+  //   redirect: '/website_info/index',
+  //   // meta: { title: '网站信息', icon: 'websiteInfo' },
+  //   meta: { title: '首页', icon: 'home' },
+  //   menuType: 'project',
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       name: 'websiteInfoIndex',
+  //       // meta: { title: '网站信息', icon: 'websiteInfo' },
+  //       meta: { title: '首页', icon: 'home' },
+  //       component: () => import('@/views/website_info/index')
+  //     }
+  //   ]
+  // },
   // 质量管理
   {
     path: '/quality',
@@ -96,12 +341,6 @@ export const asyncRouterMap = [
     menuType: 'project',
     children: [
       {
-        path: 'process_acceptance',
-        name: 'processAcceptance',
-        meta: { title: '工序验收', icon: '' },
-        component: () => import('@/views/quality/process_acceptance/process_acceptance')
-      },
-      {
         path: 'check_problems',
         name: 'checkProblem',
         // meta: { title: '检查问题', icon: '' }, 旧名
@@ -109,17 +348,23 @@ export const asyncRouterMap = [
         component: () => import('@/views/quality/check_problems/check_problems')
       },
       {
+        path: 'measure',
+        name: 'measure',
+        meta: { title: '实测实量', icon: '' },
+        component: () => import('@/views/quality/measure/measure')
+      },
+      {
+        path: 'process_acceptance',
+        name: 'processAcceptance',
+        meta: { title: '工序验收', icon: '' },
+        component: () => import('@/views/quality/process_acceptance/process_acceptance')
+      },
+      {
         path: 'service_problem',
         name: 'serviceProblem',
         hidden: true,
         meta: { title: '客服问题', icon: '' },
         component: () => import('@/views/quality/service_problem/service_problem')
-      },
-      {
-        path: 'measure',
-        name: 'measure',
-        meta: { title: '实测实量', icon: '' },
-        component: () => import('@/views/quality/measure/measure')
       },
       {
         path: 'special_item_check',
@@ -190,6 +435,7 @@ export const asyncRouterMap = [
     redirect: '/progress/progress_plan',
     name: 'progress',
     alwaysShow: true,
+    hidden: true,
     meta: { title: '进度管理', icon: 'process' },
     menuType: 'project',
     children: [
@@ -219,6 +465,63 @@ export const asyncRouterMap = [
         name: 'progressReport',
         meta: { title: '进度上报', icon: '' },
         component: () => import('@/views/progress/progress_report/progress_report')
+      }
+    ]
+  },
+  // 考勤管理界面
+  {
+    path: '/att_log',
+    name: 'attLog',
+    component: Layout,
+    hidden: true,
+    meta: { title: '考勤管理', icon: 'attLog' },
+    // menuType: 'public',
+    menuType: 'project', // 提升这行在侧边栏的显示顺序
+    children: [
+      {
+        path: 'att_log_detail',
+        name: 'attLogDetail',
+        meta: { title: '考勤管理详情', icon: '' },
+        component: () => import('@/views/att_log/att_log_detail')
+      },
+      {
+        path: 'att_log_result',
+        name: 'attLogResult',
+        meta: { title: '考勤管理结果', icon: '' },
+        component: () => import('@/views/att_log/att_log_result')
+      }
+    ]
+  },
+  // 班组管理界面
+  {
+    path: '/team_management',
+    name: 'teamManagement',
+    redirect: '/team_management/index/teamManagement',
+    component: Layout,
+    meta: { title: '班组管理', icon: 'teamManagement' },
+    menuType: 'project',
+    hidden: true,
+    children: [
+      {
+        path: 'index',
+        redirect: 'index/teamManagement',
+        name: 'teamManagement',
+        meta: { title: '班组信息', icon: '' },
+        component: () => import('@/views/team_management/index'),
+        children: [
+          {
+            path: 'teamManagement',
+            component: () => import('@/views/team_management/team_management'),
+            name: 'teamManagement',
+            hidden: true
+          },
+          {
+            path: 'teamStage',
+            component: () => import('@/views/team_management/components/teamStage'),
+            name: 'teamStage',
+            hidden: true
+          }
+        ]
       }
     ]
   },
@@ -257,6 +560,38 @@ export const asyncRouterMap = [
         name: 'documentManage',
         meta: { title: '文档管理', icon: '' },
         component: () => import('@/views/publication/document_manage/document_manage')
+      }
+    ]
+  },
+  // 基础设置
+  {
+    path: '/base_config',
+    name: 'baseConfig',
+    component: Layout,
+    meta: { title: '基础设置', icon: 'baseData' },
+    menuType: 'project',
+    redirect: '/base_config/params_config/index',
+    children: [
+      {
+        path: 'params_config',
+        name: 'paramsConfig',
+        meta: { title: '参数设置', icon: '' },
+        // hidden: true,
+        component: () => import('@/views/base_data/params_config/index'),
+        children: [
+          {
+            path: 'index',
+            name: 'paramsConfigIndex',
+            // hidden: true,
+            component: () => import('@/views/base_data/params_config/index')
+          }
+        ]
+      },
+      {
+        path: 'check_items',
+        name: 'checkItems',
+        meta: { title: '检查项配置', icon: '' },
+        component: () => import('@/views/base_data/check_items/check_items')
       }
     ]
   },
@@ -299,225 +634,6 @@ export const asyncRouterMap = [
         hidden: true,
         meta: { title: '进度详情', icon: '' },
         component: () => import('@/views/project_portal/buildingProcessDetail')
-      }
-    ]
-
-  },
-  /* ------------------- 公共业务管理 ------------------ */
-  // 项目设置界面
-  {
-    path: '/project_config',
-    component: Layout,
-    redirect: '/project_config/project',
-    name: 'projectConfig',
-    meta: { title: '项目设置', icon: 'projectConfig' },
-    menuType: 'public',
-    children: [
-      {
-        path: 'project',
-        name: 'project',
-        redirect: '/project_config/project/index',
-        meta: { title: '项目管理', icon: '' },
-        component: () => import('@/views/project_config/project/index'),
-        children: [
-          {
-            path: 'index',
-            component: () => import('@/views/project_config/project/project'),
-            name: 'projectIndex',
-            hidden: true
-          },
-          {
-            path: 'projectStage',
-            component: () => import('@/views/project_config/project/projectStage'),
-            name: 'ProjectStage',
-            hidden: true
-          },
-          {
-            path: 'stageSection',
-            component: () => import('@/views/project_config/project/stageSection'),
-            name: 'stageSection',
-            hidden: true
-          }
-        ]
-      },
-      {
-        path: 'plan',
-        name: 'Plan',
-        meta: { title: '平面图管理', icon: '' },
-        component: () => import('@/views/project_config/plan/plan')
-      },
-      {
-        path: 'building',
-        name: 'Building',
-        meta: { title: '楼栋管理', icon: '' },
-        component: () => import('@/views/project_config/building/building')
-      },
-      {
-        path: 'participant',
-        name: 'Participant',
-        meta: { title: '参建方管理', icon: '' },
-        redirect: '/project_config/participant/index',
-        component: () => import('@/views/project_config/participant/index'),
-        children: [
-          {
-            path: 'index',
-            component: () => import('@/views/project_config/participant/participant'),
-            name: 'participant',
-            hidden: true
-          },
-          {
-            path: 'participantDetail',
-            component: () => import('@/views/project_config/participant/participantDetail'),
-            name: 'participantDetail',
-            hidden: true
-          }
-        ]
-      }
-    ]
-  },
-  // 考勤管理界面
-  {
-    path: '/att_log',
-    name: 'attLog',
-    component: Layout,
-    meta: { title: '考勤管理', icon: 'attLog' },
-    menuType: 'public',
-    children: [
-      {
-        path: 'att_log_detail',
-        name: 'attLogDetail',
-        meta: { title: '考勤管理详情', icon: '' },
-        component: () => import('@/views/att_log/att_log_detail')
-      },
-      {
-        path: 'att_log_result',
-        name: 'attLogResult',
-        meta: { title: '考勤管理结果', icon: '' },
-        component: () => import('@/views/att_log/att_log_result')
-      }
-    ]
-  },
-  // 基础资料页面
-  {
-    path: '/base_data',
-    component: Layout,
-    name: 'baseData',
-    redirect: '/base_data/suppliers',
-    meta: { title: '基础资料', icon: 'baseData' },
-    menuType: 'public',
-    children: [
-      {
-        path: 'suppliers',
-        name: 'suppliers',
-        // redirect: '/base_data/suppliers/index',
-        meta: { title: '供应商管理', icon: '' },
-        component: () => import('@/views/base_data/suppliers/suppliers')
-        // children: [
-        //   {
-        //     path: 'index',
-        //     name: 'suppliersIndex',
-        //     hidden: true,
-        //     component: () => import('@/views/base_data/suppliers/suppliers')
-        //   },
-        //   {
-        //     path: 'details',
-        //     name: 'suppliersDetails',
-        //     hidden: true,
-        //     component: () => import('@/views/base_data/suppliers/details'),
-        //     meta: { title: '员工信息', icon: '' }
-        //   }
-        // ]
-      },
-      {
-        path: 'accounts',
-        name: 'accounts',
-        meta: { title: '账号管理', icon: '' },
-        component: () => import('@/views/base_data/accounts/accounts')
-      },
-      {
-        path: 'organization',
-        name: 'organization',
-        meta: { title: '组织架构', icon: '' },
-        component: () => import('@/views/base_data/organization/organization')
-      },
-      {
-        path: 'permission',
-        name: 'permission',
-        meta: { title: '权限管理', icon: '' },
-        component: () => import('@/views/base_data/permission/permission')
-      },
-      {
-        path: 'params_config',
-        name: 'paramsConfig',
-        redirect: '/base_data/params_config/index',
-        meta: { title: '参数设置', icon: '' },
-        component: () => import('@/views/base_data/params_config/index'),
-        children: [
-          {
-            path: 'index',
-            name: 'paramsConfigIndex',
-            hidden: true,
-            component: () => import('@/views/base_data/params_config/index')
-          }
-        ]
-      },
-      {
-        path: 'check_items',
-        name: 'checkItems',
-        meta: { title: '检查项配置', icon: '' },
-        component: () => import('@/views/base_data/check_items/check_items')
-      }
-    ]
-  },
-  // 用户设置界面
-  {
-    path: '/user',
-    component: Layout,
-    name: 'user',
-    redirect: '/user/user_set',
-    meta: { title: '我的', icon: 'user' },
-    menuType: 'public',
-    children: [
-      // {
-      //   path: 'security',
-      //   name: 'security',
-      //   meta: { title: '安全设置', icon: '' },
-      //   component: () => import('@/views/user/security/security')
-      // },
-      {
-        path: 'user_set',
-        name: 'userSet',
-        meta: { title: '个人设置', icon: '' },
-        component: () => import('@/views/user/user_set/user_set')
-      },
-      {
-        path: 'my_company',
-        name: 'myCompany',
-        meta: { title: '我的公司', icon: '' },
-        component: () => import('@/views/user/my_company')
-      },
-      {
-        path: 'quit_apply',
-        name: 'quitApply',
-        meta: { title: '退出申请', icon: '' },
-        component: () => import('@/views/user/quit_apply')
-      }
-    ]
-  },
-  // 网站信息
-  {
-    path: '/website_info',
-    name: 'websiteInfo',
-    component: Layout,
-    redirect: '/website_info/index',
-    meta: { title: '网站信息', icon: 'websiteInfo' },
-    menuType: 'public',
-    children: [
-      {
-        path: 'index',
-        name: 'websiteInfoIndex',
-        meta: { title: '网站信息', icon: 'websiteInfo' },
-        component: () => import('@/views/website_info/index')
       }
     ]
   },

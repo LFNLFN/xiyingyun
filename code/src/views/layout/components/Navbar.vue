@@ -2,7 +2,7 @@
   <div class="navbar">
     <hamburger :toggle-click="toggleSideBar" :is-active="sidebar.opened" class="hamburger-container"/>
     <breadcrumb />
-    <!-- <systemChange /> -->
+    <systemChange />
     <div class="navbar-right-part">
       <fullScreenCtrl
         v-show="showFullScreenBtn"

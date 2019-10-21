@@ -41,6 +41,7 @@
           :key="route.path"
           :item="route"
           :base-path="route.path"
+          v-show="$store.state.app.sidebar.sidebarType==='project'"
         />
       </template>
       <template>
@@ -57,6 +58,7 @@
           :key="route.path"
           :item="route"
           :base-path="route.path"
+           v-show="$store.state.app.sidebar.sidebarType==='public'"
         />
       </template>
       <template>

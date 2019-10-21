@@ -4,7 +4,8 @@ const app = {
   state: {
     sidebar: {
       opened: !+Cookies.get('sidebarStatus'),
-      withoutAnimation: false
+      withoutAnimation: false,
+      sidebarType: 'public'
     },
     device: 'desktop',
     fullScreen: false, // 控制是否全屏
@@ -34,6 +35,9 @@ const app = {
     },
     TOGGLE_DEVICE: (state, device) => {
       state.device = device
+    },
+    TOGGLE_SIDEBARTYPE: (state, type) => {
+      state.sidebar.sidebarType = type
     }
   },
   actions: {

@@ -142,7 +142,12 @@ export default {
             .then(() => {
               // 登录成功后，返回token，跳转页面
               this.loading = false;
-              this.$router.push({ path: this.redirect || "/" });
+              if (this.$store.state.app.sidebar.sidebarType==='public') {
+                this.$router.push({ path: this.redirect || "/" });
+              }
+              if (this.$store.state.app.sidebar.sidebarType==='project') {
+                this.$router.push({ path: "/website_info" });
+              }
               // 加载地点数据
               this.$store.dispatch("getAllCityData");
             })
