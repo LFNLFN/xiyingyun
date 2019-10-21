@@ -365,11 +365,33 @@ export default {
       // 添加分期，获取父级项目ID以及所属公司
       const curProject = searchArrByKeyVal(this.projectList, 'id', projectId)
       this.stageFormData.parentId = projectId
-      this.stageFormData['projectId'] = curProject['estateProjectDetailEntity'].projectId
+      console.log(curProject,9898)
+      // this.stageFormData['projectId'] = curProject['estateProjectDetailEntity'].projectId
+      // this.stageFormData['projectId'] = curProject.projectId
       this.stageFormData.orgId = curProject.orgId
       if (curProject) {
         this.belongCompany = curProject.name
       }
+      // 初始化加载省份数组，不需重复请求
+      const msg = this.$message({
+        type: 'info',
+        message: '数据加载中',
+        duration: 0
+      })
+      const params = {
+        'terms[0].column': 'dictId',
+        'terms[0].value': 'city'
+      }
+      this.getDictionaryItemFunc({ params, dataKey: 'districtData' }).then(async resp => {
+        this.getProvinceArr(resp)
+        this.stageLoading = false
+        msg.close()
+      }).catch(err => {
+        this.stageLoading = false
+        this.$message.error('数据加载失败，请重试')
+        console.log(err)
+        msg.close()
+      })
     } else if (eventType === 'edit') {
       const msg = this.$message({
         type: 'info',
