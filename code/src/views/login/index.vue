@@ -1,8 +1,8 @@
 <template>
   <div class="login-container">
     <div>
-      <h3 class="title">鸿宝装饰工程管理平台</h3>
-      <h5 class="title-second">Hongbao Decoration Engineering Management Platform</h5>
+      <h3 class="title">房地产数据企业服务系统</h3>
+      <h5 class="title-second">Estate Enterprise Data Service System</h5>
     </div>
     <el-form
       ref="loginForm"

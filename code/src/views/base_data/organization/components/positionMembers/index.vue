@@ -3,13 +3,15 @@
     <el-container slot="main-content" class="container">
       <el-header height="50px" class="header-wrap">
         <div class="item-warp">
-          <span :class="{'is-active': currentComponent === 'Members'}" class="item-tag">人员</span>
-          <!-- <span :class="{'is-active': currentComponent === 'Warrant'}" class="item-tag">项目授权</span> -->
-        </div>
+          <span :class="{'is-active': currentComponent === 'Members'}" class="item-tag" @click="currentComponent='Members'">人员</span>
+          <span :class="{'is-active': currentComponent === 'Warrant'}" class="item-tag" @click="currentComponent='Warrant'">项目授权</span>
+         </div>
         <span><i class="el-icon-close" @click="closeBox" /></span>
       </el-header>
       <el-main>
-        <component v-bind="$attrs" :is="currentComponent" v-on="$listeners" />
+        <Members v-bind="$attrs" v-show="currentComponent==='Members'" v-on="$listeners"/>
+        <Warrant v-bind="$attrs" v-show="currentComponent==='Warrant'" v-on="$listeners"/>
+        <!-- <component v-bind="$attrs" :is="currentComponent" v-on="$listeners" /> -->
       </el-main>
     </el-container>
   </LeftSlidePopup>
@@ -17,8 +19,9 @@
 <script>
 import LeftSlidePopup from '@/components/Pop-ups/LeftSlidePopup'
 import Members from '@/views/base_data/organization/components/PositionMembers/members'
+import Warrant from '@/views/base_data/organization/components/PositionMembers/warrant'
 export default {
-  components: { LeftSlidePopup, Members },
+  components: { LeftSlidePopup, Members, Warrant },
   props: {
     isBoxShow: {
       type: Boolean,
@@ -34,7 +37,7 @@ export default {
   watch: {
     isBoxShow: function(newVal) {
       this.boxShow = newVal
-      console.log(newVal,999)
+      // console.log(newVal,999)
     }
   },
   methods: {

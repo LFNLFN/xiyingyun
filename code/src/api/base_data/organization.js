@@ -133,3 +133,27 @@ export function getRolesInOrg(paramsObj) {
     parmas: paramsObj
   })
 }
+
+// 获取岗位项目授权状态树
+export function getProjectWarrantTree(positionId) {
+  return request({
+    url: `/projectPosition/autz/tree/position/${positionId}`,
+    method: 'get',
+  })
+}
+
+// 岗位项目授权绑定
+export function warrantBinding({positionId, projectId}) {
+  return request({
+    url: `/projectPosition/bind/${positionId}/${projectId}`,
+    method: 'post',
+  })
+}
+
+// 解除岗位项目授权绑定
+export function cancelWarrantBinding({positionId, projectId}) {
+  return request({
+    url: `/projectPosition/bind/${positionId}/${projectId}`,
+    method: 'delete',
+  })
+}

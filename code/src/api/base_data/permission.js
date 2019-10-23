@@ -55,3 +55,29 @@ export function getRolesPerson(id, paramsObj) {
     params: paramsObj
   })
 }
+
+// 获取角色权限列表
+export function getRolesPermissionList(roleId) {
+  return request({
+    url: `/sysPermission/role/${roleId}`,
+    method: 'get'
+  })
+}
+
+// 绑定角色权限
+export function rolesPermissionBinding({roleId, paramArr}) {
+  return request({
+    url: `/sysPermission/role/${roleId}`,
+    method: 'post',
+    data: JSON.stringify(paramArr)
+  })
+}
+
+// 解绑角色权限
+export function cancelRolesPermissionBinding({roleId, paramArr}) {
+  return request({
+    url: `/sysPermission/role/${roleId}`,
+    method: 'delete',
+    data: JSON.stringify(paramArr)
+  })
+}
