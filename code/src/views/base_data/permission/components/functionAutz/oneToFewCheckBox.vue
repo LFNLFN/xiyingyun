@@ -31,29 +31,31 @@ export default {
     }
   },
   watch: {
-    pageMsgObj: function(newVal) {
-      // console.log(this.currentRole)
-      this.allPermission = [];
-      this.checkedPermission = [];
-      newVal.actions.forEach(e => {
-        this.allPermission.push(e.id);
-        if (e.isCheck === 1) {
-          this.checkedPermission.push(e.id);
-        }
-      });
-      if (this.checkedPermission.length > 0) {
-        if (this.checkedPermission.length === this.allPermission.length) {
-          this.checkedAllPermission = true;
-          this.isIndeterminate = false;
-        } else {
+    pageMsgObj: {
+      handler(newVal) {
+        this.allPermission = [];
+        this.checkedPermission = [];
+        newVal.actions.forEach(e => {
+          this.allPermission.push(e.id);
+          if (e.isCheck === 1) {
+            this.checkedPermission.push(e.id);
+          }
+        });
+        if (this.checkedPermission.length > 0) {
+          if (this.checkedPermission.length === this.allPermission.length) {
+            this.checkedAllPermission = true;
+            this.isIndeterminate = false;
+          } else {
+            this.checkedAllPermission = false;
+            this.isIndeterminate = true;
+          }
+        } else if (this.checkedPermission.length === 0) {
           this.checkedAllPermission = false;
           this.isIndeterminate = true;
         }
-      } else if (this.checkedPermission.length === 0) {
-        this.checkedAllPermission = false;
-        this.isIndeterminate = true;
-      }
-      console.log("this.checkedPermission", this.checkedPermission);
+        console.log("this.checkedPermission", this.checkedPermission);
+      },
+      immediate: true
     }
   },
   data() {

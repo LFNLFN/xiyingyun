@@ -35,7 +35,7 @@
             :class="{'is-active': currentComponent === 'Warrant'}"
             class="item-tag"
             @click="currentComponent='Warrant'"
-          >项目授权</span>
+          >功能授权</span>
         </div>
         <!-- <span><i class="el-icon-close" @click="closeBox" /></span> -->
       </el-header>

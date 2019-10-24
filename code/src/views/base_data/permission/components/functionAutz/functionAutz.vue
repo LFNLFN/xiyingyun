@@ -1,8 +1,20 @@
 <template>
   <div class="funcAtuz-content" v-loading="listLoading">
-    <checkItem :module-msg-obj="rolesPermissionList['公共管理']" :title="'公共管理'" :current-role="currentRole"/>
-    <checkItem :module-msg-obj="rolesPermissionList['工程管理']" :title="'工程管理'" :current-role="currentRole"/>
-    <checkItem :module-msg-obj="rolesPermissionList['APP端']" :title="'APP端'" :current-role="currentRole"/>
+    <checkItem
+      :module-msg-obj="rolesPermissionList['公共管理']"
+      :title="'公共管理'"
+      :current-role="currentRole"
+    />
+    <checkItem
+      :module-msg-obj="rolesPermissionList['工程管理']"
+      :title="'工程管理'"
+      :current-role="currentRole"
+    />
+    <checkItem
+      :module-msg-obj="rolesPermissionList['APP端']"
+      :title="'APP端'"
+      :current-role="currentRole"
+    />
   </div>
 </template>
 <script>
