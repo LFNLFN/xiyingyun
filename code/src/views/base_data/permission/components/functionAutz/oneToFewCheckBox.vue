@@ -1,20 +1,20 @@
 <template>
-    <div class="check-flex">
-        <el-checkbox
-            :indeterminate="isIndeterminate"
-            v-model="checkedAllPermission"
-            @change="handleCheckAllChange"
-        >
-            <span class="page-name">{{pageMsgObj.name}}</span>
-        </el-checkbox>
-        <el-checkbox-group v-model="checkedPermission" @change="handleCheckedCitiesChange">
-            <el-checkbox
-                :label="subItem.id"
-                v-for="(subItem) in pageMsgObj.actions"
-                :key="subItem.id"
-            >{{subItem.describe}}</el-checkbox>
-        </el-checkbox-group>
-    </div>
+  <div class="check-flex">
+    <el-checkbox
+      :indeterminate="isIndeterminate"
+      v-model="checkedAllPermission"
+      @change="handleCheckAllChange"
+    >
+      <span class="page-name">{{pageMsgObj.name}}</span>
+    </el-checkbox>
+    <el-checkbox-group v-model="checkedPermission" @change="handleCheckedCitiesChange">
+      <el-checkbox
+        :label="subItem.id"
+        v-for="(subItem) in pageMsgObj.actions"
+        :key="subItem.id"
+      >{{subItem.describe}}</el-checkbox>
+    </el-checkbox-group>
+  </div>
 </template>
 <script>
 import {
@@ -32,15 +32,28 @@ export default {
   },
   watch: {
     pageMsgObj: function(newVal) {
-        console.log(this.currentRole)
+      // console.log(this.currentRole)
       this.allPermission = [];
-      this.checkedPermission = []
+      this.checkedPermission = [];
       newVal.actions.forEach(e => {
         this.allPermission.push(e.id);
-        if (e.isCheck) {
-            this.checkedPermission.push(e.id)
+        if (e.isCheck === 1) {
+          this.checkedPermission.push(e.id);
         }
       });
+      if (this.checkedPermission.length > 0) {
+        if (this.checkedPermission.length === this.allPermission.length) {
+          this.checkedAllPermission = true;
+          this.isIndeterminate = false;
+        } else {
+          this.checkedAllPermission = false;
+          this.isIndeterminate = true;
+        }
+      } else if (this.checkedPermission.length === 0) {
+        this.checkedAllPermission = false;
+        this.isIndeterminate = true;
+      }
+      console.log("this.checkedPermission", this.checkedPermission);
     }
   },
   data() {
@@ -58,22 +71,28 @@ export default {
         this.isIndeterminate = false;
         rolesPermissionBinding({
           roleId: this.currentRole.id,
-          paramArr: this.checkedPermission
+          paramArr: this.allPermission
         });
       } else {
         this.checkedPermission = [];
         this.isIndeterminate = true;
         cancelRolesPermissionBinding({
           roleId: this.currentRole.id,
-          paramArr: this.checkedPermission
+          paramArr: this.allPermission
         });
       }
     },
-    handleCheckedCitiesChange(value) {
+    async handleCheckedCitiesChange(value) {
       let checkedCount = value.length;
       this.checkedAllPermission = checkedCount === this.allPermission.length;
-      this.isIndeterminate = checkedCount >= 0 && checkedCount < this.allPermission.length;
-      rolesPermissionBinding({
+      this.isIndeterminate =
+        checkedCount >= 0 && checkedCount < this.allPermission.length;
+      this.checkedPermission = value;
+      await cancelRolesPermissionBinding({
+        roleId: this.currentRole.id,
+        paramArr: this.allPermission
+      });
+      await rolesPermissionBinding({
         roleId: this.currentRole.id,
         paramArr: this.checkedPermission
       });
