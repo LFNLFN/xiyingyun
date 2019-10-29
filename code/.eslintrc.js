@@ -22,6 +22,37 @@ module.exports = {
       }
     }],
     "vue/name-property-casing": ["error", "PascalCase"],
+    "vue/html-indent": ["off", 2, {
+      "attribute": 1,
+      "baseIndent": 1,
+      "closeBracket": 0,
+      "alignAttributesVertically": true,
+      "ignores": []
+    }],
+    "vue/attributes-order": ["off", {
+      "order": [
+        "DEFINITION",
+        "LIST_RENDERING",
+        "CONDITIONALS",
+        "RENDER_MODIFIERS",
+        "GLOBAL",
+        "UNIQUE",
+        "TWO_WAY_BINDING",
+        "OTHER_DIRECTIVES",
+        "OTHER_ATTR",
+        "EVENTS",
+        "CONTENT"
+      ]
+    }],
+    "vue/html-self-closing": ["off", {
+      "html": {
+        "void": "never",
+        "normal": "always",
+        "component": "always"
+      },
+      "svg": "always",
+      "math": "always"
+    }],
     'accessor-pairs': 2,
     'arrow-spacing': [2, {
       'before': true,
@@ -49,11 +80,11 @@ module.exports = {
       'before': true,
       'after': true
     }],
-    'handle-callback-err': [2, '^(err|error)$'],
+    'handle-callback-err': [0, '^(err|error)$'],
     'indent': [2, 2, {
       'SwitchCase': 1
     }],
-    'jsx-quotes': [2, 'prefer-single'],
+    'jsx-quotes': [0, 'prefer-single'],
     'key-spacing': [2, {
       'beforeColon': false,
       'afterColon': true
@@ -159,11 +190,11 @@ module.exports = {
       }
     }],
     'padded-blocks': [2, 'never'],
-    'quotes': [2, 'single', {
+    'quotes': [0, 'single', {
       'avoidEscape': true,
       'allowTemplateLiterals': true
     }],
-    'semi': [2, 'never'],
+    'semi': [0, 'never'],
     'semi-spacing': [2, {
       'before': false,
       'after': true
