@@ -54,7 +54,10 @@ export default {
       }
     },
     orgType: {
-      type: String
+      type: String,
+      default: () => {
+        return "";
+      }
     }
   },
   data() {
@@ -97,9 +100,11 @@ export default {
     }
   },
   created() {
-    this.getPerRolesInSup({paramObj: {}, orgType: this.orgType}).then(resp => {
-      this.permissionRoles = resp;
-    });
+    this.getPerRolesInSup({ paramObj: {}, orgType: this.orgType }).then(
+      resp => {
+        this.permissionRoles = resp;
+      }
+    );
   },
   methods: {
     ...mapActions(["getPerRolesInSup"]),

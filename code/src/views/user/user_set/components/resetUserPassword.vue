@@ -26,12 +26,12 @@
 </template>
 <script>
 import PublicPopups from "@/components/Pop-ups/PublicPopups";
-import { isvalidPassword, isvalidPhoneNum } from "@/utils/validate";
+import { isvalidPassword } from "@/utils/validate";
 import { batchResetPswd } from "@/api/base_data/accounts";
 export default {
   components: { PublicPopups },
   data() {
-    let isvalidReIptPassword = (rule, value, callback) => {
+    const isvalidReIptPassword = (rule, value, callback) => {
       if (value === "") {
         callback(new Error("请再次输入密码"));
       } else if (value !== this.ruleForm.password) {
@@ -85,7 +85,7 @@ export default {
     batchResetSubmit() {
       this.$refs['ruleForm'].validate(valid => {
         if (valid) {
-          let idArr = [];
+          const idArr = [];
           idArr.push(this.$store.getters.userAllInfo.id);
           if (idArr.length === 0) {
             this.$message({

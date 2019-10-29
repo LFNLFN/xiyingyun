@@ -237,7 +237,7 @@ export default {
             })
           } else if (key === 'unitId') {
               params[`terms[${paramIndex}].column`] = 'unitId'
-              params[`terms[${paramIndex}].value`] = _data.length===0 ? '' : _data.join(',')
+              params[`terms[${paramIndex}].value`] = _data.length === 0 ? '' : _data.join(',')
               params[`terms[${paramIndex}].termType`] = 'in'
               paramIndex++
           } else {

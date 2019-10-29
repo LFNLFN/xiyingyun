@@ -65,7 +65,7 @@ export function getRolesPermissionList(roleId) {
 }
 
 // 绑定角色权限
-export function rolesPermissionBinding({roleId, paramArr}) {
+export function rolesPermissionBinding({ roleId, paramArr }) {
   return request({
     url: `/sysPermission/role/${roleId}`,
     method: 'post',
@@ -74,7 +74,7 @@ export function rolesPermissionBinding({roleId, paramArr}) {
 }
 
 // 解绑角色权限
-export function cancelRolesPermissionBinding({roleId, paramArr}) {
+export function cancelRolesPermissionBinding({ roleId, paramArr }) {
   return request({
     url: `/sysPermission/role/${roleId}`,
     method: 'delete',

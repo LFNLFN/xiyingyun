@@ -26,13 +26,13 @@ export default {
     systemChangeHandle(order) {
       console.log(order)
       this.$store.commit('TOGGLE_SIDEBARTYPE', order)
-      if (order==='project') {
+      if (order === 'project') {
         this.seletedText = '工程管理'
-        this.$router.push({path:'/website_info'})
+        this.$router.push({ path: '/website_info' })
       }
-      if (order==='public') {
+      if (order === 'public') {
         this.seletedText = '系统设置'
-        this.$router.push({path:'/'})
+        this.$router.push({ path: '/' })
       }
     }
   }

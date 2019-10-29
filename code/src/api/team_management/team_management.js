@@ -23,7 +23,7 @@ export function addTeam(paramObj) {
 export function deleteTeam({ projectId, orgId }) {
     return request({
         url: `/organizational/supplier/${projectId}/${orgId}`,
-        method: 'delete',
+        method: 'delete'
     })
 }
 

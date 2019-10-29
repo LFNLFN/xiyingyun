@@ -192,7 +192,7 @@ export default {
       }
     },
     // 直接点击 X 取消已选择人员
-    cancelSelectedMember(row,index) {
+    cancelSelectedMember(row, index) {
       this.selectedmemberList.splice(index, 1);
       this.$refs['membersTable'].toggleRowSelection(row, false)
     },

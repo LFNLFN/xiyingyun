@@ -22,7 +22,6 @@ import {
   getProjectWarrantTree,
   warrantBinding,
   cancelWarrantBinding,
-  gerPersonsByPost,
   delPostMember
 } from "@/api/base_data/organization";
 export default {

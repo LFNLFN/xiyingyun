@@ -66,8 +66,7 @@ export default {
           if (realRooms.length > 0) {
             const lastRoom = realRooms[realRooms.length - 1]
             const nextSortIndex = lastRoom.sortIndex + 1
-            let curSortIndex
-            curSortIndex = nextSortIndex < 10 ? `0${nextSortIndex}` : nextSortIndex
+            const curSortIndex = nextSortIndex < 10 ? `0${nextSortIndex}` : nextSortIndex
             _obj = {
               unitId: lastRoom.unitId,
               // name: `${val.sortIndex}${curSortIndex}`,

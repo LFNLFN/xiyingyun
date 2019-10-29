@@ -217,13 +217,13 @@ export default {
         callback()
       }
     }
-    const validCityAreaView = (rule, val, callback) => { // 验证项目鸟瞰图是否输入
-      if (val === '') {
-        callback(new Error('请选择鸟瞰图'))
-      } else {
-        callback()
-      }
-    }
+    // const validCityAreaView = (rule, val, callback) => { // 验证项目鸟瞰图是否输入
+    //   if (val === '') {
+    //     callback(new Error('请选择鸟瞰图'))
+    //   } else {
+    //     callback()
+    //   }
+    // }
     return {
       // ----------- 添加项目分期表单数据 -----------
       stageFormData: {
@@ -365,7 +365,6 @@ export default {
       // 添加分期，获取父级项目ID以及所属公司
       const curProject = searchArrByKeyVal(this.projectList, 'id', projectId)
       this.stageFormData.parentId = projectId
-      console.log(curProject,9898)
       // this.stageFormData['projectId'] = curProject['estateProjectDetailEntity'].projectId
       // this.stageFormData['projectId'] = curProject.projectId
       this.stageFormData.orgId = curProject.orgId
@@ -462,7 +461,6 @@ export default {
     // 处理所有城市数据
     handleAllCityData(datas, tergetDistrictId) {
       const beHandleData = []
-      return
       datas = datas.slice(0, 10)
       // datas 每一项相当于一个地名（省市区都算一个）的数据
       datas.forEach(val => {
@@ -507,7 +505,7 @@ export default {
     },
     // 用于地点初始化
     handleAllCityDataNew(datas, tergetDistrictId) { // datas是3000多条的地方数据
-      // let provinceArr = [] 
+      // let provinceArr = []
       // for (let index = 0; index < datas.length; index++) {
       //   const element = datas[index]
       //   if (element.parentId != '-1') { // parentId=-1那就是一个省级地名
@@ -522,24 +520,24 @@ export default {
       for (let index = 0; index < datas.length; index++) {
         const element = datas[index]
         // if (element.id == '101e4f9c7ad04ed0a1c314def2d5e0d2') {
-        if (element.id == tergetDistrictId) {
+        if (element.id === tergetDistrictId) {
           this.citySelected = element.parentId // 填充对应的城市
           break
         }
       }
       for (let index = 0; index < datas.length; index++) {
         const element = datas[index]
-        if (this.citySelected == element.id) { // 遍历找出城市对应的省份
+        if (this.citySelected === element.id) { // 遍历找出城市对应的省份
           this.provinceSelected = element.parentId
           break
         }
       }
     },
     getProvinceArr(datas) {
-      let provinceArr = [] 
+      const provinceArr = []
       for (let index = 0; index < datas.length; index++) {
         const element = datas[index]
-        if (element.parentId != '-1') { // parentId=-1那就是一个省级地名
+        if (element.parentId !== '-1') { // parentId=-1那就是一个省级地名
           continue
         } else {
           provinceArr.push(element) // 获取包含所有省的数组

@@ -38,25 +38,43 @@
           ref="projectTable"
           :data="attLogDetailTableData"
           row-key="id"
-          border
+          border=""
           show-overflow-tooltip
-          class="project-table el-table_tree">
+          class="project-table el-table_tree"
+        >
           <el-table-column prop="userName" min-width="100" label="姓名" align="left" fixed="left"/>
           <el-table-column prop="orgName" min-width="200" label="部门" align="left"/>
           <el-table-column prop="userId" min-width="200" label="工号" align="left"/>
           <el-table-column prop="positionName" width="180" label="职位" align="left"/>
-          <el-table-column v-for="(item, idx) in attLogHeader" :key="idx+''+item.dayOfWeek+''+item.dayOfMonth" min-width="100">
+          <el-table-column
+            v-for="(item, idx) in attLogHeader"
+            :key="idx+''+item.dayOfWeek+''+item.dayOfMonth"
+            min-width="100"
+          >
             <template slot="header" slot-scope="scope">
-              <div class="header-week" v-if="item.dayOfWeek===6 || item.dayOfWeek===7" style="color: green">{{weekDayList[item.dayOfWeek]}}</div>
-              <div class="header-date" v-if="item.dayOfWeek===6 || item.dayOfWeek===7" style="color: green">{{item.dayOfMonth}}</div>
-              <div class="header-week" v-if="item.dayOfWeek!==6 && item.dayOfWeek!==7">{{weekDayList[item.dayOfWeek]}}</div>
-              <div class="header-date" v-if="item.dayOfWeek!==6 && item.dayOfWeek!==7">{{item.dayOfMonth}}</div>
+              <div
+                class="header-week"
+                v-if="item.dayOfWeek===6 || item.dayOfWeek===7"
+                style="color: green"
+              >{{ weekDayList[item.dayOfWeek] }}</div>
+              <div
+                class="header-date"
+                v-if="item.dayOfWeek===6 || item.dayOfWeek===7"
+                style="color: green"
+              >{{ item.dayOfMonth }}</div>
+              <div
+                class="header-week"
+                v-if="item.dayOfWeek!==6 && item.dayOfWeek!==7"
+              >{{ weekDayList[item.dayOfWeek] }}</div>
+              <div
+                class="header-date"
+                v-if="item.dayOfWeek!==6 && item.dayOfWeek!==7"
+              >{{ item.dayOfMonth }}</div>
             </template>
             <template slot-scope="scope">
-              <span>{{attLogDetailTableData[scope.$index].workDateLog[idx].logDetail}}</span>
+              <span>{{ attLogDetailTableData[scope.$index].workDateLog[idx].logDetail }}</span>
             </template>
           </el-table-column>
-          
         </el-table>
       </div>
     </el-main>
@@ -66,11 +84,8 @@
 import {
   getProjectSelectorList,
   getAttLogResultList
-} from '@/api/att_log/att_log'
-import { formatDay, afterNowDay } from '@/utils/formatDate.js'
-// old code
-import { mapActions } from 'vuex'
-import { delProject } from '@/api/project_config/project'
+} from "@/api/att_log/att_log";
+import { formatDay, afterNowDay } from "@/utils/formatDate.js";
 export default {
   data() {
     return {
@@ -78,64 +93,66 @@ export default {
       detailListParam: {
         checkDateFrom: afterNowDay(-7),
         checkDateTo: formatDay(new Date()),
-        projectId: ''
+        projectId: ""
       },
       attLogDetailTableData: [],
       attLogHeader: [],
       // old code
       searchForm: {
-        projectSelected: '',
-        checkTime: [afterNowDay(-7), formatDay(new Date())],
+        projectSelected: "",
+        checkTime: [afterNowDay(-7), formatDay(new Date())]
       },
       projectTableLoading: false,
-      weekDayList: ['0', '一', '二', '三', '四', '五', '六', '日']
-    }
+      weekDayList: ["0", "一", "二", "三", "四", "五", "六", "日"]
+    };
   },
   watch: {
-    'searchForm.projectSelected': function(newVal) {
-      this.detailListParam.projectId = newVal
+    "searchForm.projectSelected": function(newVal) {
+      this.detailListParam.projectId = newVal;
     },
-    'searchForm.checkTime': function(newVal) {
-      this.detailListParam.checkDateFrom = newVal[0]
-      this.detailListParam.checkDateTo = newVal[1]
+    "searchForm.checkTime": function(newVal) {
+      this.detailListParam.checkDateFrom = newVal[0];
+      this.detailListParam.checkDateTo = newVal[1];
     }
   },
   mounted() {
     // 获取项目下拉列表内容
-    this.initPage()
+    this.initPage();
   },
   methods: {
     // 获取项目名称下拉列表
     getProjectSelectorListFunc() {
       getProjectSelectorList().then(resp => {
-        this.projectSeletorList = resp.result
-        this.searchForm.projectSelected = this.projectSeletorList[0].id
-        this.detailListParam.projectId = this.projectSeletorList[0].id
-      })
+        this.projectSeletorList = resp.result;
+        this.searchForm.projectSelected = this.projectSeletorList[0].id;
+        this.detailListParam.projectId = this.projectSeletorList[0].id;
+      });
     },
     // 顶部搜索栏的查询功能（// 获取考勤日志详情）
     searchHandle() {
-      getAttLogResultList(this.detailListParam).then(resp => {
-        this.attLogDetailTableData = resp.result
-        if (this.attLogDetailTableData.length > 0) {
-          this.attLogHeader = this.attLogDetailTableData[0].workDateLog
-        }
-        this.$refs.projectTable.doLayout()
-      }).catch(err => {
-        console.log(err)
-      })
+      getAttLogResultList(this.detailListParam)
+        .then(resp => {
+          this.attLogDetailTableData = resp.result;
+          if (this.attLogDetailTableData.length > 0) {
+            this.attLogHeader = this.attLogDetailTableData[0].workDateLog;
+          }
+          this.$refs.projectTable.doLayout();
+        })
+        .catch(err => {
+          console.log(err);
+        });
     },
     // 初始化页面-解决一开始projectid为空的问题
     initPage() {
       getProjectSelectorList().then(resp => {
-        this.projectSeletorList = resp.result
-        this.searchForm.projectSelected = this.projectSeletorList[0].id
-        this.detailListParam.projectId = this.projectSeletorList[0].id
-        this.searchHandle()
-      })
+        this.projectSeletorList = resp.result;
+        this.searchForm.projectSelected = this.projectSeletorList[0].id;
+        this.detailListParam.projectId = this.projectSeletorList[0].id;
+        this.searchHandle();
+      });
     }
   }
-}
+};
 </script>
 <style ref="stylesheet/scss" lang="scss" scoped>
 @import "src/styles/mixin.scss";

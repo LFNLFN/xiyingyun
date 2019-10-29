@@ -32,49 +32,70 @@ const baseData = {
     // 在账号管理中获取角色
     getPerRoles({ commit, state }) {
       return new Promise((resolve, reject) => {
-        if (true || state.permissionRoles.length === 0) { // 这个判断条件目前来说没有意义，但以后不知道，所以保留下来
-          getRoles({}).then(resp => {
-            const data = resp.result.data
-            commit('SET_PER_ROLES', data)
-            resolve(data)
-          }).catch(() => {
-            reject()
-          })
-        } else {
-          resolve(state.permissionRoles)
-        }
+        getRoles({}).then(resp => {
+          const data = resp.result.data
+          commit('SET_PER_ROLES', data)
+          resolve(data)
+        }).catch(() => {
+          reject()
+        })
+        // if (state.permissionRoles.length === 0) { // 这个判断条件目前来说没有意义，但以后不知道，所以保留下来
+        //   getRoles({}).then(resp => {
+        //     const data = resp.result.data
+        //     commit('SET_PER_ROLES', data)
+        //     resolve(data)
+        //   }).catch(() => {
+        //     reject()
+        //   })
+        // } else {
+        //   resolve(state.permissionRoles)
+        // }
       })
     },
     // 在供应商管理中，获取角色
     getPerRolesInSup({ commit, state }, { paramObj, orgType }) {
       return new Promise((resolve, reject) => {
-        if (true || state.permissionRoles.length === 0) {
-          getRolesInSup(paramObj, orgType).then(resp => {
-            const data = resp.result
-            commit('SET_PER_ROLES', data)
-            resolve(data)
-          }).catch(() => {
-            reject()
-          })
-        } else {
-          resolve(state.permissionRoles)
-        }
+        getRolesInSup(paramObj, orgType).then(resp => {
+          const data = resp.result
+          commit('SET_PER_ROLES', data)
+          resolve(data)
+        }).catch(() => {
+          reject()
+        })
+        // if (true || state.permissionRoles.length === 0) {
+        //   getRolesInSup(paramObj, orgType).then(resp => {
+        //     const data = resp.result
+        //     commit('SET_PER_ROLES', data)
+        //     resolve(data)
+        //   }).catch(() => {
+        //     reject()
+        //   })
+        // } else {
+        //   resolve(state.permissionRoles)
+        // }
       })
     },
     // 在组织架构中获取角色
     getPerRolesInOrganization({ commit, state }, paramObj) {
       return new Promise((resolve, reject) => {
-        if (true || state.permissionRoles.length === 0) {
-          getRolesInOrg(paramObj).then(resp => {
-            const data = resp.result
-            commit('SET_PER_ROLES', data)
-            resolve(data)
-          }).catch(() => {
-            reject()
-          })
-        } else {
-          resolve(state.permissionRoles)
-        }
+        getRolesInOrg(paramObj).then(resp => {
+          const data = resp.result
+          commit('SET_PER_ROLES', data)
+          resolve(data)
+        }).catch(() => {
+          reject()
+        })
+        // if (state.permissionRoles.length === 0) {
+        //   getRolesInOrg(paramObj).then(resp => {
+        //     const data = resp.result
+        //     commit('SET_PER_ROLES', data)
+        //     resolve(data)
+        //   }).catch(() => {
+        //     reject()
+        //   })
+        // } else {
+        //   resolve(state.permissionRoles)
+        // }
       })
     },
     // 获取组织架构以及供应商

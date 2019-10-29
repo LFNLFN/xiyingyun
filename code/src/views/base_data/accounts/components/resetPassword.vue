@@ -55,13 +55,13 @@ export default {
     }
   },
   data() {
-    const validPassword = (rule, val, callback) => {
-      if (this.passwordForm.oldPassword === val) {
-        callback(new Error("新旧密码不能一样"));
-      } else {
-        callback();
-      }
-    };
+    // const validPassword = (rule, val, callback) => {
+    //   if (this.passwordForm.oldPassword === val) {
+    //     callback(new Error("新旧密码不能一样"));
+    //   } else {
+    //     callback();
+    //   }
+    // };
     const validReputPassword = (rule, val, callback) => {
       if (val !== this.passwordForm.newPassword) {
         callback(new Error("两次输入密码不一致"));
@@ -96,7 +96,7 @@ export default {
       this.$refs['passwordForm'].validate(valid => {
         console.log(111)
         if (valid) {
-          let idArr = [];
+          const idArr = [];
           for (const user of this.userData) {
             idArr.push(user.id);
           }

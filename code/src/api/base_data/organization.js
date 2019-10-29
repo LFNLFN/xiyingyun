@@ -138,22 +138,22 @@ export function getRolesInOrg(paramsObj) {
 export function getProjectWarrantTree(positionId) {
   return request({
     url: `/projectPosition/autz/tree/position/${positionId}`,
-    method: 'get',
+    method: 'get'
   })
 }
 
 // 岗位项目授权绑定
-export function warrantBinding({positionId, projectId}) {
+export function warrantBinding({ positionId, projectId }) {
   return request({
     url: `/projectPosition/bind/${positionId}/${projectId}`,
-    method: 'post',
+    method: 'post'
   })
 }
 
 // 解除岗位项目授权绑定
-export function cancelWarrantBinding({positionId, projectId}) {
+export function cancelWarrantBinding({ positionId, projectId }) {
   return request({
     url: `/projectPosition/bind/${positionId}/${projectId}`,
-    method: 'delete',
+    method: 'delete'
   })
 }

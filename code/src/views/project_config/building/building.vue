@@ -357,7 +357,8 @@ export default {
     },
     // 生成项目树状图
     buildProjectTree(project, treeLevel = 0) {
-      const { name, childrenWithDetail } = project
+      // const { name, childrenWithDetail } = project
+      const { childrenWithDetail } = project
       const _treeData = []
       if (childrenWithDetail && childrenWithDetail.length > 0) {
         childrenWithDetail.forEach(item => {

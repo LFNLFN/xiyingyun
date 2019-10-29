@@ -141,9 +141,8 @@ export default {
       this.floorData.forEach((item, idx) => {
         item.children = []
         for (let i = 1; i <= roomCount; i++) {
-          let curIdx
           const floorId = item.id && item.id !== '' ? item.id : '-1'
-          curIdx = i < 10 ? `0${i}` : String(i)
+          const curIdx = i < 10 ? `0${i}` : String(i)
           item.children.push({
             unitId: item.unitId,
             name: `${idx + 1}${curIdx}`,

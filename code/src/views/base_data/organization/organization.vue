@@ -198,7 +198,7 @@ export default {
         this.$refs.organTree.setCurrentKey(data.id)
       })
       this.postInfoLoading = true
-      if (this.isPostMembersShow===true) {
+      if (this.isPostMembersShow === true) {
         // this.postMemberCtrl()
         if (this.isShow) {
           this.postMemberCtrl()

@@ -1,5 +1,5 @@
 export function formatDate(date) {
-  let y = date.getFullYear()
+  const y = date.getFullYear()
   let MM = date.getMonth() + 1
   MM = MM < 10 ? ('0' + MM) : MM
   let d = date.getDate()
@@ -14,7 +14,7 @@ export function formatDate(date) {
 }
 
 export function formatDay(date) {
-  let y = date.getFullYear()
+  const y = date.getFullYear()
   let MM = date.getMonth() + 1
   MM = MM < 10 ? ('0' + MM) : MM
   let d = date.getDate()
@@ -22,9 +22,9 @@ export function formatDay(date) {
   return y + '-' + MM + '-' + d
 }
 
-export function afterNowDay(count){
+export function afterNowDay(count) {
   var date1 = new Date()
   var date2 = new Date(date1);
-  date2.setDate(date1.getDate()+count);
+  date2.setDate(date1.getDate() + count);
   return formatDay(date2)
 }

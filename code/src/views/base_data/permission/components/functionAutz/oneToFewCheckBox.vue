@@ -5,14 +5,14 @@
       v-model="checkedAllPermission"
       @change="handleCheckAllChange"
     >
-      <span class="page-name">{{pageMsgObj.name}}</span>
+      <span class="page-name">{{ pageMsgObj.name }}</span>
     </el-checkbox>
     <el-checkbox-group v-model="checkedPermission" @change="handleCheckedCitiesChange">
       <el-checkbox
         :label="subItem.id"
         v-for="(subItem) in pageMsgObj.actions"
         :key="subItem.id"
-      >{{subItem.describe}}</el-checkbox>
+      >{{ subItem.describe }}</el-checkbox>
     </el-checkbox-group>
   </div>
 </template>
@@ -24,11 +24,25 @@ import {
 export default {
   props: {
     pageMsgObj: {
-      type: Object
+      type: Object,
+      default: () => {
+        return {}
+      }
     },
     currentRole: {
-      type: Object
+      type: Object,
+      default: () => {
+        return {}
+      }
     }
+  },
+  data() {
+    return {
+      isIndeterminate: true,
+      checkedPermission: [],
+      allPermission: [],
+      checkedAllPermission: false
+    };
   },
   watch: {
     pageMsgObj: {
@@ -58,14 +72,6 @@ export default {
       immediate: true
     }
   },
-  data() {
-    return {
-      isIndeterminate: true,
-      checkedPermission: [],
-      allPermission: [],
-      checkedAllPermission: false
-    };
-  },
   methods: {
     handleCheckAllChange(val) {
       if (val) {
@@ -85,7 +91,7 @@ export default {
       }
     },
     async handleCheckedCitiesChange(value) {
-      let checkedCount = value.length;
+      const checkedCount = value.length;
       this.checkedAllPermission = checkedCount === this.allPermission.length;
       this.isIndeterminate =
         checkedCount >= 0 && checkedCount < this.allPermission.length;

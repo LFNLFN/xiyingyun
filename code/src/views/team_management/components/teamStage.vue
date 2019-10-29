@@ -31,7 +31,7 @@
       </el-main>
       <el-main v-loading="sectionInfoLoading" class="section-info-watp">
         <div class="header">
-          <span>{{`班组人员（人数:${projectTeamMemberList.length}）`}}</span>
+          <span>{{ `班组人员（人数:${projectTeamMemberList.length}）` }}</span>
         </div>
         <div class="table-wrap">
           <el-table
@@ -139,14 +139,9 @@ import {
 } from "@/api/team_management/team_management";
 // old code
 import { mapGetters, mapActions } from "vuex";
-import { searchArrByKeyVal } from "@/utils/public";
 import { getDictionaryItem } from "@/api/dictionary";
 import { getBuliding } from "@/api/project_config/building";
 import { getPlansNoPage } from "@/api/project_config/plan";
-import {
-  addProjectStage,
-  editProjectStage
-} from "@/api/project_config/project";
 import FooterBarContainer from "@/components/FooterBarContainer";
 // new code
 import {
@@ -182,7 +177,6 @@ export default {
         phone: "",
         parentId: "",
         type: 2,
-        orgId: "",
         status: "",
         estateProjectStageEntity: {
           professionalEntityList: [],
@@ -277,57 +271,13 @@ export default {
         // this.$message.error(err)
       });
     return;
-    // this.sectionInfoLoading = true;
-    // this.buildingLoading = true;
-    // this.professionLoading = true;
-    // const projectId = this.$route.query.projectId;
-    // const parentId = this.$route.query.parentId;
-    // const eventType = this.$route.query.eventType;
-    // 其他数据
-    if (eventType === "add") {
-      const curProject = searchArrByKeyVal(this.projectList, "id", parentId);
-      this.sectionFormData.parentId = parentId;
-      this.sectionFormData.orgId = curProject.orgId;
-      if (curProject) {
-        this.belongProject = curProject.name;
-      }
-    } else if (eventType === "edit") {
-      // 编辑项目分期，加载表单数据
-      const curProject = searchArrByKeyVal(
-        this.projectDetails,
-        "id",
-        projectId
-      );
-      if (curProject) {
-        const _keys = Object.keys(curProject);
-        const parentProject = searchArrByKeyVal(
-          this.projectList,
-          "id",
-          parentId
-        );
-        // 加载所属项目
-        if (parentProject) {
-          this.belongProject = parentProject.name;
-        }
-        // 加载表单数据
-        _keys.forEach(key => {
-          this.sectionFormData[key] = curProject[key];
-        });
-      }
-    }
-    // 加载总包单位以及监理单位数据
-    this.getContractSupervise();
-    // 加载楼栋数据
-    this.getBuildingData();
-    // 加载专业分类数据
-    this.getProfessionData();
   },
   methods: {
     // 班组人员的增删改查
     showMemberOperationView(operation, row, index) {
       switch (operation) {
         // 新增班组人员
-        case "add":
+        case "add": {
           if (
             this.projectTeamMemberList.length > 0 &&
             this.projectTeamMemberList[this.projectTeamMemberList.length - 1]
@@ -342,9 +292,10 @@ export default {
           this.memberOperation = "add";
           this.projectTeamMemberList.push(this.memberFillingObj);
           break;
+        }
         // 编辑班组人员
-        case "edit":
-          let isDoingInput = this.projectTeamMemberList.some((e, i, s) => {
+        case "edit": {
+          const isDoingInput = this.projectTeamMemberList.some((e, i, s) => {
             return e.doingInput;
           });
           if (isDoingInput) {
@@ -356,8 +307,8 @@ export default {
           }
           this.memberOperation = "edit";
           this.currentRow = row;
-          let _tmpRow = Object.assign({}, row);
-          let tmpKeyArr = Object.keys(this.memberFillingObj);
+          const _tmpRow = Object.assign({}, row);
+          const tmpKeyArr = Object.keys(this.memberFillingObj);
           tmpKeyArr.forEach((e, i, s) => {
             this.memberFillingObj[e] = _tmpRow[e];
           });
@@ -365,7 +316,8 @@ export default {
           _tmpRow.doingInput = true;
           this.projectTeamMemberList.splice(index, 1, _tmpRow);
           break;
-        case "cancel":
+        }
+        case "cancel": {
           if (this.memberOperation === "edit") {
             this.projectTeamMemberList[index].doingInput = false;
           } else if (this.memberOperation === "add") {
@@ -373,8 +325,9 @@ export default {
           }
 
           break;
+        }
         // 删除班组人员
-        case "delete":
+        case "delete": {
           this.$confirm("确定删除该班组人员?", "提示", {
             confirmButtonText: "确定",
             cancelButtonText: "取消",
@@ -386,6 +339,7 @@ export default {
             });
           });
           break;
+        }
       }
     },
     teamMemberOperation(operation, row) {
@@ -393,11 +347,11 @@ export default {
         // 新增班组人员
         case "add":
           // 添加验证
-          if(!phoneNumValid(this.memberFillingObj.phone)) {
+          if (!phoneNumValid(this.memberFillingObj.phone)) {
             this.$message.error('电话号码格式错误')
             break
           }
-          if(!idCardValid(this.memberFillingObj.idCard)) {
+          if (!idCardValid(this.memberFillingObj.idCard)) {
             this.$message.error('身份证格式错误')
             break
           }
@@ -433,11 +387,11 @@ export default {
         // 编辑班组人员
         case "edit":
           // 添加验证
-          if(!phoneNumValid(this.memberFillingObj.phone)) {
+          if (!phoneNumValid(this.memberFillingObj.phone)) {
             this.$message.error('电话号码格式错误')
             break
           }
-          if(!idCardValid(this.memberFillingObj.idCard)) {
+          if (!idCardValid(this.memberFillingObj.idCard)) {
             this.$message.error('身份证格式错误')
             break
           }
@@ -513,9 +467,9 @@ export default {
     },
     // 制造工种下拉框
     generateWorkTypeOption(arr) {
-      let tmpArr = [];
+      const tmpArr = [];
       arr.forEach((e, i, s) => {
-        let tmpObj = {};
+        const tmpObj = {};
         tmpObj.label = e.value;
         tmpObj.value = e.id;
         tmpArr.push(tmpObj);

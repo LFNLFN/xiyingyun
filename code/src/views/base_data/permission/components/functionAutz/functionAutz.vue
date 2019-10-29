@@ -24,8 +24,17 @@ export default {
   components: { checkItem },
   props: {
     currentRole: {
-      type: Object
+      type: Object,
+      default: () => {
+        return {};
+      }
     }
+  },
+  data() {
+    return {
+      rolesPermissionList: {},
+      listLoading: false
+    };
   },
   watch: {
     currentRole: function(newVal) {
@@ -43,12 +52,6 @@ export default {
           this.$message.error("请重试");
         });
     }
-  },
-  data() {
-    return {
-      rolesPermissionList: {},
-      listLoading: false
-    };
   }
 };
 </script>

@@ -43,7 +43,7 @@
         <!-- 封装组件 -->
         <memberList
           v-show="currentComponent==='Members'"
-          :is-table-Loading="iStableLoading"
+          :is-table-loading="isTableLoading"
           :member-table-data="memberTableData"
           :page-total="pageTotal"
           @changePage="pageChangeHandle"
@@ -69,7 +69,7 @@
           </div>
           <div class="table-wrap">
             <el-table
-              v-loading="iStableLoading"
+              v-loading="isTableLoading"
               ref="memberTable"
               :data="memberTableData"
               size="small"
@@ -125,7 +125,7 @@ export default {
       },
       isAddRolesShow: false,
       roleTreeLoading: false,
-      iStableLoading: false,
+      isTableLoading: false,
       editRoleData: {}, // 保存要编辑的角色的数据
       addOrEditRole: "", // 决定添加角色还是编辑角色，add：添加，edit：编辑
       pageTotal: 0,
@@ -151,7 +151,7 @@ export default {
     pageChangeHandle(index) {},
     // 获取角色用户
     getRolesPersonFun(data, paramObj = {}) {
-      this.iStableLoading = true;
+      this.isTableLoading = true;
       const { name, phone, pageIndex } = paramObj;
       const param = {
         name: name || "",
@@ -167,10 +167,10 @@ export default {
           } else {
             this.pageTotal = resp.result.length;
           }
-          this.iStableLoading = false;
+          this.isTableLoading = false;
         })
         .catch(() => {
-          this.iStableLoading = false;
+          this.isTableLoading = false;
         });
     },
     // 按条件查询角色人员

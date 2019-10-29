@@ -1,8 +1,13 @@
 <template>
-    <div class="check-item">
-        <div class="module-name">{{title}}</div>
-        <checkSubItem v-for="(item) in moduleMsgObj" :key="item.id" :page-msg-obj="item" :current-role="currentRole"/>
-    </div>
+  <div class="check-item">
+    <div class="module-name">{{ title }}</div>
+    <checkSubItem
+      v-for="(item) in moduleMsgObj"
+      :key="item.id"
+      :page-msg-obj="item"
+      :current-role="currentRole"
+    />
+  </div>
 </template>
 <script>
 import checkSubItem from "@/views/base_data/permission/components/functionAutz/oneToFewCheckBox";
@@ -10,13 +15,22 @@ export default {
   components: { checkSubItem },
   props: {
     moduleMsgObj: {
-      type: Array
+      type: Array,
+      default: () => {
+        return []
+      }
     },
     title: {
-      type: String
+      type: String,
+      default: () => {
+        return ''
+      }
     },
     currentRole: {
-      type: Object
+      type: Object,
+      default: () => {
+        return {}
+      }
     }
   }
 };

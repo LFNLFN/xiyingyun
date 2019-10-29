@@ -95,7 +95,6 @@
 </template>
 <script>
 import {
-  getWorkTypeList,
   getProjectList,
   getProjectTeamList,
   deleteTeam
@@ -255,7 +254,7 @@ export default {
         .then(resp => {
           this.projectTeamIds = []
           this.projectTeamList = resp.result;
-          this.projectTeamList.forEach((e,i,s) => {
+          this.projectTeamList.forEach((e, i, s) => {
             this.projectTeamIds.push(e.id)
           })
         })

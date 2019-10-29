@@ -21,7 +21,7 @@ export function getProgressPlans(params) {
 export function getResponsors(projectId) {
   return request({
     url: `/project/getPersonEntityList/${projectId}`,
-    method: 'get',
+    method: 'get'
   })
 }
 
@@ -38,7 +38,7 @@ export function addProgressPlans(data) {
 export function getPlanDetail(planId) {
   return request({
     url: `/schedulePlanMain/${planId}`,
-    method: 'get',
+    method: 'get'
   })
 }
 
@@ -55,7 +55,7 @@ export function getProgressReports(params) {
 export function getReportDetail(reportId) {
   return request({
     url: `/scheduleReportMain/detail/${reportId}`,
-    method: 'get',
+    method: 'get'
   })
 }
 

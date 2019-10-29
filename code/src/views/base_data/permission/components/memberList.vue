@@ -43,13 +43,22 @@
 export default {
   props: {
     memberTableData: {
-        type: Array
+      type: Array,
+      default: () => {
+        return [];
+      }
     },
     pageTotal: {
-        type: Number
+      type: Number,
+      default: () => {
+        return 0;
+      }
     },
     isTableLoading: {
-        type: Boolean
+      type: Boolean,
+      default: () => {
+        return false;
+      }
     }
   },
   data() {
@@ -71,7 +80,7 @@ export default {
       this.getRolesPersonFun(data, param);
     },
     pageChangeHandle() {
-        this.$emit('changePage')
+      this.$emit("changePage");
     }
   }
 };

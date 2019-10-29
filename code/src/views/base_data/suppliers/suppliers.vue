@@ -200,7 +200,7 @@ export default {
         this.$refs.suppTree.setCurrentKey(data.id)
       })
       this.postInfoLoading = true
-      if (this.isPostMembersShow===true) {
+      if (this.isPostMembersShow === true) {
         // this.postMemberCtrl()
         if (this.isShow) {
           this.postMemberCtrl()

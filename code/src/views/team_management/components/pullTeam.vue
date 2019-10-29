@@ -127,8 +127,8 @@ export default {
       this.$emit("reloadParticipant", this.isBindSuccess);
     },
     handleChange(value, direction, movedKeys) {
-      if (direction==='left') {
-        this.$emit('teamOperation','delete',{movedKeys})
+      if (direction === "left") {
+        this.$emit("teamOperation", "delete", { movedKeys });
       }
       console.log(value, direction, movedKeys);
     }
