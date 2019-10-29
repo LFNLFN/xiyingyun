@@ -43,7 +43,7 @@ export function delOrganization(id) {
 // 增加岗位
 export function addPosition(datas) {
   return request({
-    url: '/position',
+    url: '/position/custom',
     method: 'post',
     data: JSON.stringify(datas)
   })
@@ -51,7 +51,7 @@ export function addPosition(datas) {
 
 // 修改岗位信息
 export function editPosition(id, datas) {
-  const urlStr = `/position/${id}`
+  const urlStr = `/position/custom/${id}`
   return request({
     url: urlStr,
     method: 'put',
@@ -70,7 +70,7 @@ export function getPosition(datas) {
 
 // 删除岗位
 export function delPosition(id) {
-  const urlStr = `/position/${id}`
+  const urlStr = `/position/custom/${id}`
   return request({
     url: urlStr,
     method: 'delete'

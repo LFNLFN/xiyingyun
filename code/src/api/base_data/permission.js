@@ -1,9 +1,9 @@
 import request from '@/utils/request'
 
-// 账号管理页面中获取角色列表
+// 账号管理页面中获取角色列表（权限管理也使用此接口）
 export function getRoles(paramsObj) {
   return request({
-    url: `/role`,
+    url: `/role/allRoles`,
     method: 'get',
     parmas: paramsObj
   })
@@ -20,7 +20,7 @@ export function getRolesInSup(paramsObj, orgType) {
 
 // 修改角色信息
 export function editRoles(paramsObj) {
-  const _url = `/role/${paramsObj.id}`
+  const _url = `/role/personalise/${paramsObj.id}`
   return request({
     url: _url,
     method: 'put',
@@ -31,7 +31,7 @@ export function editRoles(paramsObj) {
 // 新增角色
 export function addRoles(paramsObj) {
   return request({
-    url: '/role/custom',
+    url: '/role/personalise',
     method: 'post',
     data: JSON.stringify(paramsObj)
   })
@@ -39,7 +39,7 @@ export function addRoles(paramsObj) {
 
 // 删除角色
 export function delRoles(id) {
-  const _url = `/role/${id}`
+  const _url = `/role/personalise/${id}`
   return request({
     url: _url,
     method: 'delete'
