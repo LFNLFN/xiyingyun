@@ -8,6 +8,7 @@
           circle
           size="small"
           class="el-icon-plus add-roles-btn"
+          :disabled="!(pagePermission['add-role'])"
           @click="addRolesBoxCtrl('add')"
         />
       </div>
@@ -63,7 +64,7 @@
                 <el-input v-model="searchFormData.phone" size="small" placeholder="请输入手机号"/>
               </el-form-item>
               <el-form-item>
-                <el-button type="primary" @click="searchHandle">查询</el-button>
+                <el-button type="primary" @click="searchHandle" :disabled="!(pagePermission.get)">查询</el-button>
               </el-form-item>
             </el-form>
           </div>
@@ -108,8 +109,10 @@ import AddRoles from "@/views/base_data/permission/components/addRoles";
 import memberList from "@/views/base_data/permission/components/memberList";
 import functionAutz from "@/views/base_data/permission/components/functionAutz/functionAutz";
 import { delRoles, getRolesPerson } from "@/api/base_data/permission.js";
+import permissionOfPage from "@/mixins/permissionOfPage";
 export default {
   components: { AddRoles, memberList, functionAutz },
+  mixins: [permissionOfPage],
   data() {
     return {
       currentComponent: "Members",
@@ -135,8 +138,11 @@ export default {
   created() {
     this.getRolesList();
   },
+  beforeDestroy() {
+    this.GetInfo()
+  },
   methods: {
-    ...mapActions(["getPerRoles"]),
+    ...mapActions(["getPerRoles", 'GetInfo']),
     ...mapMutations({
       clearRoles: "CLEAR_PER_ROLES"
     }),
@@ -272,8 +278,8 @@ export default {
                 class="el-icon-edit tree-edit-btn"
               />
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item command="edit">编辑</el-dropdown-item>
-                <el-dropdown-item command="delete">删除</el-dropdown-item>
+                <el-dropdown-item command="edit" disabled={ !this.pagePermission['update-role'] }>编辑</el-dropdown-item>
+                <el-dropdown-item command="delete" disabled={ !this.pagePermission['delete-role'] }>删除</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </span>

@@ -47,6 +47,7 @@ export default {
   watch: {
     pageMsgObj: {
       handler(newVal) {
+        console.log('newVal: ', newVal)
         this.allPermission = [];
         this.checkedPermission = [];
         newVal.actions.forEach(e => {

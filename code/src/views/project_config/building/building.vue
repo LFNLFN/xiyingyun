@@ -11,6 +11,7 @@
           <el-select
             v-model="projectSelected"
             filterable
+            :disabled="!(pagePermission.get)"
             placeholder="请选择项目">
             <el-option
               v-for="(item, idx) in projectList"
@@ -73,10 +74,11 @@
           <div class="building-wrap-header">
             <span class="building-name">{{ curUnitData.name }}</span>
             <div>
-              <el-button size="mini" type="primary" @click="addFloorHandle">新增楼层</el-button>
+              <el-button size="mini" type="primary" @click="addFloorHandle" :disabled="!(pagePermission.add)">新增楼层</el-button>
               <el-button
                 v-if="isUnitHasRooms"
                 size="mini"
+                :disabled="!(pagePermission.delete)"
                 @click="(evt) => emptyRoomsHandle()">清空房间</el-button>
               <el-button
                 v-else
@@ -99,6 +101,7 @@
                       type="primary"
                       size="mini"
                       class="column-set-btn"
+                      :disabled="!(pagePermission.update)"
                       @click="setPlanBatchHandle(item, idx, 3)">整列设置</el-button>
                   </template>
                   <div class="floor-item">
@@ -122,9 +125,9 @@
                         <div class="footer">
                           <span class="text-wrap">{{ item.floorPlanName || '无平面图' }}</span>
                           <span class="foot-operate-wrap">
-                            <i class="el-icon-picture" @click="setPlanHandle(item)" />
-                            <i class="el-icon-edit" @click="editRoomsHandle(item, 'edit')" />
-                            <i class="el-icon-delete-solid" @click="delRoomsHandle(item)" />
+                            <i class="el-icon-picture" @click="setPlanHandle(item)" v-show="pagePermission.add" />
+                            <i class="el-icon-edit" @click="editRoomsHandle(item, 'edit')" v-show="pagePermission.update"/>
+                            <i class="el-icon-delete-solid" @click="delRoomsHandle(item)" v-show="pagePermission.delete"/>
                           </span>
                         </div>
                       </template>
@@ -148,6 +151,7 @@
                       type="primary"
                       size="mini"
                       class="column-set-btn"
+                      :disabled="!(pagePermission.update)"
                       @click="setPlanBatchHandle(child, cidx, 4)">整列设置</el-button>
                   </template>
                   <!-- 非虚拟数据，渲染房间信息 -->
@@ -173,9 +177,9 @@
                           <div class="footer">
                             <span class="text-wrap">{{ child.floorPlanName || '无平面图' }}</span>
                             <span class="foot-operate-wrap">
-                              <i class="el-icon-picture" @click="setPlanHandle(child)" />
-                              <i class="el-icon-edit" @click="editRoomsHandle(child, 'edit')"/>
-                              <i class="el-icon-delete-solid" @click="delRoomsHandle(child)"/>
+                              <i class="el-icon-picture" @click="setPlanHandle(child)" v-show="pagePermission.add"/>
+                              <i class="el-icon-edit" @click="editRoomsHandle(child, 'edit')" v-show="pagePermission.update"/>
+                              <i class="el-icon-delete-solid" @click="delRoomsHandle(child)" v-show="pagePermission.delete"/>
                             </span>
                           </div>
                         </template>
@@ -186,7 +190,7 @@
                   <template v-else>
                     <div class="floor-item">
                       <div v-if="item.isStandard==0"></div>
-                      <div v-else class="add-rooms-item" @click="addRoomHandle(item)">添加房间</div>
+                      <div v-else class="add-rooms-item" @click="addRoomHandle(item)" :disabled="!(pagePermission.add)">添加房间</div>
                     </div>
                   </template>
                 </div>
@@ -196,11 +200,12 @@
                       type="primary"
                       size="mini"
                       class="column-set-btn"
+                      :disabled="!(pagePermission.add)"
                       @click="addRoomBatchHandle">批量添加</el-button>
                   </template>
                   <div class="floor-item">
                     <div v-if="item.isStandard==0"></div>
-                    <div v-else class="add-rooms-item" @click="addRoomHandle(item)">添加房间</div>
+                    <div v-else class="add-rooms-item" @click="addRoomHandle(item)" :disabled="!(pagePermission.add)">添加房间</div>
                   </div>
                 </div>
               </div>
@@ -250,8 +255,10 @@ import AddFloor from '@/views/project_config/building/components/addFloor'
 import BuildRoom from '@/views/project_config/building/components/buildRoom'
 import AddRoom from '@/views/project_config/building/components/addRoom'
 import SetPlan from '@/views/project_config/building/components/setPlan'
+import permissionOfPage from "@/mixins/permissionOfPage"
 export default {
   components: { AddBuilding, AddFloor, BuildRoom, AddRoom, SetPlan },
+  mixins: [permissionOfPage],
   data() {
     return {
       /* -------------- 项目信息相关 -----------------*/

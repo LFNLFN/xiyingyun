@@ -5,7 +5,7 @@
       src="../../../../assets/logo_images/seeingCloudLogo.png"
       alt=""
       id="sidebar-pic-open"
-    > -->
+    >-->
     <!-- <h3 v-show="$store.state.app.sidebar.opened" id="sidebar-pic-open">Seeing Cloud</h3> -->
     111111
     <!-- <img v-show="!$store.state.app.sidebar.opened" src="../../../../assets/home-page-pic/mini-logo.png" alt="" id="sidebar-pic-close"> -->
@@ -58,7 +58,7 @@
           :key="route.path"
           :item="route"
           :base-path="route.path"
-           v-show="$store.state.app.sidebar.sidebarType==='public'"
+          v-show="$store.state.app.sidebar.sidebarType==='public'"
         />
       </template>
       <template>
@@ -74,12 +74,14 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-import variables from '@/styles/variables.scss'
-import SidebarItem from './SidebarItem'
+import { mapGetters } from "vuex";
+import variables from "@/styles/variables.scss";
+import SidebarItem from "./SidebarItem";
+import permissionOfPage from "@/mixins/permissionOfPage";
 
 export default {
   components: { SidebarItem },
+  mixins: [permissionOfPage],
   data() {
     return {
       defaultActive: this.$route.name,
@@ -88,41 +90,41 @@ export default {
       publicRoutes: [],
       otherRouters: [],
       typeRouterIndex: {
-        home: 'homeRoutes',
-        project: 'projectRoutes',
-        public: 'publicRoutes'
+        home: "homeRoutes",
+        project: "projectRoutes",
+        public: "publicRoutes"
       }
-    }
+    };
   },
   computed: {
-    ...mapGetters(['sidebar']),
+    ...mapGetters(["sidebar"]),
     routes() {
-      return this.$router.options.routes
+      return this.$router.options.routes;
     },
     variables() {
-      return variables
+      return variables;
     },
     isCollapse() {
-      return !this.sidebar.opened
+      return !this.sidebar.opened;
     }
   },
   created() {
-    const routes = this.$router.options.routes
+    const routes = this.$router.options.routes;
     routes.forEach(item => {
       if (item.menuType) {
-        const index = this.typeRouterIndex[item.menuType]
-        this[index].push(item)
+        const index = this.typeRouterIndex[item.menuType];
+        this[index].push(item);
       } else {
-        this.otherRouters.push(item)
+        this.otherRouters.push(item);
       }
-    })
+    });
   },
   methods: {
     handleOpen(index, indexPath) {
-      this.defaultActive = index
+      this.defaultActive = index;
     }
   }
-}
+};
 </script>
 <style ref="stylesheet/scss" lang="scss" scoped>
 @import "src/styles/mixin.scss";

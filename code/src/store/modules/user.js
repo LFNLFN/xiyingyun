@@ -8,6 +8,7 @@ const user = {
     name: 'admin',
     avatar: require('@/assets/user_images/avatar.png'),
     roles: [],
+    permissions: {},
     userAllInfo: {}
   },
 
@@ -25,6 +26,9 @@ const user = {
     },
     SET_ROLES: (state, roles) => {
       state.roles = roles
+    },
+    SET_PERMISSIONS: (state, permissions) => {
+      state.permissions = permissions
     },
     SET_USERALLINFO: (state, info) => {
       state.userAllInfo = info
@@ -59,6 +63,7 @@ const user = {
           }
           commit('SET_NAME', data.name)
           commit('SET_AVATAR', data.photo)
+          commit('SET_PERMISSIONS', data.permissions)
           commit('SET_USERALLINFO', data)
           resolve(response)
         }).catch(error => {

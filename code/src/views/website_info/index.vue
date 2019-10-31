@@ -19,6 +19,15 @@
             <el-form-item label="企业网址" prop="website">
               <el-input v-model="ruleForm.website"></el-input>
             </el-form-item>
+            <el-form-item label="地址" prop="address">
+              <el-input v-model="ruleForm.address"></el-input>
+            </el-form-item>
+            <el-form-item label="组织结构代码" prop="code">
+              <el-input v-model="ruleForm.code"></el-input>
+            </el-form-item>
+            <el-form-item label="工商执照注册号" prop="registrationNumber">
+              <el-input v-model="ruleForm.registrationNumber"></el-input>
+            </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="submitForm('ruleForm')">提交</el-button>
               <el-button @click="resetForm('ruleForm')">重置</el-button>

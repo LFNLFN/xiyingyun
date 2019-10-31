@@ -125,6 +125,7 @@ export const asyncRouterMap = [
             path: 'index',
             component: () => import('@/views/project_config/project/project'),
             name: 'projectIndex',
+            meta: { pagePermissionId: 'project' },
             hidden: true
           },
           {
@@ -144,13 +145,13 @@ export const asyncRouterMap = [
       {
         path: 'building',
         name: 'Building',
-        meta: { title: '楼栋管理', icon: '' },
+        meta: { title: '楼栋管理', icon: '', pagePermissionId: 'unit' },
         component: () => import('@/views/project_config/building/building')
       },
       {
         path: 'plan',
         name: 'Plan',
-        meta: { title: '平面图管理', icon: '' },
+        meta: { title: '平面图管理', icon: '', pagePermissionId: 'floorPlan' },
         component: () => import('@/views/project_config/plan/plan')
       },
       // 班组管理界面
@@ -186,12 +187,14 @@ export const asyncRouterMap = [
           {
             path: 'index',
             component: () => import('@/views/project_config/participant/participant'),
+            meta: { pagePermissionId: 'thirdPart' },
             name: 'participant',
             hidden: true
           },
           {
             path: 'participantDetail',
             component: () => import('@/views/project_config/participant/participantDetail'),
+            meta: { pagePermissionId: 'thirdPart' },
             name: 'participantDetail',
             hidden: true
           }
@@ -212,20 +215,20 @@ export const asyncRouterMap = [
         path: 'organization',
         name: 'organization',
         // meta: { title: '组织架构', icon: '' },
-        meta: { title: '企业架构', icon: '' },
+        meta: { title: '企业架构', icon: '', pagePermissionId: 'organizational' },
         component: () => import('@/views/base_data/organization/organization')
       },
       {
         path: 'accounts',
         name: 'accounts',
         // meta: { title: '账号管理', icon: '' },
-        meta: { title: '人员管理', icon: '' },
+        meta: { title: '人员管理', icon: '', pagePermissionId: 'person' },
         component: () => import('@/views/base_data/accounts/accounts')
       },
       {
         path: 'permission',
         name: 'permission',
-        meta: { title: '权限管理', icon: '' },
+        meta: { title: '权限管理', icon: '', pagePermissionId: 'permission' },
         component: () => import('@/views/base_data/permission/permission')
       },
       {
