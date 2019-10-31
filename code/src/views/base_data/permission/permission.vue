@@ -222,7 +222,7 @@ export default {
           this.roleTreeLoading = false;
           this.rolesTreeData = resp;
         })
-        .catch(() => {
+        .catch((err) => {
           this.roleTreeLoading = false;
         });
     },

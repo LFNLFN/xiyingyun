@@ -33,7 +33,7 @@ const baseData = {
     getPerRoles({ commit, state }) {
       return new Promise((resolve, reject) => {
         getRoles({}).then(resp => {
-          const data = resp.result.data
+          const data = resp.result
           commit('SET_PER_ROLES', data)
           resolve(data)
         }).catch(() => {
