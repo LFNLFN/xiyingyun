@@ -58,7 +58,14 @@ import { uploadImg } from "@/utils/manageOSS";
 export default {
   data() {
     return {
-      ruleForm: {},
+      ruleForm: {
+        logo: undefined,
+        name: undefined,
+        website: undefined,
+        address: undefined,
+        code: undefined,
+        registrationNumber: undefined,
+      },
       isUploadingLogoPic: false,
       rules: {
         logo: [{ required: true, trigger: "change", message: "不能为空" }],
@@ -76,7 +83,9 @@ export default {
   created() {
     getOrgDetailInfo()
       .then(resp => {
-        this.ruleForm = resp.result.data[0];
+        if (resp.result.data.length > 0) {
+          this.ruleForm = resp.result.data[0];
+        }
       })
       .catch(err => {
         console.log(err);
