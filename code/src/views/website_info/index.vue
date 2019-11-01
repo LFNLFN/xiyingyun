@@ -2,16 +2,28 @@
   <el-container class="global-container">
     <el-main class="left-wrap">
       <div class="chart-wrap">
-        <div class="header">用户活跃度</div>
-        <div class="chart-container">
-          <el-form
-            :model="ruleForm"
-            :rules="rules"
-            ref="ruleForm"
-            label-width="100px"
-          >
+        <div class="header">企业信息</div>
+        <div class="chart-container form-wrap">
+          <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="140px">
             <el-form-item label="企业Logo" prop="logo">
-              <el-input v-model="ruleForm.logo"></el-input>
+              <el-upload
+                v-loading="isUploadingLogoPic"
+                :http-request="uploadLogoPic"
+                :show-file-list="false"
+                class="avatar-uploader"
+                action=""
+              >
+                <img
+                  v-if="ruleForm.logo"
+                  :src="GetOssImgFullPath(ruleForm.logo)"
+                  @error="ruleForm.logo=undefined"
+                  class="avatar"
+                >
+                <el-button type="primary" v-else>上传
+                  <i class="el-icon-upload el-icon--right"></i>
+                </el-button>
+                <el-input v-show="false" type="hidden" v-model="ruleForm.logo"></el-input>
+              </el-upload>
             </el-form-item>
             <el-form-item label="企业名称" prop="name">
               <el-input v-model="ruleForm.name"></el-input>
@@ -30,7 +42,6 @@
             </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="submitForm('ruleForm')">提交</el-button>
-              <el-button @click="resetForm('ruleForm')">重置</el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -39,13 +50,61 @@
   </el-container>
 </template>
 <script>
+import {
+  editOrgInfo,
+  getOrgDetailInfo
+} from "@/api/organization_information/info_management.js";
+import { uploadImg } from "@/utils/manageOSS";
 export default {
   data() {
     return {
-      ruleForm: {
-
-      },
-      rules: []
+      ruleForm: {},
+      isUploadingLogoPic: false,
+      rules: {
+        logo: [{ required: true, trigger: "change", message: "不能为空" }],
+        name: [{ required: true, trigger: "blur", message: "不能为空" }],
+        website: [{ required: true, trigger: "blur", message: "不能为空" }],
+        address: [{ required: true, trigger: "blur", message: "不能为空" }],
+        code: [{ required: true, trigger: "blur", message: "不能为空" }],
+        registrationNumber: [
+          { required: true, trigger: "blur", message: "不能为空" }
+        ]
+        // registrationNumber: [{ required: true, trigger: 'change', validator: validCityFunc }],
+      }
+    };
+  },
+  created() {
+    getOrgDetailInfo()
+      .then(resp => {
+        this.ruleForm = resp.result.data[0];
+      })
+      .catch(err => {
+        console.log(err);
+        this.$message.error("请求失败");
+      });
+  },
+  methods: {
+    // 上传Logo图
+    uploadLogoPic({ file }) {
+      this.isUploadingLogoPic = true;
+      uploadImg(file, "companyLogoPic").then(resp => {
+        this.ruleForm.logo = resp.url;
+        this.isUploadingLogoPic = false;
+      });
+    },
+    submitForm(formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          editOrgInfo(this.ruleForm).then(resp => {
+            this.$message.success('操作成功')
+          }).catch(err => {
+            console.log(err)
+            this.$message.error("请求失败");
+          })
+        } else {
+          this.$message.error("表格填写有误");
+        }
+      });
     }
   }
 };
@@ -111,7 +170,7 @@ export default {
       border-radius: 10px;
       background: #fff;
       .chart-container {
-        height: 375px;
+        height: auto;
       }
     }
   }
@@ -170,5 +229,8 @@ export default {
       width: 100%;
     }
   }
+}
+.form-wrap {
+  padding: 1em 50px;
 }
 </style>
