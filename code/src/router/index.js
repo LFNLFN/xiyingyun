@@ -75,7 +75,7 @@ export const asyncRouterMap = [
     component: Layout,
     redirect: '/website_info/index',
     // meta: { title: '网站信息', icon: 'websiteInfo' },
-    meta: { title: '首页', icon: 'home' },
+    meta: { title: '首页', icon: 'home',  pagePermissionId: 'organizationInfo' },
     // menuType: 'public',
     menuType: 'home',
     children: [
@@ -83,7 +83,7 @@ export const asyncRouterMap = [
         path: 'index',
         name: 'websiteInfoIndex',
         // meta: { title: '网站信息', icon: 'websiteInfo' },
-        meta: { title: '首页', icon: 'home' },
+        meta: { title: '首页', icon: 'home', pagePermissionId: 'organizationInfo' },
         component: () => import('@/views/website_info/index')
       }
     ]
@@ -118,7 +118,7 @@ export const asyncRouterMap = [
         path: 'project',
         name: 'project',
         redirect: '/project_config/project/index',
-        meta: { title: '项目管理', icon: '' },
+        meta: { title: '项目管理', icon: '', pagePermissionId: 'project' },
         component: () => import('@/views/project_config/project/index'),
         children: [
           {
@@ -235,7 +235,7 @@ export const asyncRouterMap = [
         path: 'suppliers',
         name: 'suppliers',
         // redirect: '/base_data/suppliers/index',
-        meta: { title: '供应商管理', icon: '' },
+        meta: { title: '供应商管理', icon: '', pagePermissionId: 'supplier' },
         component: () => import('@/views/base_data/suppliers/suppliers')
         // children: [
         //   {
@@ -253,29 +253,29 @@ export const asyncRouterMap = [
         //   }
         // ]
       },
-      {
-        path: 'params_config',
-        name: 'paramsConfig',
-        redirect: '/base_data/params_config/index',
-        meta: { title: '参数设置', icon: '' },
-        hidden: true,
-        component: () => import('@/views/base_data/params_config/index'),
-        children: [
-          {
-            path: 'index',
-            name: 'paramsConfigIndex',
-            hidden: true,
-            component: () => import('@/views/base_data/params_config/index')
-          }
-        ]
-      },
-      {
-        path: 'check_items',
-        name: 'checkItems',
-        meta: { title: '检查项配置', icon: '' },
-        hidden: true,
-        component: () => import('@/views/base_data/check_items/check_items')
-      }
+      // {
+      //   path: 'params_config',
+      //   name: 'paramsConfig',
+      //   redirect: '/base_data/params_config/index',
+      //   meta: { title: '参数设置', icon: '' },
+      //   hidden: true,
+      //   component: () => import('@/views/base_data/params_config/index'),
+      //   children: [
+      //     {
+      //       path: 'index',
+      //       name: 'paramsConfigIndex',
+      //       hidden: true,
+      //       component: () => import('@/views/base_data/params_config/index')
+      //     }
+      //   ]
+      // },
+      // {
+      //   path: 'check_items',
+      //   name: 'checkItems',
+      //   meta: { title: '检查项配置', icon: '' },
+      //   hidden: true,
+      //   component: () => import('@/views/base_data/check_items/check_items')
+      // }
     ]
   },
   // 用户设置界面
@@ -346,20 +346,20 @@ export const asyncRouterMap = [
       {
         path: 'check_problems',
         name: 'checkProblem',
-        // meta: { title: '检查问题', icon: '' }, 旧名
-        meta: { title: '日常检查', icon: '' },
+        // meta: { title: '检查问题', icon: '' }, 旧名，保留旧名是因为有些文件的命名是根据旧名起的
+        meta: { title: '日常检查', icon: '', pagePermissionId: 'problemCheckMain' },
         component: () => import('@/views/quality/check_problems/check_problems')
       },
       {
         path: 'measure',
         name: 'measure',
-        meta: { title: '实测实量', icon: '' },
+        meta: { title: '实测实量', icon: '', pagePermissionId: 'measuredQuantity' },
         component: () => import('@/views/quality/measure/measure')
       },
       {
         path: 'process_acceptance',
         name: 'processAcceptance',
-        meta: { title: '工序验收', icon: '' },
+        meta: { title: '工序验收', icon: '', pagePermissionId: 'processAccept' },
         component: () => import('@/views/quality/process_acceptance/process_acceptance')
       },
       {
@@ -373,12 +373,13 @@ export const asyncRouterMap = [
         path: 'special_item_check',
         name: 'specialCheck',
         redirect: 'special_item_check/index',
-        meta: { title: '专项检查', icon: '' },
+        meta: { title: '专项检查', icon: '', pagePermissionId: 'problemCheckBatch' },
         component: () => import('@/views/quality/special_item_check/index'),
         children: [
           {
             path: 'index',
             name: 'specialItemCheckIndex',
+            meta: { title: '专项检查', pagePermissionId: 'problemCheckBatch' },
             hidden: true,
             component: () => import('@/views/quality/special_item_check/special_item_check')
           },
@@ -420,7 +421,7 @@ export const asyncRouterMap = [
       {
         path: 'material_acceptance',
         name: 'materialAcceptance',
-        meta: { title: '材料验收', icon: '' },
+        meta: { title: '材料验收', icon: '', pagePermissionId: 'metarialAcceptMain' },
         component: () => import('@/views/material/material_acceptance/material_acceptance')
       }
       // {
@@ -561,7 +562,7 @@ export const asyncRouterMap = [
       {
         path: 'document_manage',
         name: 'documentManage',
-        meta: { title: '文档管理', icon: '' },
+        meta: { title: '文档管理', icon: '', pagePermissionId: 'documentRecord' },
         component: () => import('@/views/publication/document_manage/document_manage')
       }
     ]
@@ -578,7 +579,7 @@ export const asyncRouterMap = [
       {
         path: 'params_config',
         name: 'paramsConfig',
-        meta: { title: '参数设置', icon: '' },
+        meta: { title: '参数设置', icon: '', pagePermissionId: 'dictionary' },
         // hidden: true,
         component: () => import('@/views/base_data/params_config/index'),
         children: [
@@ -593,7 +594,8 @@ export const asyncRouterMap = [
       {
         path: 'check_items',
         name: 'checkItems',
-        meta: { title: '检查项配置', icon: '' },
+        // meta: { title: '检查项配置', icon: '' }, 保留旧名是因为有些文件的命名是根据旧名起的
+        meta: { title: '检查标准', icon: '', pagePermissionId: 'inspectionCriteria' },
         component: () => import('@/views/base_data/check_items/check_items')
       }
     ]
@@ -601,17 +603,17 @@ export const asyncRouterMap = [
   // 统计分析
   {
     path: '/statistics',
-    component: Layout,
-    redirect: '/statistics/statistics_report',
     name: 'statistics',
-    meta: { title: '统计分析', icon: 'statistics' },
+    component: Layout,
+    meta: { title: '统计分析', icon: 'statistics', pagePermissionId: 'report' },
     menuType: 'project',
+    redirect: '/statistics/statistics_report',
     alwaysShow: true,
     children: [
       {
         path: 'statistics_report',
         name: 'statisticsReport',
-        meta: { title: '统计报表', icon: '' },
+        meta: { title: '统计报表', icon: '', pagePermissionId: 'report' },
         component: () => import('@/views/statistics/statistics_report/statistics_report')
       }
     ]

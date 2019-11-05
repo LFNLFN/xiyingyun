@@ -10,6 +10,7 @@
                 v-loading="isUploadingLogoPic"
                 :http-request="uploadLogoPic"
                 :show-file-list="false"
+                :disabled="!(pagePermission.add)"
                 class="avatar-uploader"
                 action=""
               >
@@ -26,22 +27,22 @@
               </el-upload>
             </el-form-item>
             <el-form-item label="企业名称" prop="name">
-              <el-input v-model="ruleForm.name"></el-input>
+              <el-input v-model="ruleForm.name" :disabled="!(pagePermission.add)"></el-input>
             </el-form-item>
             <el-form-item label="企业网址" prop="website">
-              <el-input v-model="ruleForm.website"></el-input>
+              <el-input v-model="ruleForm.website" :disabled="!(pagePermission.add)"></el-input>
             </el-form-item>
             <el-form-item label="地址" prop="address">
-              <el-input v-model="ruleForm.address"></el-input>
+              <el-input v-model="ruleForm.address" :disabled="!(pagePermission.add)"></el-input>
             </el-form-item>
             <el-form-item label="组织结构代码" prop="code">
-              <el-input v-model="ruleForm.code"></el-input>
+              <el-input v-model="ruleForm.code" :disabled="!(pagePermission.add)"></el-input>
             </el-form-item>
             <el-form-item label="工商执照注册号" prop="registrationNumber">
-              <el-input v-model="ruleForm.registrationNumber"></el-input>
+              <el-input v-model="ruleForm.registrationNumber" :disabled="!(pagePermission.add)"></el-input>
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" @click="submitForm('ruleForm')">提交</el-button>
+              <el-button type="primary" @click="submitForm('ruleForm')" :disabled="!(pagePermission.add)">提交</el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -55,7 +56,9 @@ import {
   getOrgDetailInfo
 } from "@/api/organization_information/info_management.js";
 import { uploadImg } from "@/utils/manageOSS";
+import permissionOfPage from "@/mixins/permissionOfPage";
 export default {
+  mixins: [permissionOfPage],
   data() {
     return {
       ruleForm: {

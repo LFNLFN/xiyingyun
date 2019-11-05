@@ -18,7 +18,18 @@ export default {
         'enable': false,
         'add-role': false,
         'update-role': false,
-        'delete-role': false
+        'delete-role': false,
+        'problem_check_detail_get': false,
+        'measured_quantity_detail_get': false,
+        'process_accept_detail_get': false,
+        'project_init_get': false,
+        'problem_check_used_get': false,
+        'measured_quantity_used_get': false,
+        'process_accept_used_get': false,
+        'person_workload_get': false,
+        'person_area_workload_get': false,
+        'metarial_accept_get': false,
+        'metarial_accept_detail_get': false
       }
     }
   },

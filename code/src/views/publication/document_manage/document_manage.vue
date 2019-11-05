@@ -2,10 +2,10 @@
   <el-container class="global-container">
     <el-main>
       <el-tabs v-model="showTabName" @tab-click="changTabShow">
-        <el-tab-pane label="企业文档" name="company">
+        <el-tab-pane label="企业文档" name="company" v-if="!(pagePermission.org_get)">
           <tabDocuments ref="company" :document-tree-data="documentTreeData" @add-doc-type="addDocTypeHandle($event)"/>
         </el-tab-pane>
-        <el-tab-pane label="项目文档" name="project">
+        <el-tab-pane label="项目文档" name="project" v-if="!(pagePermission.project_get)">
           <tabDocuments ref="project" :document-tree-data="documentTreeData" @add-doc-type="addDocTypeHandle($event)"/>
         </el-tab-pane>
       </el-tabs>
@@ -15,8 +15,10 @@
 <script>
 import { getDocumentTree, addDocumentType } from '@/api/publication/document'
 import TabDocuments from '@/views/publication/document_manage/components/tabDocuments'
+import permissionOfPage from "@/mixins/permissionOfPage";
 export default {
   components: { TabDocuments },
+  mixins: [permissionOfPage],
   data() {
     return {
       showTabName: 'company',

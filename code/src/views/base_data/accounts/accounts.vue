@@ -29,7 +29,6 @@
           size="mini"
           class="search-btn"
           @click="filterAccountInfo"
-          :disabled="!(pagePermission.get)"
         >查询</el-button>
       </el-form>
     </el-header>
@@ -74,6 +73,7 @@
               size="mini"
               type="primary"
               class="account-table-btn"
+              :disabled="!(pagePermission.update)"
               @click="passwordBoxShow(scope.row)"
             >重置密码</el-button>
             <!-- status === 1 正常用户 -->
@@ -109,7 +109,7 @@
         >全选</el-checkbox>
         <el-select v-model="batchOperateValue" clearable size="mini" placeholder="批量操作">
           <el-option value="changePassword" label="更改密码"/>
-          <el-option value="enable" label="启用" :disabled="!(pagePermission.enable)" />
+          <el-option value="enable" label="启用" :disabled="!(pagePermission.enable)"/>
           <el-option value="disable" label="禁用" :disabled="!(pagePermission.disable)"/>
         </el-select>
         <el-button type="primary" size="mini" @click="batchSelected">确定</el-button>

@@ -3,7 +3,7 @@
     <el-aside width="250px" class="side-wrap">
       <div class="header">
         <span>{{ checkItemTitle }}检查项</span>
-        <span class="el-icon-circle-plus add-check-item-btn" />
+        <span class="el-icon-circle-plus add-check-item-btn" :disabled="!(pagePermission.add)"></span>
       </div>
       <el-tree :data="checkItemTreeData" :props="checkItemTreeProps" class="check-item-tree" />
     </el-aside>
@@ -11,14 +11,14 @@
       <div class="check-index-wrap">
         <div class="header">
           <span>检查索引</span>
-          <el-button type="primary" size="mini">保存</el-button>
+          <el-button type="primary" size="mini" :disabled="!(pagePermission.update)">保存</el-button>
         </div>
-        <el-input v-model="checkIndex" type="textarea" rows="4" placeholder="请输入索引值" class="check-index-ipt" />
+        <el-input v-model="checkIndex" :disabled="!(pagePermission.update)" type="textarea" rows="4" placeholder="请输入索引值" class="check-index-ipt" />
       </div>
       <div class="common-problem-wrap">
         <div class="header">
           <span>常见问题项</span>
-          <el-button type="primary" size="mini">添加</el-button>
+          <el-button type="primary" size="mini" :disabled="!(pagePermission.add)">添加</el-button>
         </div>
         <div class="content">
           <el-table ref="probTable" :data="probTableData" border>
@@ -26,8 +26,8 @@
             <el-table-column prop="level" width="100" label="姓名" align="center" />
             <el-table-column width="150" label="操作" align="center">
               <template slot-scope="scope">
-                <el-button type="primary" size="mini">编辑</el-button>
-                <el-button type="primary" size="mini">删除</el-button>
+                <el-button type="primary" size="mini" :disabled="!(pagePermission.update)">编辑</el-button>
+                <el-button type="primary" size="mini" :disabled="!(pagePermission.delete)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -42,7 +42,9 @@
   </el-container>
 </template>
 <script>
+import permissionOfPage from "@/mixins/permissionOfPage";
 export default {
+  mixins: [permissionOfPage],
   data() {
     return {
       checkItemTitle: '质量风险',

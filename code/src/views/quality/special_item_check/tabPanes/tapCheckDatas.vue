@@ -224,7 +224,7 @@ export default {
             检查批次名称: data.name,
             类型: data.typeName,
             检查人: checkPersonFormat,
-            督办人: data.supervisor.personName,
+            督办人: data.supervisor && data.supervisor.personName || '',
             责任人: data.dutyPerson.personName,
             抄送人: ccPersonListFormat,
             检查模板: data.templateName,

@@ -37,16 +37,50 @@
             @click="addMembersHandle"
             :disabled="!(pagePermission['bind-person'])"
           >添加人员</el-button>
-          <!-- <el-button type="primary" size="mini">新增人员</el-button> -->
+          <el-button
+            type="primary"
+            size="mini"
+            @click="showMemberOperationView('add')"
+            :disabled="!(pagePermission['add-person'])"
+          >新增人员</el-button>
         </div>
       </div>
       <el-table ref="membersTable" :data="membersTableData" class="members-table">
-        <el-table-column prop="name" width="100" label="姓名" align="center"/>
-        <el-table-column prop="phone" label="联系方式" align="center"/>
-        <el-table-column width="180" label="职位描述" align="center"/>
+        <el-table-column prop="name" min-width="100" label="姓名" align="left">
+          <template slot-scope="scope">
+            <el-input
+              v-if="scope.row.doingInput && scope.row.doingInput===true"
+              v-model="memberFillingObj.name"
+              placeholder="姓名"
+            />
+            <span v-else>{{ scope.row.name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="phone" min-width="200" label="手机号" align="left">
+          <template slot-scope="scope">
+            <el-input
+              v-if="scope.row.doingInput && scope.row.doingInput===true"
+              v-model="memberFillingObj.phone"
+              placeholder="请输入手机号"
+            />
+            <span v-else>{{ scope.row.phone }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="positionDescribe" min-width="200" label="职位描述" align="left">
+          <template slot-scope="scope">
+            <el-input
+              v-if="scope.row.doingInput && scope.row.doingInput===true"
+              v-model="memberFillingObj.positionDescribe"
+              placeholder="请输入职位描述"
+            />
+            <span v-else>{{ scope.row.positionDescribe }}</span>
+          </template>
+        </el-table-column>
         <el-table-column width="180" label="是否是项目经理" align="center">
           <template slot-scope="scope">
+            <span v-if="scope.row.doingInput && scope.row.doingInput===true">/</span>
             <el-switch
+              v-else
               v-model="scope.row.isManager"
               :active-value="1"
               :inactive-value="0"
@@ -58,13 +92,26 @@
         </el-table-column>
         <el-table-column width="180" label="操作" align="center">
           <template slot-scope="scope">
-            <!-- <el-button size="mini" class="no-border">编辑</el-button> -->
-            <el-button
-              size="mini"
-              class="no-border"
-              @click.stop="unbindMemberHandle(scope.row)"
-              :disabled="!(pagePermission['unbind-person'])"
-            >移除</el-button>
+            <template v-if="!scope.row.doingInput">
+              <el-button
+                size="mini"
+                class="no-border"
+                @click.stop="unbindMemberHandle(scope.row)"
+                :disabled="!(pagePermission['unbind-person'])"
+              >移除</el-button>
+            </template>
+            <template v-else>
+              <el-button
+                type="text"
+                class="search-btn"
+                @click="showMemberOperationView('cancel', scope.row, scope.$index)"
+              >取消</el-button>
+              <el-button
+                type="text"
+                class="search-btn"
+                @click="teamMemberOperation(memberOperation, scope.row)"
+              >提交</el-button>
+            </template>
           </template>
         </el-table-column>
       </el-table>
@@ -86,6 +133,12 @@ import {
 } from "@/api/project_config/participant";
 import AddParticiMembers from "@/views/project_config/participant/components/addParticiMembers";
 import permissionOfPage from "@/mixins/permissionOfPage";
+import { addTeamMember } from "@/api/team_management/team_management";
+import {
+  getTeamDetail,
+  getWorkTypeList
+} from "@/api/team_management/team_management";
+import { isvalidPhoneNum, phoneNumValid } from "@/utils/validate";
 export default {
   components: { AddParticiMembers },
   mixins: [permissionOfPage],
@@ -96,7 +149,13 @@ export default {
       curParticipantData: {},
       bindedMemberIds: [],
       isAddMembersShow: false,
-      isLoading: false
+      isLoading: false,
+      memberFillingObj: {
+        name: null,
+        phone: null,
+        positionDescribe: null,
+        doingInput: true
+      }
     };
   },
   created() {
@@ -111,6 +170,50 @@ export default {
   },
   methods: {
     ...mapActions(["getProjectParticipants"]),
+    teamMemberOperation(operation, row) {
+      switch (operation) {
+        // 新增班组人员
+        case "add":
+          // 添加验证
+          if (!this.memberFillingObj.name) {
+            this.$message.error("姓名格式错误");
+            break;
+          }
+          if (!phoneNumValid(this.memberFillingObj.phone)) {
+            this.$message.error("电话号码格式错误");
+            break;
+          }
+          const copyMemberFillingObj = Object.assign({}, this.memberFillingObj);
+          const participantId = this.$route.query.participantId;
+          addTeamMember({
+            projectId: this.projectId,
+            orgId: participantId,
+            memberFillingObj: copyMemberFillingObj
+          }).then(resp => {
+            this.memberFillingObj = {
+              name: null,
+              phone: null,
+              positionDescribe: null,
+              doingInput: true
+            };
+            this.$message.success("操作成功");
+            // 请求详情数据
+            getTeamDetail(this.sectionFormData)
+              .then(resp => {
+                const keyArr = Object.keys(resp.result);
+                keyArr.forEach(key => {
+                  this.sectionFormData[key] = resp.result[key];
+                });
+                this.projectTeamMemberList = resp.result.personEntityList || [];
+              })
+              .catch(err => {
+                console.log(err);
+                this.$message.error("操作失败，请重试");
+              });
+          });
+          break;
+      }
+    },
     // 获取已绑定的参建方人员
     getPariticMembers() {
       if (!this.isLoading) {
@@ -189,6 +292,31 @@ export default {
     },
     backHandle() {
       this.$router.go(-1);
+    },
+    // 班组人员的增删改查
+    showMemberOperationView(operation, row, index) {
+      switch (operation) {
+        // 新增班组人员
+        case "add": {
+          if (
+            this.membersTableData.length > 0 &&
+            this.membersTableData[this.membersTableData.length - 1].doingInput
+          ) {
+            this.$alert("请逐条添加完人员信息后再进行新增操作", "提示", {
+              confirmButtonText: "确定",
+              showClose: false
+            });
+            break;
+          }
+          this.memberOperation = "add";
+          this.membersTableData.push(this.memberFillingObj);
+          break;
+        }
+        case "cancel": {
+          this.membersTableData.splice(index, 1);
+          break;
+        }
+      }
     }
   }
 };

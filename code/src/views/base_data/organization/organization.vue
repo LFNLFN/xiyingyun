@@ -4,7 +4,7 @@
       <div class="tree-wrap">
         <div class="header">
           <span>组织架构</span>
-          <span class="el-icon-circle-plus add-check-item-btn" @click="boxCtrl('organization')" v-show="pagePermission['update-position']"></span>
+          <span class="el-icon-circle-plus add-check-item-btn" @click="boxCtrl('organization')" v-show="pagePermission.add"></span>
         </div>
         <el-tree
           v-loading="organTreeLoading"

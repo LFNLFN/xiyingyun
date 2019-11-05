@@ -1,5 +1,6 @@
 <template>
   <div class="funcAtuz-content" v-loading="listLoading">
+    <div class="warm-tip">---温馨提示：页面权限设置完毕后请刷新页面启用新的权限设置。---</div>
     <checkItem
       :module-msg-obj="rolesPermissionList['公共管理']"
       :title="'公共管理'"
@@ -19,7 +20,7 @@
 </template>
 <script>
 import { getRolesPermissionList } from "@/api/base_data/permission.js";
-import checkItem from "@/views/base_data/permission/components/functionAutz/checkAllCheckbox";
+import checkItem from "@/views/base_data/permission/components/functionAutz/allCheckbox";
 export default {
   components: { checkItem },
   props: {
@@ -59,5 +60,9 @@ export default {
 @import "src/styles/mixin.scss";
 .funcAtuz-content {
   padding: 20px;
+  padding-top: 0;
+}
+.warm-tip {
+  font-size: 14px;
 }
 </style>

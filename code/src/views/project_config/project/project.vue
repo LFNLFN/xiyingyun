@@ -14,7 +14,7 @@
             placeholder="请输入项目名称"
           />
         </el-form-item>
-        <el-button type="primary" size="small" class="search-btn" @click="searchProjectHandle" :disabled="!(pagePermission.get)">查询</el-button>
+        <el-button type="primary" size="small" class="search-btn" @click="searchProjectHandle">查询</el-button>
       </el-form>
     </el-header>
     <el-main class="main-wrap">
@@ -56,7 +56,7 @@
                   <el-button size="mini" class="no-border">更多操作</el-button>
                   <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item command="addStage" :disabled="!(pagePermission.add)">新增分期</el-dropdown-item>
-                    <el-dropdown-item command="setMap" :disabled="!(pagePermission.update)">设置运营图</el-dropdown-item>
+                    <el-dropdown-item command="setMap">设置运营图</el-dropdown-item>
                     <el-dropdown-item command="delete" :disabled="!(pagePermission.delete)">删除</el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>

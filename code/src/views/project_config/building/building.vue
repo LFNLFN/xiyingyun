@@ -48,11 +48,11 @@
                   <span class="el-icon-s-tools tree-icon-btn" />
                   <el-dropdown-menu slot="dropdown">
                     <template v-if="data.level === 0">
-                      <el-dropdown-item command="addBuilding">新增楼栋</el-dropdown-item>
+                      <el-dropdown-item command="addBuilding" :disabled="!(pagePermission.add)">新增楼栋</el-dropdown-item>
                     </template>
                     <template v-else-if="data.level === 1">
-                      <el-dropdown-item command="editBuilding">编辑楼栋</el-dropdown-item>
-                      <el-dropdown-item command="delBuilding">删除楼栋</el-dropdown-item>
+                      <el-dropdown-item command="editBuilding" :disabled="!(pagePermission.update)">编辑楼栋</el-dropdown-item>
+                      <el-dropdown-item command="delBuilding" :disabled="!(pagePermission.delete)">删除楼栋</el-dropdown-item>
                     </template>
                   </el-dropdown-menu>
                 </el-dropdown>

@@ -90,7 +90,7 @@
         </el-row>
       </el-form>
       <div class="add-btn-wrap">
-        <el-button type="primary" size="small" @click="addMeasureHandle">新增</el-button>
+        <el-button type="primary" size="small" @click="addMeasureHandle" :disabled="!(pagePermission.add)">新增</el-button>
       </div>
       <el-table
         :data="measureTableData"
@@ -157,9 +157,10 @@ import AddMeasure from '@/views/quality/measure/components/addMeasure'
 import PhotosZoom from '@/components/PhotosZoom'
 import { getBuliding } from '@/api/project_config/building'
 import { getMeasureDatas, getMeasuerItems } from '@/api/quality/measure'
+import permissionOfPage from "@/mixins/permissionOfPage";
 export default {
   components: { MeasureDetail, AddMeasure, PhotosZoom },
-  mixins: [getProjectMixin, personTypeData],
+  mixins: [getProjectMixin, personTypeData, permissionOfPage],
   data() {
     return {
       filterFormData: {

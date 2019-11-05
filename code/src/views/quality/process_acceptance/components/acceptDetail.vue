@@ -10,7 +10,7 @@
             {{ acceptDetailData.statusName }}
           </span>
           <span class="btn-wrap">
-            <el-button type="danger" size="small" @click="invalidHandle(acceptDetailData)">作废</el-button>
+            <el-button type="danger" size="small" @click="invalidHandle(acceptDetailData)" :disabled="!(pagePermission.delete)">作废</el-button>
           </span>
         </div>
         <div class="process-info-wrap">
@@ -102,8 +102,10 @@
 <script>
 import PublicPopups from '@/components/Pop-ups/PublicPopups'
 import { getProcessAcceptDetail, invalidProcessAccept } from '@/api/quality/processAcceptance'
+import permissionOfPage from "@/mixins/permissionOfPage"
 export default {
-  components: { PublicPopups },
+  components: { PublicPopups, permissionOfPage },
+  mixins: [permissionOfPage],
   props: {
     isAcceptDetailShow: {
       type: Boolean,

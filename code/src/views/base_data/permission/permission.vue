@@ -53,7 +53,7 @@
         <div class="roles-members" v-if="false">
           <div class="header">
             <span>人员列表</span>
-            <!-- <el-button type="primary" size="small" class="manage-members-btn" @click="membersBoxCtrl">添加人员</el-button> -->
+            <el-button type="primary" size="small" class="manage-members-btn">添加人员</el-button>
           </div>
           <div class="search-wrap">
             <el-form ref="searchForm" :inline="true" :model="searchFormData">
@@ -64,7 +64,7 @@
                 <el-input v-model="searchFormData.phone" size="small" placeholder="请输入手机号"/>
               </el-form-item>
               <el-form-item>
-                <el-button type="primary" @click="searchHandle" :disabled="!(pagePermission.get)">查询</el-button>
+                <el-button type="primary" @click="searchHandle">查询</el-button>
               </el-form-item>
             </el-form>
           </div>

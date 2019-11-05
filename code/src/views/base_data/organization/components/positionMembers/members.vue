@@ -1,8 +1,8 @@
 <template>
   <div class="main-wrap">
     <div class="button-wrap">
-      <el-button type="primary" @click="emitEvent('addMember')">新增人员</el-button>
-      <el-button @click="emitEvent('pullMember')">添加人员</el-button>
+      <el-button type="primary" @click="emitEvent('addMember')" :disabled="!(pagePermission['add-person'])">新增人员</el-button>
+      <el-button @click="emitEvent('pullMember')" :disabled="!(pagePermission['bind-person'])">添加人员</el-button>
     </div>
     <el-table
       v-loading="isLoading"
@@ -19,7 +19,7 @@
       <el-table-column :formatter="tableFormatter" width="180" label="所属部门" align="center" />
       <el-table-column width="80" align="center">
         <template slot-scope="scope">
-          <el-button class="no-border" @click="deleteMember(scope.row)">移除</el-button>
+          <el-button class="no-border" @click="deleteMember(scope.row)" :disabled="!(pagePermission['unbind-person'])">移除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -27,6 +27,7 @@
 </template>
 <script>
 import { gerPersonsByPost, delPostMember } from '@/api/base_data/organization'
+import permissionOfPage from "@/mixins/permissionOfPage";
 export default {
   name: 'Members',
   props: {

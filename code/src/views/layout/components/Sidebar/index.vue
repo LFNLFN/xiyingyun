@@ -93,7 +93,8 @@ export default {
         home: "homeRoutes",
         project: "projectRoutes",
         public: "publicRoutes"
-      }
+      },
+      pagePermissionDic: {}
     };
   },
   computed: {
@@ -109,19 +110,34 @@ export default {
     }
   },
   created() {
-    const routes = this.$router.options.routes;
-    routes.forEach(item => {
-      if (item.menuType) {
-        const index = this.typeRouterIndex[item.menuType];
-        this[index].push(item);
-      } else {
-        this.otherRouters.push(item);
-      }
-    });
+    this.refreshSidebar()
   },
   methods: {
     handleOpen(index, indexPath) {
       this.defaultActive = index;
+    },
+    refreshSidebar() {
+      const routes = this.$router.options.routes;
+      this.pagePermissionDic = this.$store.state.user.permissions;
+      routes.forEach(item => {
+        if (item.meta && item.meta.pagePermissionId) {
+          if (
+            !this.pagePermissionDic[item.meta.pagePermissionId] ||
+            this.pagePermissionDic[item.meta.pagePermissionId].indexOf(
+              "get"
+            ) === -1
+          ) {
+            // 如果页面权限id不存在于权限对象词典或者页面权限id对应数组不包含‘get’，则表示该用户没有此页面的浏览权限，侧边栏隐藏此页面
+            item.hidden = true;
+          }
+        }
+        if (item.menuType) {
+          const index = this.typeRouterIndex[item.menuType];
+          this[index].push(item);
+        } else {
+          this.otherRouters.push(item);
+        }
+      });
     }
   }
 };

@@ -28,7 +28,7 @@ export function deleteTeam({ projectId, orgId }) {
 }
 
 // 获取项目分期列表
-export function getProjectList() {
+export function ProjectList() {
     return request({
         url: '/project/no-paging?terms[0].column=level&terms[0].value=2',
         method: 'get'

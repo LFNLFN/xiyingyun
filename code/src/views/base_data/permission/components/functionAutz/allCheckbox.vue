@@ -1,12 +1,15 @@
 <template>
   <div class="check-item">
     <div class="module-name">{{ title }}</div>
-    <checkSubItem
-      v-for="(item) in moduleMsgObj"
-      :key="item.id"
-      :page-msg-obj="item"
-      :current-role="currentRole"
-    />
+    <div :class="[title==='APP端' ? 'app-flex' : '']">
+      <checkSubItem
+        v-for="(item) in moduleMsgObj"
+        :key="item.id"
+        :page-msg-obj="item"
+        :current-role="currentRole"
+        :parent-title="title"
+      />
+    </div>
   </div>
 </template>
 <script>
@@ -17,19 +20,19 @@ export default {
     moduleMsgObj: {
       type: Array,
       default: () => {
-        return []
+        return [];
       }
     },
     title: {
       type: String,
       default: () => {
-        return ''
+        return "";
       }
     },
     currentRole: {
       type: Object,
       default: () => {
-        return {}
+        return {};
       }
     }
   }
@@ -41,5 +44,9 @@ export default {
   font-weight: bold;
   font-size: 1em;
   margin: 12px 0;
+}
+.app-flex {
+  @include flex-layout(flex-start, center, wrap, null);
+  margin: 1em;
 }
 </style>

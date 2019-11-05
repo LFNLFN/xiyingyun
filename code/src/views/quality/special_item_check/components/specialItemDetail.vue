@@ -13,8 +13,8 @@
         <el-tab-pane label="检查问题" name="checkProblems">
           <div class="check-problem-wrap">
             <div class="btn-wrap">
-              <el-button size="mini">导出检查问题报告</el-button>
-              <el-button size="mini">导出整改回复报告</el-button>
+              <el-button size="mini" :disabled="!(pagePermission.export)">导出检查问题报告</el-button>
+              <el-button size="mini" :disabled="!(pagePermission.export)">导出整改回复报告</el-button>
             </div>
             <el-row class="count-wrap">
               <el-col :span="4" @click.native="selectProblemType(problemData.allProblemList)">
@@ -85,12 +85,13 @@
 import problemTypeData from '@/mixins/problemTypeData.js'
 import LeftSlidePopup from '@/components/Pop-ups/LeftSlidePopup'
 import problemDetail from '@/views/quality/special_item_check/problemDetail.vue'
+import permissionOfPage from "@/mixins/permissionOfPage";
 export default {
   components: {
     LeftSlidePopup,
     problemDetail
   },
-  mixins: [problemTypeData],
+  mixins: [problemTypeData, permissionOfPage],
   props: {
     isItemDetailShow: {
       type: Boolean,

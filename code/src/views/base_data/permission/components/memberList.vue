@@ -10,6 +10,7 @@
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="searchHandle">查询</el-button>
+                    <el-button type="primary" @click="searchHandle">添加人员</el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -25,7 +26,7 @@
                 <el-table-column prop="phone" label="手机" align="center"/>
                 <el-table-column label="操作" width="120" align="center">
                     <template slot-scope="scope">
-                        <el-button>删除</el-button>
+                        <el-button>移除</el-button>
                     </template>
                 </el-table-column>
             </el-table>

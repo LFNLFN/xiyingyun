@@ -4,7 +4,7 @@
       <div class="tree-wrap">
         <div class="header">
           <span>供应商信息</span>
-          <span class="el-icon-circle-plus add-check-item-btn" @click="boxCtrl('supplier')"/>
+          <span class="el-icon-circle-plus add-check-item-btn" @click="boxCtrl('supplier')" :disabled="!(pagePermission.add)"></span>
         </div>
         <el-tree
           v-loading="suppTreeLoading"
@@ -24,7 +24,7 @@
       <div class="post-info-wrap">
         <div class="header">
           <span>岗位信息</span>
-          <el-button type="primary" size="mini" icon="el-icon-circle-plus-outline" @click="boxCtrl('position')">添加</el-button>
+          <el-button type="primary" size="mini" icon="el-icon-circle-plus-outline" @click="boxCtrl('position')" :disabled="!(pagePermission['add-position'])">添加</el-button>
         </div>
         <div v-loading="postInfoLoading" class="post-table-wrap">
           <el-table
@@ -38,14 +38,14 @@
             <el-table-column prop="name" />
             <el-table-column width="250" align="center">
               <template slot-scope="scope">
-                <el-button size="mini" class="post-table-btn no-border" @click.stop="pullMemberCtrl(scope.row)">添加人员</el-button>
-                <el-button size="mini" class="post-table-btn no-border" @click.stop="addMemberCtrl(scope.row)">新增人员</el-button>
+                <el-button size="mini" class="post-table-btn no-border" @click.stop="pullMemberCtrl(scope.row)" :disabled="!(pagePermission['bind-person'])">添加人员</el-button>
+                <el-button size="mini" class="post-table-btn no-border" @click.stop="addMemberCtrl(scope.row)" :disabled="!(pagePermission['add-person'])">新增人员</el-button>
                 <el-dropdown size="small" @command="(order)=>handleyDropdown(order, scope.row, 'position')">
                   <el-button size="mini" class="post-table-btn no-border">更多操作</el-button>
                   <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item command="add">新增子级</el-dropdown-item>
-                    <el-dropdown-item command="edit">编辑</el-dropdown-item>
-                    <el-dropdown-item command="delete">删除</el-dropdown-item>
+                    <el-dropdown-item command="add" :disabled="!(pagePermission.add)">新增子级</el-dropdown-item>
+                    <el-dropdown-item command="edit" :disabled="!(pagePermission.update)">编辑</el-dropdown-item>
+                    <el-dropdown-item command="delete" :disabled="!(pagePermission.delete)">删除</el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>
               </template>
@@ -98,8 +98,10 @@ import PositionMembers from '@/views/base_data/suppliers/components/PositionMemb
 import { delSuppliers } from '@/api/base_data/suppliers'
 import { getDictionaryItem } from '@/api/dictionary'
 import { getPosition, delPosition } from '@/api/base_data/suppliers'
+import permissionOfPage from "@/mixins/permissionOfPage";
 export default {
   components: { AddSupplier, AddPosition, AddMember, PullMember, PositionMembers },
+  mixins: [permissionOfPage],
   data() {
     return {
       // 供应商相关
@@ -360,9 +362,9 @@ export default {
               <el-dropdown on-command={ (order) => this.handleyDropdown(order, roleData, 'supplier') }>
                 <el-button type='primary' circle size='mini' class='el-icon-edit tree-edit-btn'></el-button>
                 <el-dropdown-menu slot='dropdown'>
-                  <el-dropdown-item command='add'>新增</el-dropdown-item>
-                  <el-dropdown-item command='edit'>编辑</el-dropdown-item>
-                  <el-dropdown-item command='delete'>删除</el-dropdown-item>
+                  <el-dropdown-item command='add' disabled={!this.pagePermission.add}>新增</el-dropdown-item>
+                  <el-dropdown-item command='edit' disabled={!this.pagePermission.update}>编辑</el-dropdown-item>
+                  <el-dropdown-item command='delete' disabled={!this.pagePermission.delete}>删除</el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
             </span>

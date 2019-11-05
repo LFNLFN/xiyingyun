@@ -162,7 +162,7 @@
               <el-dropdown
                 trigger="click"
                 size="small">
-                <el-button size="mini">
+                <el-button size="mini" :disabled="!(pagePermission.export)">
                   导出 <i class="el-icon-caret-bottom" />
                 </el-button>
                 <el-dropdown-menu slot="dropdown">
@@ -229,8 +229,9 @@
 import { isEmpty } from '@/utils/public'
 import filterDatas from '@/views/quality/check_problems/mixins/filterDatas'
 import { getCheckProblems } from '@/api/quality/checkProblems'
+import permissionOfPage from "@/mixins/permissionOfPage"
 export default {
-  mixins: [filterDatas],
+  mixins: [filterDatas, permissionOfPage],
   data() {
     return {
       /* -------------- 筛选表单相关数据 -----------------*/
