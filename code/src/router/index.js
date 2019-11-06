@@ -68,40 +68,23 @@ export const asyncRouterMap = [
   //     }
   //   ]
   // },
-   // 网站信息(首页)
-   {
+  // 网站信息(首页)
+  {
     path: '/website_info',
     name: 'websiteInfo',
     component: Layout,
     redirect: '/website_info/index',
     // meta: { title: '网站信息', icon: 'websiteInfo' },
-    meta: { title: '首页', icon: 'home',  pagePermissionId: 'organizationInfo' },
-    // menuType: 'public',
-    menuType: 'home',
+    meta: { title: '首页', icon: 'home', pagePermissionId: 'sys_setting_index' },
+    menuType: 'public',
+    // menuType: 'home',
     children: [
       {
         path: 'index',
         name: 'websiteInfoIndex',
         // meta: { title: '网站信息', icon: 'websiteInfo' },
-        meta: { title: '首页', icon: 'home', pagePermissionId: 'organizationInfo' },
+        meta: { title: '首页', icon: 'home', pagePermissionId: 'sys_setting_index' },
         component: () => import('@/views/website_info/index')
-      }
-    ]
-  },
-  // 首页
-  {
-    path: '/data_screen',
-    name: 'dataScreen',
-    component: Layout,
-    redirect: '/data_screen/index',
-    meta: { title: '统计数据大屏', icon: 'dataScreen' },
-    menuType: 'project',
-    children: [
-      {
-        path: 'index',
-        name: 'dataScreenIndex',
-        meta: { title: '统计数据大屏', icon: 'dataScreen' },
-        component: () => import('@/views/data_screen/index')
       }
     ]
   },
@@ -212,6 +195,12 @@ export const asyncRouterMap = [
     menuType: 'public',
     children: [
       {
+        path: 'organizationInformation',
+        name: 'organizationInformation',
+        meta: { title: '企业信息', icon: '', pagePermissionId: 'organizationInfo' },
+        component: () => import('@/views/base_data/organizationInfo/organizationInfo')
+      },
+      {
         path: 'organization',
         name: 'organization',
         // meta: { title: '组织架构', icon: '' },
@@ -316,24 +305,42 @@ export const asyncRouterMap = [
   },
   /* ------------------- 工程管理 ------------------ */
   // 网站信息(首页)
-  // {
-  //   path: '/website_info',
-  //   name: 'websiteInfo',
-  //   component: Layout,
-  //   redirect: '/website_info/index',
-  //   // meta: { title: '网站信息', icon: 'websiteInfo' },
-  //   meta: { title: '首页', icon: 'home' },
-  //   menuType: 'project',
-  //   children: [
-  //     {
-  //       path: 'index',
-  //       name: 'websiteInfoIndex',
-  //       // meta: { title: '网站信息', icon: 'websiteInfo' },
-  //       meta: { title: '首页', icon: 'home' },
-  //       component: () => import('@/views/website_info/index')
-  //     }
-  //   ]
-  // },
+  {
+    path: '/project_website_info',
+    name: 'websiteInfo',
+    component: Layout,
+    redirect: '/project_website_info/index',
+    // meta: { title: '网站信息', icon: 'websiteInfo' },
+    meta: { title: '首页', icon: 'home', pagePermissionId: 'project_manage_index' },
+    menuType: 'project',
+    // menuType: 'home',
+    children: [
+      {
+        path: 'index',
+        name: 'websiteInfoIndex',
+        // meta: { title: '网站信息', icon: 'websiteInfo' },
+        meta: { title: '首页', icon: 'home', pagePermissionId: 'project_manage_index' },
+        component: () => import('@/views/website_info/index')
+      }
+    ]
+  },
+  // 数据大屏
+  {
+    path: '/data_screen',
+    name: 'dataScreen',
+    component: Layout,
+    redirect: '/data_screen/index',
+    meta: { title: '统计数据大屏', icon: 'dataScreen', pagePermissionId: 'project_manage_data_screen' },
+    menuType: 'project',
+    children: [
+      {
+        path: 'index',
+        name: 'dataScreenIndex',
+        meta: { title: '统计数据大屏', icon: 'dataScreen', pagePermissionId: 'project_manage_data_screen' },
+        component: () => import('@/views/data_screen/index')
+      }
+    ]
+  },
   // 质量管理
   {
     path: '/quality',
