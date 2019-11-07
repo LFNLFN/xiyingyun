@@ -2,14 +2,14 @@
   <el-container>
     <el-main>
       <div class="header">
-        <span class="el-icon-tickets">问题等级</span>
+        <span class="el-icon-tickets">项目关键节点</span>
         <div class="btn-wrap">
-          <el-button size="small" @click="operationHandler('add')">添加问题等级</el-button>
+          <el-button size="small" @click="operationHandler('add')">添加节点</el-button>
           <el-button type="primary" size="small" @click="backConigNav">返回</el-button>
         </div>
       </div>
-      <el-table ref="levelTable" :data="levelTableData" border="" class="level-table">
-        <el-table-column prop="name" label="问题等级" align="center">
+      <el-table ref="levelTable" :data="projectKeyNodeTableData" border="" class="level-table">
+        <el-table-column prop="name" label="节点名称" align="center">
           <template slot-scope="scope">
             <el-input v-if="scope.row.isDoingInput===true" v-model="fillingMsgObj.name"/>
             <span v-else>{{ scope.row.name }}</span>
@@ -50,14 +50,13 @@
 </template>
 <script>
 import {
-  getProblemLevelList,
-  addProblemLevel,
-  editProblemLevel,
-  deleteProblemLevel
+  getProjectKeyNodeList,
+  addProjectKeyNode,
+  editProjectKeyNode,
+  deleteProjectKeyNode
 } from "@/api/base_data/params_config";
 export default {
-  // name: "Supplierlevel",
-  name: "problemLevel",
+  name: "ProjectKeyNode",
   props: {
     componentDatas: {
       type: Object,
@@ -74,8 +73,7 @@ export default {
   },
   data() {
     return {
-      levelTableData: [],
-      levelCheckedVal: "",
+      projectKeyNodeTableData: [],
       fillingMsgObj: {
         dictId: "",
         name: "",
@@ -85,23 +83,23 @@ export default {
         ordinal: "",
         isDoingInput: true
       },
-      levelOperation: ""
+      keyNodeOperation: ""
     };
   },
   methods: {
     backConigNav() {
       this.$emit("changeSowCom", "configNav");
     },
-    getProblemLevelListFunc() {
+    getProjectKeyNodeListFunc() {
       const msg = this.$message({
         message: "数据加载中",
         type: "info",
         duration: 0
       });
-      getProblemLevelList()
+      getProjectKeyNodeList()
         .then(resp => {
           msg.close();
-          this.levelTableData = resp.result;
+          this.projectKeyNodeTableData = resp.result;
         })
         .catch(err => {
           console.log(err);
@@ -109,20 +107,20 @@ export default {
           this.$message.error("请求失败");
         });
     },
-    addProblemLevelFunc() {
+    addProjectKeyNodeFunc() {
       const msg = this.$message({
         message: "数据加载中",
         type: "info",
         duration: 0
       });
-      addProblemLevel({
-        dictId: "problem_level",
+      addProjectKeyNode({
+        dictId: "project_key_node",
         name: this.fillingMsgObj.name,
         value: this.fillingMsgObj.name,
         valueType: "String",
         text: this.fillingMsgObj.name,
         status: 1,
-        ordinal: this.levelTableData[this.levelTableData.length - 2].ordinal + 1
+        ordinal: this.projectKeyNodeTableData[this.projectKeyNodeTableData.length - 2].ordinal + 1
       })
         .then(resp => {
           console.log(resp);
@@ -136,7 +134,7 @@ export default {
             isDoingInput: true
           }; // 初始化表单
           msg.close();
-          this.getProblemLevelListFunc(); // 刷新列表
+          this.getProjectKeyNodeListFunc(); // 刷新列表
         })
         .catch(err => {
           console.log(err);
@@ -144,14 +142,14 @@ export default {
           this.$message.error("请求失败");
         });
     },
-    editProblemLevelFunc() {
+    editProjectKeyNodeFunc() {
       const msg = this.$message({
         message: "数据加载中",
         type: "info",
         duration: 0
       });
       this.fillingMsgObj.value = this.fillingMsgObj.text = this.fillingMsgObj.name;
-      editProblemLevel({
+      editProjectKeyNode({
         id: this.fillingMsgObj.id,
         paramsObj: this.fillingMsgObj
       })
@@ -167,7 +165,7 @@ export default {
             isDoingInput: true
           }; // 初始化表单
           msg.close();
-          this.getProblemLevelListFunc(); // 刷新列表
+          this.getProjectKeyNodeListFunc(); // 刷新列表
         })
         .catch(err => {
           console.log(err);
@@ -175,7 +173,7 @@ export default {
           this.$message.error("请求失败");
         });
     },
-    deleteProblemLevelFunc(levelId) {
+    deleteProjectKeyNodeFunc(levelId) {
       this.$confirm("确定删除?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -187,11 +185,11 @@ export default {
             type: "info",
             duration: 0
           });
-          deleteProblemLevel(levelId)
+          deleteProjectKeyNode(levelId)
             .then(resp => {
               console.log(resp);
               msg.close();
-              this.getProblemLevelListFunc(); // 刷新列表
+              this.getProjectKeyNodeListFunc(); // 刷新列表
             })
             .catch(err => {
               console.log(err);
@@ -207,8 +205,8 @@ export default {
       switch (action) {
         case "add":
           if (
-            this.levelTableData.length > 0 &&
-            this.levelTableData[this.levelTableData.length - 1].isDoingInput
+            this.projectKeyNodeTableData.length > 0 &&
+            this.projectKeyNodeTableData[this.projectKeyNodeTableData.length - 1].isDoingInput
           ) {
             this.$alert("请逐条添加完信息后再进行新增操作", "提示", {
               confirmButtonText: "确定",
@@ -216,12 +214,12 @@ export default {
             });
             break;
           }
-          this.levelOperation = "add";
-          this.levelTableData.push(this.fillingMsgObj);
+          this.keyNodeOperation = "add";
+          this.projectKeyNodeTableData.push(this.fillingMsgObj);
           break;
         case "update":
           {
-            const isDoingInput = this.levelTableData.some((e, i, s) => {
+            const isDoingInput = this.projectKeyNodeTableData.some((e, i, s) => {
               return e.isDoingInput;
             });
             if (isDoingInput) {
@@ -231,28 +229,28 @@ export default {
               });
               break;
             }
-            this.levelOperation = "update";
+            this.keyNodeOperation = "update";
             const _tmpRow = Object.assign({}, row);
             const tmpKeyArr = Object.keys(row);
             tmpKeyArr.forEach((e, i, s) => {
               this.fillingMsgObj[e] = _tmpRow[e];
             });
-            this.levelTableData.splice(index, 1);
+            this.projectKeyNodeTableData.splice(index, 1);
             _tmpRow.isDoingInput = true;
-            this.levelTableData.splice(index, 1, _tmpRow);
+            this.projectKeyNodeTableData.splice(index, 1, _tmpRow);
             break;
           }
           break;
         case "save":
-          if (this.levelOperation === "add") {
-            this.addProblemLevelFunc();
-          } else if (this.levelOperation === "update") {
-            this.editProblemLevelFunc();
+          if (this.keyNodeOperation === "add") {
+            this.addProjectKeyNodeFunc();
+          } else if (this.keyNodeOperation === "update") {
+            this.editProjectKeyNodeFunc();
           }
           break;
         case "cancel":
-          if (this.levelOperation === "update") {
-            this.levelTableData[index].isDoingInput = false;
+          if (this.keyNodeOperation === "update") {
+            this.projectKeyNodeTableData[index].isDoingInput = false;
             this.fillingMsgObj = {
               dictId: "",
               name: "",
@@ -262,8 +260,8 @@ export default {
               ordinal: "",
               isDoingInput: true
             }; // 初始化表单
-          } else if (this.levelOperation === "add") {
-            this.levelTableData.splice(index, 1);
+          } else if (this.keyNodeOperation === "add") {
+            this.projectKeyNodeTableData.splice(index, 1);
             this.fillingMsgObj = {
               dictId: "",
               name: "",
@@ -276,7 +274,7 @@ export default {
           }
           break;
         case "delete":
-          this.deleteProblemLevelFunc(row.id);
+          this.deleteProjectKeyNodeFunc(row.id);
           break;
         default:
           break;
@@ -286,7 +284,7 @@ export default {
   created() {
     // console.log('componentDatas', this.componentDatas)
     // console.log('paramsData', this.paramsData)
-    this.getProblemLevelListFunc();
+    this.getProjectKeyNodeListFunc();
   }
 };
 </script>

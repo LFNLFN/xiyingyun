@@ -593,6 +593,7 @@ export const asyncRouterMap = [
           {
             path: 'index',
             name: 'paramsConfigIndex',
+            meta: { pagePermissionId: 'dictionary' },
             // hidden: true,
             component: () => import('@/views/base_data/params_config/index')
           }

@@ -25,7 +25,11 @@
             <el-input v-model="sectionFormData.phone" size="small" :disabled="viewDetail"/>
           </el-form-item>
           <el-form-item label="施工范围">
-            <el-input v-model="sectionFormData.constructionScope" size="small" :disabled="viewDetail"/>
+            <el-input
+              v-model="sectionFormData.constructionScope"
+              size="small"
+              :disabled="viewDetail"
+            />
           </el-form-item>
         </el-form>
       </el-main>
@@ -235,17 +239,17 @@ export default {
     if (this.$route.query.operation === "add") {
       this.sectionFormData.projectId = this.$route.query.projectId;
       getWorkTypeList()
-      .then(resp => {
-        this.workTypeDic = resp.result;
-        this.generateWorkTypeOption(this.workTypeDic);
-      })
-      .catch(err => {
-        // this.$message.error(err)
-      });
+        .then(resp => {
+          this.workTypeDic = resp.result;
+          this.generateWorkTypeOption(this.workTypeDic);
+        })
+        .catch(err => {
+          // this.$message.error(err)
+        });
       return;
     }
     if (this.$route.query.operation === "detail") {
-      this.viewDetail = true
+      this.viewDetail = true;
     }
     // 获取请求参数
     this.sectionFormData.projectId = this.$route.query.projectId;
@@ -320,8 +324,22 @@ export default {
         case "cancel": {
           if (this.memberOperation === "edit") {
             this.projectTeamMemberList[index].doingInput = false;
+            this.memberFillingObj = {
+              name: null,
+              phone: null,
+              idCard: null,
+              workType: null,
+              doingInput: true
+            };
           } else if (this.memberOperation === "add") {
             this.projectTeamMemberList.splice(index, 1);
+            this.memberFillingObj = {
+              name: null,
+              phone: null,
+              idCard: null,
+              workType: null,
+              doingInput: true
+            };
           }
 
           break;
@@ -348,12 +366,12 @@ export default {
         case "add":
           // 添加验证
           if (!phoneNumValid(this.memberFillingObj.phone)) {
-            this.$message.error('电话号码格式错误')
-            break
+            this.$message.error("电话号码格式错误");
+            break;
           }
           if (!idCardValid(this.memberFillingObj.idCard)) {
-            this.$message.error('身份证格式错误')
-            break
+            this.$message.error("身份证格式错误");
+            break;
           }
           this.sectionFormData.memberFillingObj = Object.assign(
             {},
@@ -388,12 +406,12 @@ export default {
         case "edit":
           // 添加验证
           if (!phoneNumValid(this.memberFillingObj.phone)) {
-            this.$message.error('电话号码格式错误')
-            break
+            this.$message.error("电话号码格式错误");
+            break;
           }
           if (!idCardValid(this.memberFillingObj.idCard)) {
-            this.$message.error('身份证格式错误')
-            break
+            this.$message.error("身份证格式错误");
+            break;
           }
           this.sectionFormData.memberFillingObj = Object.assign(
             { personId: row.id },
