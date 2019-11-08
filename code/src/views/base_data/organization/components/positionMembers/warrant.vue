@@ -4,8 +4,8 @@
       <el-tree
         :data="warrantOrgTree"
         :props="{label: 'name',children: 'treeChildren'}"
-        node-key="autzStatus"
-        :default-checked-keys="[1]"
+        node-key="id"
+        :default-checked-keys="defaultCheckNode"
         show-checkbox
         @check-change="handleCheckChange"
       ></el-tree>
@@ -37,7 +37,8 @@ export default {
   data() {
     return {
       warrantOrgTree: [],
-      isLoading: false
+      isLoading: false,
+      defaultCheckNode: []
     };
   },
   watch: {
@@ -58,8 +59,9 @@ export default {
       getProjectWarrantTree(id).then(resp => {
         this.isLoading = false;
         this.warrantOrgTree = resp.result;
+        console.log(resp.result);
         // 格式化数据便于渲染树组件
-        function formatForTree(arr) {
+        function formatForTree(arr, defaultCheckNode) {
           arr.map((e, i, s) => {
             if (e.children) {
               if (e.projectEntityList) {
@@ -67,32 +69,56 @@ export default {
               } else {
                 e.treeChildren = e.children;
               }
-              formatForTree(e.children);
+              if (e.autzStatus === 1) {
+                defaultCheckNode.push(e.id);
+              }
+              formatForTree(e.children, defaultCheckNode);
             } else {
-              e.treeChildren = e.projectEntityList;
+              if (e.projectEntityList) {
+                if (e.children) {
+                  e.treeChildren = e.children.concat(e.projectEntityList);
+                  if (e.autzStatus === 1) {
+                    defaultCheckNode.push(e.id);
+                  }
+                  formatForTree(e.children, defaultCheckNode);
+                } else {
+                  e.treeChildren = e.projectEntityList;
+                  if (e.autzStatus === 1) {
+                    defaultCheckNode.push(e.id);
+                  }
+                  formatForTree(e.projectEntityList, defaultCheckNode);
+                }
+              }
+              if (e.autzStatus === 1) {
+                defaultCheckNode.push(e.id);
+              }
             }
           });
         }
-        formatForTree(this.warrantOrgTree);
+        formatForTree(this.warrantOrgTree, this.defaultCheckNode);
       });
     },
     // 绑定项目授权机构
     handleCheckChange(data, checked, indeterminate) {
       console.log(data, checked, indeterminate);
       if (!data.projectId) return;
-      //   let projectIds = [];
-      //   data.projectEntityList.forEach((e, i, s) => {
-      //     projectIds.push(e.projectId);
-      //   });
+      let projectIds = [data.projectId];
+      data.projectEntityList &&
+        data.projectEntityList.forEach((e, i, s) => {
+          projectIds.push(e.projectId);
+          projectIds.push(e.parentId);
+        });
       if (checked) {
         warrantBinding({
           positionId: this.positionData.positionId,
-          projectId: data.projectId
+          // projectId: data.projectId
+          projectId: projectIds
         }).then(() => {});
       } else {
         cancelWarrantBinding({
           positionId: this.positionData.positionId,
-          projectId: data.projectId
+          // projectId: data.projectId
+          projectId: projectIds
         }).then(() => {});
       }
     },

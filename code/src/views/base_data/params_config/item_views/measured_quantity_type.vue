@@ -7,7 +7,7 @@
           <el-button type="primary" size="small" @click="backConigNav">返回</el-button>
         </div>
       </div>
-      <el-table ref="levelTable" :data="photoSettingData" border="" class="level-table">
+      <el-table ref="levelTable" :data="measuredQuantityTypeData" border="" class="level-table">
         <el-table-column prop="value" label="录入模式" align="center"/>
         <el-table-column prop="text" label="描述" align="center"/>
         <el-table-column label="操作" align="center">
@@ -35,7 +35,7 @@ export default {
   name: "MeasuredQuantityType",
   data() {
     return {
-      photoSettingData: [],
+      measuredQuantityTypeData: [],
       radioValue: ""
     };
   },
@@ -52,8 +52,8 @@ export default {
       getMeasuredQuantityTypeList()
         .then(resp => {
           msg.close();
-          this.photoSettingData = resp.result;
-          this.photoSettingData.forEach(e => {
+          this.measuredQuantityTypeData = resp.result;
+          this.measuredQuantityTypeData.forEach(e => {
             if (e.status === 1) {
               this.radioValue = e.id;
             }
@@ -71,7 +71,7 @@ export default {
         type: "info",
         duration: 0
       });
-      this.photoSettingData.forEach(async (e, i, s) => {
+      this.measuredQuantityTypeData.forEach(async (e, i, s) => {
         if (e.id === modeId) {
           await editMeasuredQuantityType({
             id: e.id,

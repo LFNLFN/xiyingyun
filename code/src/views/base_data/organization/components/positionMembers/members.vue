@@ -30,6 +30,7 @@ import { gerPersonsByPost, delPostMember } from '@/api/base_data/organization'
 import permissionOfPage from "@/mixins/permissionOfPage";
 export default {
   name: 'Members',
+  mixins: [permissionOfPage],
   props: {
     positionData: {
       type: Object,
